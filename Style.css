@@ -1,0 +1,117 @@
+body {
+  font-family: 'Assistant', sans-serif;
+  background: #fefbfb;
+  color: #3a3a3a;
+  margin: 0;
+  padding: 10px;
+  direction: rtl;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.logo {
+  max-width: 200px;
+  display: block;
+  margin: 0 auto 8px auto;
+  opacity: 0.85;
+}
+
+h1, h2 {
+  font-weight: 700;
+  color: #b71c1c;
+}
+
+main {
+  max-width: 460px;
+  margin: 0 auto;
+  background: rgba(255 255 255 / 0.88);
+  padding: 15px 20px 30px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgb(183 28 28 / 0.3);
+}
+
+/* כפתורי התחברות */
+.facebook-btn {
+  background: #1877f2;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.apple-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* כמות */
+.quantity-control {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 15px;
+}
+
+.quantity-control button {
+  width: 36px;
+  height: 36px;
+  font-size: 1.5rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: #f0c0c0;
+  color: #7a2a2a;
+}
+
+.quantity-control input {
+  width: 44px;
+  text-align: center;
+  font-size: 1.1rem;
+  border: 1px solid #b71c1c;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+/* טקסטאראה וסיכום */
+#notes {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#order-summary {
+  background: #ffe5e5;
+  border-radius: 8px;
+  padding: 10px;
+  min-height: 100px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #7a2a2a;
+  white-space: pre-wrap;
+}
+
+#send-order {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
