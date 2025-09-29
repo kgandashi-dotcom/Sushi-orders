@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>הזמנת רולים</title>
   <link rel="stylesheet" href="style.css">
+
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- Facebook SDK -->
-  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 </head>
 <body>
   <header>
@@ -20,18 +19,22 @@
     <!-- התחברות -->
     <section id="social-login">
       <div id="g_id_onload"
-           data-client_id="962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com"
+           data-client_id="YOUR_GOOGLE_CLIENT_ID"
            data-callback="handleGoogleLogin">
       </div>
       <div class="g_id_signin" data-type="standard"></div>
-
-      <button id="facebook-login" class="facebook-btn">התחבר עם פייסבוק</button>
-      <button id="apple-login" class="apple-btn">התחבר עם אפל</button>
     </section>
 
-    <!-- טופס ההזמנה -->
+    <!-- הזמנה -->
     <section id="order-section" style="display:none;">
-      <h2>כמות אנשים (צ'ופסטיקס)</h2>
+      <h2>רולים</h2>
+      <div class="rolls-container" id="rolls-container"></div>
+
+      <h2>בחירת רטבים</h2>
+      <div class="rolls-container" id="sauces-container"></div>
+      <p id="sauces-limit-message" class="limit-message"></p>
+
+      <h2>כמות אנשים (צ’ופסטיקס)</h2>
       <div class="quantity-control">
         <button id="chopsticks-minus">−</button>
         <input type="number" id="chopsticks-qty" value="1" readonly>
@@ -44,7 +47,7 @@
       <h2>סיכום הזמנה</h2>
       <pre id="order-summary">בחר רולים ורטבים להצגת הסיכום</pre>
 
-      <button id="send-order">שלח הזמנה</button>
+      <button id="send-order" disabled>שלח הזמנה</button>
     </section>
   </main>
 
