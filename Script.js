@@ -94,4 +94,12 @@ document.getElementById("send-order").addEventListener("click", () => {
   };
 
   fetch(MAKE_WEBHOOK_URL, {
-   
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(()=> { alert("ההזמנה נשלחה בהצלחה!"); })
+  .catch(err=> { console.error(err); alert("שגיאה בשליחת ההזמנה."); });
+});
+
+updateSummary();
