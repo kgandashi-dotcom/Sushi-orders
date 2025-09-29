@@ -83,15 +83,29 @@ function initSauces() {
   saucesData.forEach(s => createRollCard(s, container));
 }
 
-// --- התחברות Google ---
+// --- Google Login ---
 function handleGoogleLogin(response) {
+  // דקודינג הטוקן שהתקבל מגוגל
   const decoded = jwt_decode(response.credential);
-  currentUser = { name: decoded.name, email: decoded.email, picture: decoded.picture };
+
+  // שמירת פרטי המשתמש
+  currentUser = {
+    name: decoded.name,
+    email: decoded.email,
+    picture: decoded.picture || ""
+  };
+
+  // הסתרת מסך ההתחברות
   document.getElementById("social-login").style.display = "none";
+
+  // הצגת מסך ההזמנה
   document.getElementById("order-section").style.display = "block";
 
-  initRolls();
-  initSauces();
+  // אתחול תפריט הרולים והרטבים
+  initRolls();      // יוצר את כל כרטיסי הרולים
+  initSauces();     // יוצר את כל כרטיסי הרטבים
+
+  // אתחול סיכום ההזמנה
   updateSummary();
 }
 
