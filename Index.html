@@ -25,16 +25,14 @@
       <div class="g_id_signin" data-type="standard"></div>
     </section>
 
-    <!-- הזמנה -->
     <section id="order-section" style="display:none;">
       <h2>רולים</h2>
-      <div class="rolls-container" id="rolls-container"></div>
+      <div id="rolls-container" class="rolls-container"></div>
 
-      <h2>בחירת רטבים</h2>
-      <div class="rolls-container" id="sauces-container"></div>
-      <p id="sauces-limit-message" class="limit-message"></p>
+      <h2>רטבים</h2>
+      <div id="sauces-container" class="rolls-container"></div>
 
-      <h2>כמות אנשים (צ’ופסטיקס)</h2>
+      <h2>כמות אנשים (צ'ופסטיקס)</h2>
       <div class="quantity-control">
         <button id="chopsticks-minus">−</button>
         <input type="number" id="chopsticks-qty" value="1" readonly>
@@ -49,6 +47,7 @@
 
       <button id="send-order" disabled>שלח הזמנה</button>
     </section>
+ 
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
