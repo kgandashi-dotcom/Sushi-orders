@@ -1,55 +1,64 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>תפריט רולים</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>תפריט רולים</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
-  <header>
-    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
-    <h1>תפריט רולים</h1>
-  </header>
+<header>
+  <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
+  <h1>תפריט רולים</h1>
+</header>
 
-  <main>
-    <section id="social-login">
-      <button id="google-login" class="google-btn">בצע הזמנה / התחבר עם Google</button>
-    </section>
+<main>
+  <!-- התחברות -->
+  <section id="social-login">
+    <div id="g_id_onload"
+         data-client_id="962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com"
+         data-auto_prompt="false"
+         data-callback="handleGoogleLogin">
+    </div>
+    <div class="g_id_signin" data-type="standard"></div>
+  </section>
 
-    <section id="order-section">
-      <h2>רולים אינסייד אאוט</h2>
-      <div id="insideOutRolls"></div>
+  <!-- תפריט -->
+  <section id="menu-section">
+    <h2>רולים אינסייד-אאוט</h2>
+    <div id="insideOutRolls"></div>
 
-      <h2>מאקי</h2>
-      <div id="makiRolls"></div>
+    <h2>מאקי</h2>
+    <div id="makiRolls"></div>
 
-      <h2>אוניגירי</h2>
-      <div id="onigiri"></div>
+    <h2>אוניגירי</h2>
+    <div id="onigiriRolls"></div>
 
-      <h2>פוקי</h2>
-      <div id="Poke"></div>
+    <h2>פוקי</h2>
+    <div id="pokeRolls"></div>
 
-      <h2>רטבים</h2>
-      <div id="sauces-container"></div>
+    <h2>רטבים</h2>
+    <div id="sauces"></div>
 
-      <h2>צ'ופסטיקס</h2>
-      <div class="quantity-control">
-        <button id="chopsticks-minus">−</button>
-        <input type="number" id="chopsticks-qty" value="1" readonly>
-        <button id="chopsticks-plus">+</button>
-      </div>
+    <h2>כמות צ'ופסטיקס</h2>
+    <div class="quantity-control">
+      <button id="chopsticks-minus">−</button>
+      <input type="number" id="chopsticks-qty" value="1" readonly>
+      <button id="chopsticks-plus">+</button>
+    </div>
 
-      <h2>הערות אישיות</h2>
-      <textarea id="notes" placeholder="רשום כאן הערות"></textarea>
+    <h2>הערות אישיות</h2>
+    <textarea id="notes" placeholder="רשום כאן הערות"></textarea>
 
-      <h2>סיכום הזמנה</h2>
-      <pre id="order-summary">בחר פריטים להצגת הסיכום</pre>
-    </section>
-  </main>
+    <h2>סיכום הזמנה</h2>
+    <pre id="order-summary">בחר רולים ורטבים להצגת הסיכום</pre>
 
-  <script src="script.js"></script>
+    <button id="send-order">התחבר/שלח הזמנה</button>
+  </section>
+</main>
+
+<script src="script.js"></script>
 </body>
 </html>
