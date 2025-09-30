@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>תפריט רולים</title>
+  <title>הזמנת רולים</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
@@ -15,17 +15,15 @@
   </header>
 
   <main>
-    <!-- כפתור התחברות Google -->
     <section id="login-section">
       <button id="google-login" class="google-btn">התחבר עם Google</button>
     </section>
 
-    <!-- תפריט והזמנה -->
     <section id="menu" style="display:none;">
-      <h2>רולים Inside-Out</h2>
+      <h2>אינסיידאאוט</h2>
       <div id="insideOutRolls" class="cards-container"></div>
 
-      <h2>מַאקי</h2>
+      <h2>מאקי</h2>
       <div id="makiRolls" class="cards-container"></div>
 
       <h2>אוניגירי</h2>
@@ -37,7 +35,7 @@
       <h2>רטבים</h2>
       <div id="sauces" class="cards-container"></div>
 
-      <h2>כמות צ'ופסטיקס</h2>
+      <h2>כמות צ’ופסטיקס</h2>
       <div class="quantity-control">
         <button id="chopsticks-minus">−</button>
         <input type="number" id="chopsticks-qty" value="1" readonly>
@@ -49,6 +47,8 @@
 
       <h2>סיכום הזמנה</h2>
       <pre id="order-summary">בחר רולים ורטבים להצגת הסיכום</pre>
+
+      <button id="send-order" class="google-btn">בצע הזמנה</button>
     </section>
   </main>
 
