@@ -1,56 +1,74 @@
+/* -------------------------
+   כלליים
+------------------------- */
 body {
   font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
   margin: 0;
   padding: 0;
-  background-image: url('https://i.imgur.com/m6KeXAB.jpeg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+  direction: rtl;
 }
 
 header {
   text-align: center;
-  background-color: rgba(255, 255, 255, 0.85);
-  padding: 10px;
-}
-
-.logo {
-  max-width: 150px;
-  display: block;
-  margin: 0 auto;
-}
-
-main {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 10px;
+  padding: 20px 0;
   background-color: rgba(255,255,255,0.9);
-  border-radius: 12px;
 }
 
-h2 {
-  color: #7a2a2a;
+header img.logo {
+  max-width: 120px;
   margin-bottom: 10px;
 }
 
-.roll-category, .sauces-box, .quantity-box, .notes-box, .summary-box {
-  margin-bottom: 20px;
-  padding: 10px;
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.85);
+h1, h2, h3 {
+  margin: 10px 0;
 }
 
-.roll-card, .sauce-item {
+/* -------------------------
+   קטגוריות רולים
+------------------------- */
+.category-section {
+  margin: 20px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.category-section h2 {
+  margin-bottom: 10px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 5px;
+}
+
+/* -------------------------
+   כרטיסי רולים
+------------------------- */
+.roll-card, .sauce-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px;
+  padding: 10px 12px;
   margin-bottom: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #fff;
+  background-color: #fff4f0;
+  border: 1px solid #e0cfcf;
+  border-radius: 8px;
 }
 
+.roll-card h3, .sauce-card h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.roll-card p, .sauce-card p {
+  margin: 2px 0 0 0;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* -------------------------
+   כפתורי כמות
+------------------------- */
 .quantity-control {
   display: flex;
   align-items: center;
@@ -58,46 +76,123 @@ h2 {
 }
 
 .quantity-control button {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  border: none;
   background-color: #f0c0c0;
+  border: none;
   color: #7a2a2a;
   font-size: 1.2rem;
   font-weight: 700;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background-color 0.3s ease;
 }
 
 .quantity-control button:hover {
-  background-color: #e0a0a0;
+  background-color: #e89a9a;
 }
 
-input[type=number] {
-  width: 50px;
+.quantity-control input {
+  width: 36px;
   text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
 }
 
-textarea {
+/* -------------------------
+   רטבים
+------------------------- */
+.sauce-section {
+  margin: 20px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.sauce-section h2 {
+  margin-bottom: 10px;
+}
+
+.sauce-card {
+  justify-content: space-between;
+  margin-bottom: 6px;
+  padding: 8px 10px;
+}
+
+/* -------------------------
+   צ’ופסטיקס והערות
+------------------------- */
+#chopsticks-section, #notes-section {
+  margin: 20px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+#notes-section textarea {
   width: 100%;
   min-height: 60px;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid #ccc;
   padding: 6px;
+  font-size: 0.95rem;
 }
 
-.send-btn {
-  width: 100%;
+/* -------------------------
+   סיכום הזמנה
+------------------------- */
+#order-summary-section {
+  margin: 20px;
+  padding: 15px;
+  background-color: #fff9f2;
+  border-radius: 12px;
+  border: 1px solid #e0cfcf;
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+}
+
+/* -------------------------
+   כפתור התחברות/שליחה
+------------------------- */
+#send-order {
+  display: block;
+  width: calc(100% - 40px);
+  margin: 15px 20px;
   padding: 12px;
   background-color: #7a2a2a;
   color: #fff;
-  font-size: 1.2rem;
   border: none;
   border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.send-btn:hover {
-  background-color: #9c3a3a;
+#send-order:hover {
+  background-color: #5e1f1f;
+}
+
+/* -------------------------
+   כפתור חסר/Disabled
+------------------------- */
+#send-order:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* -------------------------
+   Responsive
+------------------------- */
+@media (max-width: 600px) {
+  .roll-card, .sauce-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .quantity-control {
+    margin-top: 6px;
+  }
 }
