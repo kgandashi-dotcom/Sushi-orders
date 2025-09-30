@@ -1,76 +1,46 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>תפריט רולים</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>הזמנת רולים</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-<header>
-  <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
-  <h1>תפריט רולים</h1>
-</header>
+  <header>
+    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
+    <h1>תפריט רולים</h1>
+  </header>
 
-<main>
-  <section id="menu-section">
-    <div class="category">
-      <h2>Inside Out Rolls</h2>
-      <div id="insideout-container" class="rolls-container"></div>
-    </div>
-
-    <div class="category">
-      <h2>Maki Rolls</h2>
-      <div id="maki-container" class="rolls-container"></div>
-    </div>
-
-    <div class="category">
-      <h2>Onigiri</h2>
-      <div id="onigiri-container" class="rolls-container"></div>
-    </div>
-
-    <div class="category">
-      <h2>Poke</h2>
-      <div id="poke-container" class="rolls-container"></div>
-    </div>
-
-    <div class="category">
+  <main>
+    <section id="menu-section">
+      <div id="rolls-container"></div>
       <h2>רטבים</h2>
-      <div id="sauces-container" class="rolls-container"></div>
-      <p>על כל רול מגיעים 2 רטבים חינם. רטבים נוספים: 3₪ כל אחד.</p>
-    </div>
+      <div id="sauces-container"></div>
 
-    <div class="category">
       <h2>כמות צ'ופסטיקס</h2>
       <div class="quantity-control">
         <button id="chopsticks-minus">−</button>
         <input type="number" id="chopsticks-qty" value="1" readonly>
         <button id="chopsticks-plus">+</button>
       </div>
-    </div>
 
-    <div class="category">
       <h2>הערות אישיות</h2>
       <textarea id="notes" placeholder="רשום כאן הערות"></textarea>
-    </div>
 
-    <div class="category">
-      <h2>בחר שעת איסוף</h2>
-      <select id="pickup-time">
-        <option value="">בחר שעה</option>
-      </select>
-    </div>
+      <h2>שעת איסוף</h2>
+      <select id="pickup-time"></select>
 
-    <div class="category">
       <h2>סיכום הזמנה</h2>
-      <pre id="order-summary">בחר פריטים להצגת הסיכום</pre>
-      <button id="send-order">התחבר / שלח הזמנה</button>
-    </div>
-  </section>
-</main>
+      <pre id="order-summary">בחר רולים ורטבים להצגת הסיכום</pre>
 
-<script src="script.js"></script>
+      <button id="send-order">שלח הזמנה / התחבר</button>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
