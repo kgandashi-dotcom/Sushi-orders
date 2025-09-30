@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>תפריט רולים</title>
+<title>הזמנת רולים</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
@@ -15,52 +15,56 @@
 </header>
 
 <main>
-  <section id="rolls-section">
-    <h2>רולים</h2>
-    <div id="rolls-container"></div>
+  <!-- כפתור התחברות / שליחת הזמנה -->
+  <section id="login-section">
+    <button id="send-order">התחבר/שלח הזמנה</button>
   </section>
 
-  <section id="maki-section">
-    <h2>מאקי</h2>
-    <div id="maki-container"></div>
+  <!-- תפריט רולים -->
+  <section id="menu-section">
+    <h2>Inside Out Rolls</h2>
+    <div id="insideout-container" class="rolls-container"></div>
+
+    <h2>Maki Rolls</h2>
+    <div id="maki-container" class="rolls-container"></div>
+
+    <h2>Onigiri</h2>
+    <div id="onigiri-container" class="rolls-container"></div>
+
+    <h2>Poke</h2>
+    <div id="poke-container" class="rolls-container"></div>
   </section>
 
-  <section id="onigiri-section">
-    <h2>אוניגירי</h2>
-    <div id="onigiri-container"></div>
-  </section>
-
-  <section id="poke-section">
-    <h2>פוקי</h2>
-    <div id="poke-container"></div>
-  </section>
-
+  <!-- רטבים -->
   <section id="sauces-section">
-    <h2>רטבים נוספים (+3₪ כל אחד מעבר לשניים חינם)</h2>
+    <h2>בחר רטבים</h2>
     <div id="sauces-container"></div>
   </section>
 
+  <!-- צ'ופסטיקס -->
   <section id="chopsticks-section">
-    <h2>כמות צ’ופסטיקס</h2>
+    <h2>כמות צ'ופסטיקס</h2>
     <button id="chopsticks-minus">−</button>
     <input type="number" id="chopsticks-qty" value="1" readonly>
     <button id="chopsticks-plus">+</button>
   </section>
 
+  <!-- הערות אישיות -->
   <section id="notes-section">
     <h2>הערות אישיות</h2>
     <textarea id="notes" placeholder="רשום כאן הערות"></textarea>
   </section>
 
+  <!-- שעת איסוף -->
   <section id="pickup-section">
     <h2>בחר שעת איסוף</h2>
     <select id="pickup-time"></select>
   </section>
 
+  <!-- סיכום הזמנה -->
   <section id="summary-section">
     <h2>סיכום הזמנה</h2>
-    <pre id="order-summary">בחר פריטים להצגת הסיכום</pre>
-    <button id="send-order">הזמן עכשיו</button>
+    <pre id="order-summary">בחר רולים ורטבים להצגת הסיכום</pre>
   </section>
 </main>
 
