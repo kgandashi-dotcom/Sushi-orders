@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>הזמנת רולים</title>
+  <title>תפריט רולים</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
@@ -15,27 +15,27 @@
   </header>
 
   <main>
-    <section id="login-section">
-      <button id="google-login" class="google-btn">התחבר עם Google</button>
+    <section id="social-login">
+      <button id="google-login" class="google-btn">בצע הזמנה / התחבר עם Google</button>
     </section>
 
-    <section id="menu" style="display:none;">
-      <h2>אינסיידאאוט</h2>
-      <div id="insideOutRolls" class="cards-container"></div>
+    <section id="order-section">
+      <h2>רולים אינסייד אאוט</h2>
+      <div id="insideOutRolls"></div>
 
       <h2>מאקי</h2>
-      <div id="makiRolls" class="cards-container"></div>
+      <div id="makiRolls"></div>
 
       <h2>אוניגירי</h2>
-      <div id="onigiri" class="cards-container"></div>
+      <div id="onigiri"></div>
 
       <h2>פוקי</h2>
-      <div id="poke" class="cards-container"></div>
+      <div id="Poke"></div>
 
       <h2>רטבים</h2>
-      <div id="sauces" class="cards-container"></div>
+      <div id="sauces-container"></div>
 
-      <h2>כמות צ’ופסטיקס</h2>
+      <h2>צ'ופסטיקס</h2>
       <div class="quantity-control">
         <button id="chopsticks-minus">−</button>
         <input type="number" id="chopsticks-qty" value="1" readonly>
@@ -46,9 +46,7 @@
       <textarea id="notes" placeholder="רשום כאן הערות"></textarea>
 
       <h2>סיכום הזמנה</h2>
-      <pre id="order-summary">בחר רולים ורטבים להצגת הסיכום</pre>
-
-      <button id="send-order" class="google-btn">בצע הזמנה</button>
+      <pre id="order-summary">בחר פריטים להצגת הסיכום</pre>
     </section>
   </main>
 
