@@ -15,41 +15,29 @@
 </header>
 
 <main>
-  <!-- כפתור התחברות / שליחת הזמנה -->
-  <section id="login-section">
-    <button id="send-order">התחבר/שלח הזמנה</button>
-  </section>
-
-  <!-- תפריט רולים -->
-  <section id="menu-section">
-    <h2>Inside Out Rolls</h2>
-    <div id="insideout-container" class="rolls-container"></div>
-
-    <h2>Maki Rolls</h2>
-    <div id="maki-container" class="rolls-container"></div>
-
-    <h2>Onigiri</h2>
-    <div id="onigiri-container" class="rolls-container"></div>
-
-    <h2>Poke</h2>
-    <div id="poke-container" class="rolls-container"></div>
+  <!-- כרטיסי רולים -->
+  <section id="rolls-section">
+    <h2>רולים</h2>
+    <div id="rolls-container" class="cards-container"></div>
   </section>
 
   <!-- רטבים -->
   <section id="sauces-section">
-    <h2>בחר רטבים</h2>
-    <div id="sauces-container"></div>
+    <h2>רטבים</h2>
+    <div id="sauces-container" class="cards-container"></div>
   </section>
 
   <!-- צ'ופסטיקס -->
   <section id="chopsticks-section">
     <h2>כמות צ'ופסטיקס</h2>
-    <button id="chopsticks-minus">−</button>
-    <input type="number" id="chopsticks-qty" value="1" readonly>
-    <button id="chopsticks-plus">+</button>
+    <div class="quantity-control">
+      <button id="chopsticks-minus">−</button>
+      <input type="number" id="chopsticks-qty" value="1" readonly>
+      <button id="chopsticks-plus">+</button>
+    </div>
   </section>
 
-  <!-- הערות אישיות -->
+  <!-- הערות -->
   <section id="notes-section">
     <h2>הערות אישיות</h2>
     <textarea id="notes" placeholder="רשום כאן הערות"></textarea>
@@ -58,13 +46,20 @@
   <!-- שעת איסוף -->
   <section id="pickup-section">
     <h2>בחר שעת איסוף</h2>
-    <select id="pickup-time"></select>
+    <select id="pickup-time">
+      <option value="">בחר שעה</option>
+    </select>
   </section>
 
-  <!-- סיכום הזמנה -->
+  <!-- סיכום -->
   <section id="summary-section">
     <h2>סיכום הזמנה</h2>
-    <pre id="order-summary">בחר רולים ורטבים להצגת הסיכום</pre>
+    <pre id="order-summary">ההזמנה שלך תופיע כאן</pre>
+  </section>
+
+  <!-- כפתור שלח/התחבר -->
+  <section id="send-section">
+    <button id="send-order">שלח הזמנה / התחבר עם גוגל</button>
   </section>
 </main>
 
