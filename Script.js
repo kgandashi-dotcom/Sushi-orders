@@ -3,6 +3,7 @@ let chopsticksCount = 1;
 const ADDRESS = "אור עקיבא, רחוב מור, בניין 17ב, דירה 3";
 const PICKUP_TIME = "21:30";
 const MAKE_WEBHOOK_URL = "https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r";
+const GOOGLE_CLIENT_ID = "962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com";
 
 // --- נתוני רולים ---
 const insideOutRollsData = [
