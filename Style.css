@@ -2,93 +2,78 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #fff8f0;
+  background: #f9f9f9;
   color: #333;
 }
 
 header {
-  text-align: center;
-  padding: 20px;
-  background-color: #ff6f61;
+  background: #ff6f61;
   color: white;
+  padding: 1rem;
+  text-align: center;
 }
 
 .logo {
-  height: 60px;
+  max-width: 100px;
+  display: block;
+  margin: 0 auto 10px;
 }
 
 h1, h2 {
-  margin: 10px 0;
+  margin: 0.5rem 0;
+}
+
+section {
+  padding: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .roll-card {
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
   border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
-  background-color: #fff;
+  background: #fff;
 }
 
 .roll-card h3 {
-  margin: 0 0 5px 0;
-}
-
-.roll-card p {
-  margin: 0 0 5px 0;
+  margin: 0 0 0.3rem 0;
 }
 
 .quantity-control {
   display: flex;
   align-items: center;
-  margin: 5px 0 15px 0;
+  margin: 0.5rem 0;
 }
 
 .quantity-control button {
-  width: 30px;
-  height: 30px;
-  font-size: 18px;
-  margin: 0 5px;
-  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  margin: 0 0.5rem;
 }
 
-input[type="number"] {
+.quantity-control input {
   width: 50px;
   text-align: center;
 }
 
-.google-btn {
-  background-color: #4285F4;
+#g_id_onload, .g_id_signin {
+  margin: 1rem 0;
+}
+
+#send-order {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  background: #28a745;
   color: white;
   border: none;
-  padding: 10px 20px;
-  margin: 20px;
-  font-size: 16px;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-.google-btn:hover {
-  background-color: #357ae8;
-}
-
-textarea {
-  width: 100%;
-  height: 60px;
-  resize: none;
-  padding: 5px;
-  margin-bottom: 15px;
-}
-
-#sauces-container div {
-  display: inline-block;
-  margin: 5px;
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#sauces-container div.selected {
-  font-weight: bold;
-  background-color: #ffd6b2;
+#send-order:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
