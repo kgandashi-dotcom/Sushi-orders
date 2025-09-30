@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>הזמנת רולים</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Google Identity -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
@@ -36,10 +35,11 @@
       <div id="poke-container" class="cards-row"></div>
     </section>
 
-    <!-- רטבים גלובליים (הופיעו ברורים גם בתוך כל רול) -->
+    <!-- רטבים גלובליים -->
     <section class="menu-section">
-      <h2>רטבים (מופיעים גם בתוך כל רול — כאן תוכל לראות פירוט כללי)</h2>
-      <div id="sauces-legend" class="sauces-legend"></div>
+      <h2>רטבים</h2>
+      <p class="muted">על כל רול מגיעים 2 רטבים חינם. כל רוטב נוסף עולה 3₪.</p>
+      <div id="sauces-container" class="sauces-row"></div>
     </section>
 
     <!-- צ'ופסטיקס והערות -->
