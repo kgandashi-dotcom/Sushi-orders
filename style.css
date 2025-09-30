@@ -1,78 +1,77 @@
-/* -------------------------
-   כלליים
-------------------------- */
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
+/* Reset בסיסי */
+* {
   margin: 0;
   padding: 0;
-  direction: rtl;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #f5f5f5; /* רקע כללי */
+  color: #333;
+  line-height: 1.5;
+  padding: 20px;
 }
 
 header {
   text-align: center;
-  padding: 20px 0;
-  background-color: rgba(255,255,255,0.9);
+  margin-bottom: 20px;
 }
 
-header img.logo {
+header .logo {
   max-width: 120px;
   margin-bottom: 10px;
 }
 
 h1, h2, h3 {
-  margin: 10px 0;
+  color: #7a2a2a;
 }
 
-/* -------------------------
-   קטגוריות רולים
-------------------------- */
-.category-section {
-  margin: 20px;
+/* Containers לכל קטגוריה */
+section {
+  margin-bottom: 30px;
   padding: 15px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
 }
 
-.category-section h2 {
-  margin-bottom: 10px;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 5px;
-}
-
-/* -------------------------
-   כרטיסי רולים
-------------------------- */
-.roll-card, .sauce-card {
+.rolls-container {
   display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+/* כרטיס רול / רוטב */
+.roll-card {
+  background-color: #fff8f0;
+  border: 2px solid #f0c0c0;
+  border-radius: 10px;
+  padding: 10px;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  background-color: #fff4f0;
-  border: 1px solid #e0cfcf;
-  border-radius: 8px;
 }
 
-.roll-card h3, .sauce-card h3 {
-  margin: 0;
-  font-size: 1rem;
+.roll-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
 }
 
-.roll-card p, .sauce-card p {
-  margin: 2px 0 0 0;
-  font-size: 0.85rem;
-  color: #555;
+.roll-card p {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
 }
 
-/* -------------------------
-   כפתורי כמות
-------------------------- */
+/* כפתורי כמות */
 .quantity-control {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 6px;
+  user-select: none;
+  margin-bottom: 10px;
 }
 
 .quantity-control button {
@@ -81,118 +80,87 @@ h1, h2, h3 {
   color: #7a2a2a;
   font-size: 1.2rem;
   font-weight: 700;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .quantity-control button:hover {
-  background-color: #e89a9a;
+  background-color: #e09b9b;
 }
 
 .quantity-control input {
-  width: 36px;
+  width: 40px;
   text-align: center;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
+  height: 36px;
 }
 
-/* -------------------------
-   רטבים
-------------------------- */
-.sauce-section {
-  margin: 20px;
-  padding: 15px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.sauce-section h2 {
-  margin-bottom: 10px;
-}
-
-.sauce-card {
-  justify-content: space-between;
-  margin-bottom: 6px;
-  padding: 8px 10px;
-}
-
-/* -------------------------
-   צ’ופסטיקס והערות
-------------------------- */
-#chopsticks-section, #notes-section {
-  margin: 20px;
-  padding: 15px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-#notes-section textarea {
+/* טקסטעריה */
+textarea {
   width: 100%;
   min-height: 60px;
-  border-radius: 6px;
+  padding: 8px;
+  border-radius: 8px;
   border: 1px solid #ccc;
-  padding: 6px;
-  font-size: 0.95rem;
+  resize: vertical;
 }
 
-/* -------------------------
-   סיכום הזמנה
-------------------------- */
-#order-summary-section {
-  margin: 20px;
-  padding: 15px;
-  background-color: #fff9f2;
-  border-radius: 12px;
-  border: 1px solid #e0cfcf;
-  white-space: pre-wrap;
-  font-size: 0.9rem;
-}
-
-/* -------------------------
-   כפתור התחברות/שליחה
-------------------------- */
+/* כפתור שליחה */
 #send-order {
-  display: block;
-  width: calc(100% - 40px);
-  margin: 15px 20px;
+  width: 100%;
   padding: 12px;
   background-color: #7a2a2a;
   color: #fff;
+  font-size: 1.1rem;
+  font-weight: bold;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 #send-order:hover {
-  background-color: #5e1f1f;
+  background-color: #a33b3b;
 }
 
-/* -------------------------
-   כפתור חסר/Disabled
-------------------------- */
-#send-order:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+/* סיכום הזמנה */
+#order-summary {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  white-space: pre-wrap;
 }
 
-/* -------------------------
-   Responsive
-------------------------- */
+/* בחירת שעה */
+#pickup-time {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  width: 100%;
+}
+
+/* מדגיש את הערות על רטבים */
+#sauces-section p {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #7a2a2a;
+  font-weight: bold;
+}
+
+/* התאמה למובייל */
 @media (max-width: 600px) {
-  .roll-card, .sauce-card {
+  .rolls-container {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
   }
-
-  .quantity-control {
-    margin-top: 6px;
+  .roll-card {
+    width: 90%;
   }
 }
