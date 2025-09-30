@@ -1,76 +1,60 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>הזמנת רולים</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>הזמנת רולים</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
-  <header>
-    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
-    <h1>תפריט רולים</h1>
-  </header>
+<header>
+  <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
+  <h1>תפריט רולים</h1>
+</header>
 
-  <main>
-    <section id="controls-row">
-      <div id="capacity-info" class="muted"></div>
-      <button id="send-order" class="primary">שלח הזמנה / התחבר עם Google</button>
-    </section>
+<main>
+  <!-- רולים -->
+  <section id="rolls-section"></section>
 
-    <!-- קטגוריות -->
-    <section class="menu-section">
-      <h2>Inside Out Rolls</h2>
-      <div id="insideout-container" class="cards-row"></div>
+  <!-- רטבים -->
+  <section id="sauces-section">
+    <h2>בחר רטבים</h2>
+    <p>לכל רול מגיעים 2 רטבים חינם, יתר כל רוטב +3₪</p>
+    <div id="sauces-container"></div>
+  </section>
 
-      <h2>Maki Rolls</h2>
-      <div id="maki-container" class="cards-row"></div>
+  <!-- כמות צ’ופסטיקס -->
+  <section id="chopsticks-section">
+    <h2>כמות צ’ופסטיקס</h2>
+    <div class="quantity-control">
+      <button id="chopsticks-minus">−</button>
+      <input type="number" id="chopsticks-qty" value="1" readonly>
+      <button id="chopsticks-plus">+</button>
+    </div>
+  </section>
 
-      <h2>Onigiri</h2>
-      <div id="onigiri-container" class="cards-row"></div>
+  <!-- הערות -->
+  <section id="notes-section">
+    <h2>הערות אישיות</h2>
+    <textarea id="notes" placeholder="רשום כאן הערות"></textarea>
+  </section>
 
-      <h2>Poke</h2>
-      <div id="poke-container" class="cards-row"></div>
-    </section>
+  <!-- שעת איסוף -->
+  <section id="time-section">
+    <h2>בחר שעת איסוף</h2>
+    <select id="pickup-time"></select>
+  </section>
 
-    <!-- רטבים גלובליים -->
-    <section class="menu-section">
-      <h2>רטבים</h2>
-      <p class="muted">על כל רול מגיעים 2 רטבים חינם. כל רוטב נוסף עולה 3₪.</p>
-      <div id="sauces-container" class="sauces-row"></div>
-    </section>
+  <!-- סיכום ההזמנה -->
+  <section id="summary-section">
+    <h2>סיכום הזמנה</h2>
+    <pre id="order-summary">בחר רולים, רטבים וצ’ופסטיקס להצגת הסיכום</pre>
+    <button id="send-order">התחבר ושלח הזמנה</button>
+  </section>
+</main>
 
-    <!-- צ'ופסטיקס והערות -->
-    <section class="menu-section small">
-      <h2>כמות צ'ופסטיקס</h2>
-      <div class="quantity-control">
-        <button id="chopsticks-minus">−</button>
-        <input id="chopsticks-qty" type="number" value="1" readonly>
-        <button id="chopsticks-plus">+</button>
-      </div>
-    </section>
-
-    <section class="menu-section">
-      <h2>הערות אישיות</h2>
-      <textarea id="notes" placeholder="רשום כאן הערות להזמנה"></textarea>
-    </section>
-
-    <section class="menu-section small">
-      <h2>בחר שעת איסוף (חובה)</h2>
-      <select id="pickup-time">
-        <option value="">בחר שעת איסוף</option>
-      </select>
-      <div id="time-warning" class="muted"></div>
-    </section>
-
-    <section class="menu-section">
-      <h2>סיכום הזמנה</h2>
-      <pre id="order-summary">עוד לא נבחרו פריטים</pre>
-    </section>
-  </main>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
