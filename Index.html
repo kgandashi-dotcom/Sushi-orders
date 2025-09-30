@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>הזמנת רולים</title>
+  <title>תפריט רולים</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
   <header>
@@ -15,37 +15,50 @@
   </header>
 
   <main>
-    <!-- התחברות -->
     <section id="social-login">
-      <div id="google-button"></div>
+      <div id="g_id_onload"
+           data-client_id="962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com"
+           data-login_uri=""
+           data-callback="handleGoogleLogin"
+           data-auto_prompt="false">
+      </div>
+      <div class="g_id_signin" data-type="standard"></div>
     </section>
 
-    <!-- טופס ההזמנה -->
-    <section id="order-section" style="display:none;">
-      <h2>כמות אנשים (צ'ופסטיקס)</h2>
+    <section id="menu-section">
+      <h2>אינסייד-אאוט</h2>
+      <div id="insideOutRolls" class="rolls-container"></div>
+
+      <h2>מאקי</h2>
+      <div id="makiRolls" class="rolls-container"></div>
+
+      <h2>אוניגירי</h2>
+      <div id="onigiri" class="rolls-container"></div>
+
+      <h2>פוקי</h2>
+      <div id="Poke" class="rolls-container"></div>
+
+      <h2>רטבים</h2>
+      <div id="sauces-container" class="rolls-container"></div>
+      <p id="sauces-limit-message" class="info-message"></p>
+
+      <h2>כמות צ'ופסטיקס</h2>
       <div class="quantity-control">
         <button id="chopsticks-minus">−</button>
         <input type="number" id="chopsticks-qty" value="1" readonly>
         <button id="chopsticks-plus">+</button>
       </div>
 
-      <h2>בחר רולים</h2>
-      <div id="rolls-container"></div>
-
-      <h2>בחר רטבים</h2>
-      <div id="sauces-container"></div>
-
-      <h2>הערות אישיות</h2>
+      <h2>הערות</h2>
       <textarea id="notes" placeholder="רשום כאן הערות"></textarea>
 
       <h2>סיכום הזמנה</h2>
       <pre id="order-summary">בחר רולים ורטבים להצגת הסיכום</pre>
 
-      <button id="send-order">שלח הזמנה</button>
+      <button id="send-order" disabled>שלח הזמנה (התחבר קודם)</button>
     </section>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
