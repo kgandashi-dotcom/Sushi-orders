@@ -1,91 +1,94 @@
 body {
   font-family: Arial, sans-serif;
-  background: #fff;
   margin: 0;
   padding: 0;
-  text-align: center;
-  direction: rtl;
+  background-color: #fff8f0;
+  color: #333;
 }
 
 header {
-  background: #f2f2f2;
+  text-align: center;
   padding: 20px;
+  background-color: #ff6f61;
+  color: white;
 }
 
 .logo {
-  width: 100px;
+  height: 60px;
 }
 
 h1, h2 {
   margin: 10px 0;
 }
 
-.cards-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
 .roll-card {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 10px;
-  width: 220px;
-  text-align: center;
+  margin-bottom: 10px;
+  background-color: #fff;
 }
 
 .roll-card h3 {
-  font-size: 16px;
-  margin-bottom: 5px;
+  margin: 0 0 5px 0;
 }
 
 .roll-card p {
-  font-size: 14px;
-  margin-bottom: 10px;
+  margin: 0 0 5px 0;
 }
 
 .quantity-control {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 5px;
-  margin-bottom: 15px;
+  margin: 5px 0 15px 0;
 }
 
 .quantity-control button {
-  padding: 5px 10px;
+  width: 30px;
+  height: 30px;
   font-size: 18px;
+  margin: 0 5px;
   cursor: pointer;
 }
 
-.quantity-control input {
-  width: 40px;
+input[type="number"] {
+  width: 50px;
   text-align: center;
-  font-size: 16px;
 }
 
 .google-btn {
-  background-color: #4285f4;
+  background-color: #4285F4;
   color: white;
   border: none;
   padding: 10px 20px;
-  margin: 10px 0;
+  margin: 20px;
   font-size: 16px;
+  border-radius: 6px;
   cursor: pointer;
-  border-radius: 4px;
+}
+
+.google-btn:hover {
+  background-color: #357ae8;
 }
 
 textarea {
-  width: 90%;
+  width: 100%;
   height: 60px;
+  resize: none;
+  padding: 5px;
   margin-bottom: 15px;
 }
 
-#order-summary {
-  text-align: left;
-  background: #f9f9f9;
-  padding: 10px;
-  border-radius: 4px;
+#sauces-container div {
+  display: inline-block;
+  margin: 5px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#sauces-container div.selected {
+  font-weight: bold;
+  background-color: #ffd6b2;
 }
