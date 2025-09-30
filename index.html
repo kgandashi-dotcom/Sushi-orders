@@ -16,29 +16,29 @@
 
   <main>
     <!-- קטגוריות רולים -->
-    <section id="rolls-section">
-      <div id="insideout-container" class="roll-category">
-        <h2>Inside Out Rolls</h2>
-      </div>
-      <div id="maki-container" class="roll-category">
-        <h2>Maki Rolls</h2>
-      </div>
-      <div id="onigiri-container" class="roll-category">
-        <h2>Onigiri</h2>
-      </div>
-      <div id="poke-container" class="roll-category">
-        <h2>Poke</h2>
-      </div>
+    <section id="menu-section">
+      <h2>Inside-Out Rolls</h2>
+      <div id="insideout-container" class="rolls-container"></div>
+
+      <h2>Maki Rolls</h2>
+      <div id="maki-container" class="rolls-container"></div>
+
+      <h2>Onigiri</h2>
+      <div id="onigiri-container" class="rolls-container"></div>
+
+      <h2>Poke</h2>
+      <div id="poke-container" class="rolls-container"></div>
     </section>
 
     <!-- רטבים -->
-    <section class="sauces-box">
-      <h2>רטבים (2 חינם לכל רול, כל רוטב נוסף +3₪)</h2>
-      <div id="sauces-container"></div>
+    <section id="sauces-section">
+      <h2>רטבים</h2>
+      <div id="sauces-container" class="rolls-container"></div>
+      <p>על כל רול מגיעים 2 רטבים חינם, כל רוטב נוסף 3₪</p>
     </section>
 
-    <!-- צ'ופסטיקס -->
-    <section class="quantity-box">
+    <!-- צ’ופסטיקס -->
+    <section id="chopsticks-section">
       <h2>כמות צ’ופסטיקס</h2>
       <div class="quantity-control">
         <button id="chopsticks-minus">−</button>
@@ -47,20 +47,37 @@
       </div>
     </section>
 
-    <!-- הערות -->
-    <section class="notes-box">
+    <!-- הערות אישיות -->
+    <section id="notes-section">
       <h2>הערות אישיות</h2>
       <textarea id="notes" placeholder="רשום כאן הערות"></textarea>
     </section>
 
-    <!-- סיכום הזמנה -->
-    <section class="summary-box">
-      <h2>סיכום הזמנה</h2>
-      <pre id="order-summary">בחר רולים, רטבים וצ’ופסטיקס להצגת הסיכום</pre>
+    <!-- בחירת שעת איסוף -->
+    <section id="time-section">
+      <h2>בחר שעת איסוף</h2>
+      <select id="pickup-time">
+        <option value="">בחר שעה</option>
+        <option value="19:30">19:30</option>
+        <option value="20:00">20:00</option>
+        <option value="20:30">20:30</option>
+        <option value="21:00">21:00</option>
+        <option value="21:30">21:30</option>
+        <option value="22:00">22:00</option>
+        <option value="22:30">22:30</option>
+      </select>
     </section>
 
-    <!-- התחברות/שליחה -->
-    <button id="send-order" class="send-btn">התחבר/שלח הזמנה</button>
+    <!-- סיכום הזמנה -->
+    <section id="summary-section">
+      <h2>סיכום הזמנה</h2>
+      <pre id="order-summary">בחר רולים ורטבים להצגת הסיכום</pre>
+    </section>
+
+    <!-- כפתור שליחה / התחברות -->
+    <section id="submit-section">
+      <button id="send-order">שלח הזמנה / התחבר עם גוגל</button>
+    </section>
   </main>
 
   <script src="script.js"></script>
