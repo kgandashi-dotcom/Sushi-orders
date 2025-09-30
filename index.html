@@ -3,72 +3,63 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>תפריט רולים</title>
+<title>הזמנת רולים</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
-<header>
-  <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
-  <h1>תפריט רולים</h1>
-</header>
+  <header>
+    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
+    <h1>תפריט רולים</h1>
+  </header>
 
-<main>
-  <!-- Inside-Out Rolls -->
-  <section>
-    <h2>Inside-Out Rolls</h2>
-    <div id="rolls-section-insideout" class="rolls-container"></div>
-  </section>
+  <main>
+    <!-- קטגוריות רולים -->
+    <section id="rolls-container"></section>
 
-  <!-- Maki -->
-  <section>
-    <h2>Maki</h2>
-    <div id="rolls-section-maki" class="rolls-container"></div>
-  </section>
+    <!-- רטבים -->
+    <section id="sauces-container">
+      <h2>רטבים</h2>
+      <p>כל רול מגיע עם 2 רטבים חינם. רוטב נוסף עולה 3₪</p>
+    </section>
 
-  <!-- Onigiri -->
-  <section>
-    <h2>Onigiri</h2>
-    <div id="rolls-section-onigiri" class="rolls-container"></div>
-  </section>
+    <!-- כמות צ’ופסטיקס -->
+    <section id="chopsticks-section">
+      <h2>כמות צ’ופסטיקס</h2>
+      <div class="quantity-control">
+        <button id="chopsticks-minus">−</button>
+        <input type="number" id="chopsticks-qty" value="1" readonly>
+        <button id="chopsticks-plus">+</button>
+      </div>
+    </section>
 
-  <!-- Poke -->
-  <section>
-    <h2>Poke</h2>
-    <div id="rolls-section-poke" class="rolls-container"></div>
-  </section>
+    <!-- הערות -->
+    <section>
+      <h2>הערות אישיות</h2>
+      <textarea id="notes" placeholder="רשום כאן הערות"></textarea>
+    </section>
 
-  <!-- Sauces -->
-  <section>
-    <h2>רטבים נוספים (על כל רול 2 חינם, כל רוטב נוסף 3₪)</h2>
-    <div id="sauces-container" class="rolls-container"></div>
-  </section>
+    <!-- שעת איסוף -->
+    <section>
+      <h2>בחר שעת איסוף</h2>
+      <select id="pickup-time">
+        <option value="">בחר שעה</option>
+      </select>
+    </section>
 
-  <!-- Chopsticks -->
-  <section>
-    <h2>כמות צ’ופסטיקס</h2>
-    <div class="quantity-control">
-      <button id="chopsticks-minus">−</button>
-      <input type="number" id="chopsticks-qty" value="1" readonly>
-      <button id="chopsticks-plus">+</button>
-    </div>
-  </section>
+    <!-- סיכום -->
+    <section>
+      <h2>סיכום הזמנה</h2>
+      <pre id="order-summary"></pre>
+    </section>
 
-  <!-- הערות -->
-  <section>
-    <h2>הערות אישיות</h2>
-    <textarea id="notes" placeholder="רשום כאן הערות"></textarea>
-  </section>
+    <!-- כפתור ביצוע / התחברות -->
+    <section>
+      <button id="order-button">בצע הזמנה / התחבר עם גוגל</button>
+    </section>
+  </main>
 
-  <!-- סיכום הזמנה -->
-  <section>
-    <h2>סיכום הזמנה</h2>
-    <pre id="order-summary">בחר רולים ורטבים להצגת הסיכום</pre>
-    <button id="order-button">בצע הזמנה / התחבר עם Google</button>
-  </section>
-</main>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
