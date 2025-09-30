@@ -38,136 +38,60 @@ const saucesData = [
 ];
 
 // --- יצירת כרטיסי רולים ---
-function createRollCard(roll, container) {
+function createCard(item, container) {
   const card = document.createElement("div");
-  card.className = "roll-card";
+  card.className = container.id.includes("sauces") ? "sauce-item" : "roll-card";
 
-  const title = document.createElement("h3");
-  title.textContent = roll.name;
+  const title = document.createElement("span");
+  title.textContent = item.name;
   card.appendChild(title);
 
-  const desc = document.createElement("p");
-  desc.textContent = roll.description;
-  card.appendChild(desc);
+  const qtyDiv = document.createElement("div");
+  qtyDiv.className = "quantity-control";
 
-  const quantity = document.createElement("div");
-  quantity.className = "quantity-control";
-
-  const minus = document.createElement("button");
-  minus.textContent = "−";
-  minus.addEventListener("click", () => {
-    if(selectedRolls[roll.id] > 0) selectedRolls[roll.id]--;
-    qty.value = selectedRolls[roll.id];
+  const minusBtn = document.createElement("button");
+  minusBtn.textContent = "−";
+  minusBtn.addEventListener("click", ()=>{
+    const input = qtyDiv.querySelector("input");
+    if(parseInt(input.value)>0) input.value = parseInt(input.value)-1;
     updateSummary();
   });
+  qtyDiv.appendChild(minusBtn);
 
-  const qty = document.createElement("input");
-  qty.type = "number";
-  qty.value = selectedRolls[roll.id] || 0;
-  qty.readOnly = true;
+  const input = document.createElement("input");
+  input.type = "number";
+  input.value = 0;
+  input.readOnly = true;
+  qtyDiv.appendChild(input);
 
-  const plus = document.createElement("button");
-  plus.textContent = "+";
-  plus.addEventListener("click", () => {
-    selectedRolls[roll.id] = (selectedRolls[roll.id] || 0) + 1;
-    qty.value = selectedRolls[roll.id];
+  const plusBtn = document.createElement("button");
+  plusBtn.textContent = "+";
+  plusBtn.addEventListener("click", ()=>{
+    const input = qtyDiv.querySelector("input");
+    input.value = parseInt(input.value)+1;
     updateSummary();
   });
+  qtyDiv.appendChild(plusBtn);
 
-  quantity.appendChild(minus);
-  quantity.appendChild(qty);
-  quantity.appendChild(plus);
-
-  card.appendChild(quantity);
+  card.appendChild(qtyDiv);
   container.appendChild(card);
 }
 
-// --- יצירת רטבים ---
-function createSauceCard(sauce, container) {
-  const card = document.createElement("div");
-  card.className = "sauce-card";
+// --- אתחול קטגוריות ---
+function initCategories() {
+  const containers = [
+    {data: insideOutRollsData, container: document.getElementById("insideout-container")},
+    {data: makiRollsData, container: document.getElementById("maki-container")},
+    {data: onigiriData, container: document.getElementById("onigiri-container")},
+    {data: pokeData, container: document.getElementById("poke-container")},
+    {data: saucesData, container: document.getElementById("sauces-container")}
+  ];
 
-  const title = document.createElement("h4");
-  title.textContent = sauce.name;
-  card.appendChild(title);
-
-  const quantity = document.createElement("div");
-  quantity.className = "quantity-control";
-
-  const minus = document.createElement("button");
-  minus.textContent = "−";
-  minus.addEventListener("click", () => {
-    if(selectedSauces[sauce.id] > 0) selectedSauces[sauce.id]--;
-    qty.value = selectedSauces[sauce.id] || 0;
-    updateSummary();
-  });
-
-  const qty = document.createElement("input");
-  qty.type = "number";
-  qty.value = selectedSauces[sauce.id] || 0;
-  qty.readOnly = true;
-
-  const plus = document.createElement("button");
-  plus.textContent = "+";
-  plus.addEventListener("click", () => {
-    selectedSauces[sauce.id] = (selectedSauces[sauce.id] || 0) + 1;
-    qty.value = selectedSauces[sauce.id];
-    updateSummary();
-  });
-
-  quantity.appendChild(minus);
-  quantity.appendChild(qty);
-  quantity.appendChild(plus);
-
-  card.appendChild(quantity);
-  container.appendChild(card);
-}
-
-// --- אתחול תפריט ---
-function initMenu() {
-  const rollsContainer = document.getElementById("rolls-container");
-  rollsContainer.innerHTML = "";
-  for(const category in rollsData){
-    const catTitle = document.createElement("h2");
-    catTitle.textContent = category;
-    rollsContainer.appendChild(catTitle);
-    rollsData[category].forEach(r => createRollCard(r, rollsContainer));
-  }
-
-  const saucesContainer = document.getElementById("sauces-container");
-  saucesContainer.innerHTML = "";
-  saucesData.forEach(s => createSauceCard(s, saucesContainer));
-}
-
-// --- עדכון סיכום ---
-function updateSummary() {
-  let text = "סיכום הזמנה:\n\n";
-
-  let totalRolls = 0;
-  for(const cat in rollsData){
-    rollsData[cat].forEach(r=>{
-      const qty = selectedRolls[r.id] || 0;
-      if(qty>0){
-        text += `${r.name} x${qty} (${r.price*qty}₪)\n`;
-        totalRolls += qty;
-      }
+  containers.forEach(obj=>{
+    obj.data.forEach(item=>{
+      createCard(item,obj.container);
     });
-  }
-
-  let totalSauces = 0;
-  for(const s of saucesData){
-    const qty = selectedSauces[s.id] || 0;
-    if(qty>2) totalSauces += (qty-2)*3; // על כל רוטב נוסף 3₪
-    if(qty>0) text += `${s.name} x${qty} ${qty>2?`(+${(qty-2)*3}₪)`:"(2 חינם)"}\n`;
-  }
-
-  text += `\nכמות צ’ופסטיקס: ${chopsticksCount}\n`;
-  text += `הערות: ${document.getElementById("notes").value}\n`;
-  text += `שעת איסוף: ${selectedPickupTime || "לא נבחרה"}\n`;
-  text += `כתובת: ${ADDRESS}\n`;
-  if(currentUser) text += `לקוח: ${currentUser.name} (${currentUser.email})\n`;
-
-  document.getElementById("order-summary").textContent = text;
+  });
 }
 
 // --- כמות צ’ופסטיקס ---
@@ -182,66 +106,67 @@ document.getElementById("chopsticks-plus").addEventListener("click", ()=>{
   updateSummary();
 });
 
-// --- בחירת שעת איסוף ---
-const pickupSelect = document.getElementById("pickup-time");
-pickupTimes.forEach(time=>{
-  const option = document.createElement("option");
-  option.value = time;
-  option.textContent = time;
-  pickupSelect.appendChild(option);
-});
-pickupSelect.addEventListener("change", ()=>{
-  selectedPickupTime = pickupSelect.value;
-  updateSummary();
-});
+// --- סיכום הזמנה ---
+function updateSummary() {
+  let summary = "הזמנה חדשה:\n";
 
-// --- Google Login ---
-function handleGoogleLogin(response){
-  const decoded = jwt_decode(response.credential);
-  currentUser = {name: decoded.name, email: decoded.email, phone: decoded.phoneNumber||""};
-  alert(`שלום ${currentUser.name}, ההזמנה מוכנה לשליחה`);
-  updateSummary();
+  // רולים
+  ["insideout-container","maki-container","onigiri-container","poke-container"].forEach(id=>{
+    const container = document.getElementById(id);
+    container.querySelectorAll(".roll-card").forEach(card=>{
+      const qty = parseInt(card.querySelector("input").value);
+      if(qty>0) summary += `${card.querySelector("span").textContent} × ${qty}\n`;
+    });
+  });
+
+  // רטבים
+  const saucesSummary = [];
+  document.getElementById("sauces-container").querySelectorAll(".sauce-item").forEach(card=>{
+    const qty = parseInt(card.querySelector("input").value);
+    if(qty>0) saucesSummary.push(`${card.querySelector("span").textContent} × ${qty}`);
+  });
+  if(saucesSummary.length>0) summary += "רטבים:\n" + saucesSummary.join(", ") + "\n";
+
+  summary += `צ’ופסטיקס: ${chopsticksCount}\n`;
+  summary += `הערות: ${document.getElementById("notes").value.trim()}\n`;
+  if(currentUser) summary += `לקוח: ${currentUser.name} (${currentUser.email})\n`;
+
+  document.getElementById("order-summary").textContent = summary;
 }
 
-// --- שליחת הזמנה / התחברות ---
-document.getElementById("order-button").addEventListener("click", ()=>{
-  // בדיקות
-  if(Object.values(selectedRolls).reduce((a,b)=>a+b,0)==0){
-    alert("אנא בחר לפחות רול אחד");
-    return;
-  }
-  if(!selectedPickupTime){
-    alert("אנא בחר שעת איסוף");
-    return;
-  }
+// --- התחברות ושליחה ---
+document.getElementById("send-order").addEventListener("click", ()=>{
+  const hasRolls = Array.from(document.querySelectorAll(".roll-card input")).some(i=>parseInt(i.value)>0);
+  if(!hasRolls){ alert("אנא בחר לפחות רול אחד"); return; }
 
-  // אם לא מחובר - התחבר
+  // אם לא מחובר, פתח גוגל login
   if(!currentUser){
     google.accounts.id.prompt();
     return;
   }
 
+  // יצירת payload ושליחה
   const payload = {
     user: currentUser,
-    rolls: selectedRolls,
-    sauces: selectedSauces,
-    chopsticks: chopsticksCount,
-    pickupTime: selectedPickupTime,
-    notes: document.getElementById("notes").value
+    chopsticksCount,
+    notes: document.getElementById("notes").value.trim()
   };
 
   fetch(MAKE_WEBHOOK_URL,{
     method:"POST",
-    headers:{"Content-Type":"application/json"},
+    headers:{'Content-Type':'application/json'},
     body: JSON.stringify(payload)
-  }).then(()=>{
-    alert("ההזמנה נשלחה! בדוק את המייל או WhatsApp שלך.");
-  }).catch(err=>{
-    console.error(err);
-    alert("שגיאה בשליחת ההזמנה");
-  });
+  }).then(()=>{ alert("ההזמנה נשלחה!"); }).catch(e=>{console.error(e); alert("שגיאה בשליחה"); });
 });
 
+// --- התחברות גוגל ---
+function handleGoogleLogin(response){
+  const decoded = jwt_decode(response.credential);
+  currentUser = {name:decoded.name,email:decoded.email, picture:decoded.picture};
+  alert(`התחברת בהצלחה כ ${currentUser.name}`);
+  updateSummary();
+}
+
 // --- אתחול ---
-initMenu();
+initCategories();
 updateSummary();
