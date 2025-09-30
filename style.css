@@ -1,79 +1,162 @@
-body {
-  font-family: Arial, sans-serif;
+/* --- בסיס --- */
+* {
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
   margin: 0;
   padding: 0;
-  background: #f9f9f9;
+}
+
+body {
+  background-color: #fff8f0;
   color: #333;
+  line-height: 1.5;
 }
 
 header {
-  background: #ff6f61;
-  color: white;
-  padding: 1rem;
   text-align: center;
+  padding: 20px 10px;
+  background-color: #ff7043;
+  color: #fff;
 }
 
-.logo {
-  max-width: 100px;
-  display: block;
-  margin: 0 auto 10px;
+header .logo {
+  width: 100px;
+  margin-bottom: 10px;
 }
 
+/* --- כותרות ראשיות --- */
 h1, h2 {
-  margin: 0.5rem 0;
+  margin-bottom: 15px;
 }
 
+/* --- סקשנים --- */
 section {
-  padding: 1rem;
-  max-width: 800px;
-  margin: 0 auto;
+  margin: 20px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
+/* --- קונטיינרים לרולים --- */
+#rolls-container,
+#maki-container,
+#onigiri-container,
+#poke-container,
+#sauces-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+/* --- כרטיסי רול --- */
 .roll-card {
-  border: 1px solid #ccc;
-  padding: 0.8rem;
-  margin: 0.5rem 0;
-  border-radius: 8px;
-  background: #fff;
+  flex: 1 1 220px;
+  background-color: #fff3e0;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .roll-card h3 {
-  margin: 0 0 0.3rem 0;
+  margin-bottom: 5px;
+  font-size: 1.1em;
 }
 
+.roll-card p {
+  font-size: 0.9em;
+  margin-bottom: 10px;
+}
+
+/* --- כפתורי כמויות --- */
 .quantity-control {
   display: flex;
   align-items: center;
-  margin: 0.5rem 0;
+  justify-content: center;
+  gap: 10px;
 }
 
 .quantity-control button {
-  width: 40px;
-  height: 40px;
-  font-size: 1.2rem;
-  margin: 0 0.5rem;
-}
-
-.quantity-control input {
-  width: 50px;
-  text-align: center;
-}
-
-#g_id_onload, .g_id_signin {
-  margin: 1rem 0;
-}
-
-#send-order {
-  padding: 0.8rem 1.5rem;
-  font-size: 1rem;
-  background: #28a745;
-  color: white;
+  padding: 5px 10px;
+  font-size: 1em;
   border: none;
+  background-color: #ff7043;
+  color: #fff;
   border-radius: 5px;
   cursor: pointer;
 }
 
+.quantity-control input {
+  width: 40px;
+  text-align: center;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* --- לחצני רטבים --- */
+.sauce-checkbox {
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+
+/* --- כפתור הזמנה --- */
+#send-order {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  margin-top: 15px;
+  font-size: 1.1em;
+  background-color: #ff7043;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
 #send-order:disabled {
-  background: #ccc;
+  background-color: #ccc;
   cursor: not-allowed;
+}
+
+#send-order:hover:not(:disabled) {
+  background-color: #ff5722;
+}
+
+/* --- סיכום הזמנה --- */
+#order-summary {
+  background-color: #fff3e0;
+  padding: 10px;
+  border-radius: 10px;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+/* --- טקסטרים והערות --- */
+textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  resize: vertical;
+}
+
+/* --- שעת איסוף --- */
+select {
+  padding: 8px 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1em;
+}
+
+/* --- תגובות ותראות --- */
+.alert {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
+  text-align: center;
 }
