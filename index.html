@@ -15,47 +15,52 @@
 </header>
 
 <main>
-  <!-- התחברות -->
-  <section id="social-login">
-    <div id="g_id_onload"
-         data-client_id="962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com"
-         data-auto_prompt="false"
-         data-callback="handleGoogleLogin">
-    </div>
-    <div class="g_id_signin" data-type="standard"></div>
+  <section id="rolls-section">
+    <h2>רולים</h2>
+    <div id="rolls-container"></div>
   </section>
 
-  <!-- תפריט -->
-  <section id="menu-section">
-    <h2>רולים אינסייד-אאוט</h2>
-    <div id="insideOutRolls"></div>
-
+  <section id="maki-section">
     <h2>מאקי</h2>
-    <div id="makiRolls"></div>
+    <div id="maki-container"></div>
+  </section>
 
+  <section id="onigiri-section">
     <h2>אוניגירי</h2>
-    <div id="onigiriRolls"></div>
+    <div id="onigiri-container"></div>
+  </section>
 
+  <section id="poke-section">
     <h2>פוקי</h2>
-    <div id="pokeRolls"></div>
+    <div id="poke-container"></div>
+  </section>
 
-    <h2>רטבים</h2>
-    <div id="sauces"></div>
+  <section id="sauces-section">
+    <h2>רטבים נוספים (+3₪ כל אחד מעבר לשניים חינם)</h2>
+    <div id="sauces-container"></div>
+  </section>
 
-    <h2>כמות צ'ופסטיקס</h2>
-    <div class="quantity-control">
-      <button id="chopsticks-minus">−</button>
-      <input type="number" id="chopsticks-qty" value="1" readonly>
-      <button id="chopsticks-plus">+</button>
-    </div>
+  <section id="chopsticks-section">
+    <h2>כמות צ’ופסטיקס</h2>
+    <button id="chopsticks-minus">−</button>
+    <input type="number" id="chopsticks-qty" value="1" readonly>
+    <button id="chopsticks-plus">+</button>
+  </section>
 
+  <section id="notes-section">
     <h2>הערות אישיות</h2>
     <textarea id="notes" placeholder="רשום כאן הערות"></textarea>
+  </section>
 
+  <section id="pickup-section">
+    <h2>בחר שעת איסוף</h2>
+    <select id="pickup-time"></select>
+  </section>
+
+  <section id="summary-section">
     <h2>סיכום הזמנה</h2>
-    <pre id="order-summary">בחר רולים ורטבים להצגת הסיכום</pre>
-
-    <button id="send-order">התחבר/שלח הזמנה</button>
+    <pre id="order-summary">בחר פריטים להצגת הסיכום</pre>
+    <button id="send-order">הזמן עכשיו</button>
   </section>
 </main>
 
