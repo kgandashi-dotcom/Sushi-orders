@@ -241,7 +241,39 @@ $id('chopsticks-plus').addEventListener('click', ()=>{
 // עדכון summary כשמחליפים שעת איסוף
 $id('pickup-time').addEventListener('change', updateSummary);
 $id('notes').addEventListener('input', updateSummary);
+function checkAdminAndAddResetButton() {
+  const adminEmail = 'kgandashi@gmail.com'; // מייל המנהל
+  const existingBtn = document.getElementById('reset-orders');
 
+  if(existingBtn) return;
+
+  if(currentUser && currentUser.email === adminEmail){
+    const resetBtn = document.createElement('button');
+    resetBtn.textContent = 'אפס הזמנות';
+    resetBtn.id = 'reset-orders';
+    resetBtn.style.margin = '10px';
+    resetBtn.style.backgroundColor = '#f44336';
+    resetBtn.style.color = '#fff';
+    resetBtn.style.padding = '6px 12px';
+    resetBtn.style.border = 'none';
+    resetBtn.style.borderRadius = '4px';
+    resetBtn.style.cursor = 'pointer';
+
+    resetBtn.addEventListener('click', ()=>{
+      if(confirm('אתה בטוח שברצונך לאפס את כל ההזמנות?')){
+        bookedTimes = [];
+        dailyRollCount = {};
+        localStorage.setItem('bookedTimes', JSON.stringify(bookedTimes));
+        localStorage.setItem('dailyRollCount', JSON.stringify(dailyRollCount));
+        initPickupTimes();
+        updateSummary();
+        alert('כל ההזמנות אופסו בהצלחה!');
+      }
+    });
+
+    document.body.appendChild(resetBtn);
+  }
+}
 // ------------- Google login flow --------------
 function googleInit(){
   // לא קורא מיד — נקרא בלחיצה על כפתור
@@ -265,6 +297,7 @@ function handleCredentialResponse(response){
     updateSummary();
     // לאחר התחברות נבצע את שליחת ההזמנה (אם התנאים תקינים)
     performPostLoginSend();
+    checkAdminAndAddResetButton(); // מוסיף את הכפתור רק למנהל
   }catch(e){
     console.error('decode error', e);
     showMessage('שגיאה בקריאת תשובת Google');
