@@ -421,24 +421,24 @@ async function performPostLoginSend() {
     await postToMake(payload);
 
     // שליחה ל-Supabase
-    const { error } = await supabase.from('sushi').insert({
-      id: orderUUID,
-      created_at: new Date().toISOString(),
-      user_name: currentUser.name,
-      user_email: currentUser.email,
-      user_phone: currentUser.phone || '',
-      pickup_time: pickup,
-      notes: payload.notes,
-      rolls: payload.rolls,
-      sauces: payload.sauces,
-      summary: payload.summary
-    });
+const { error } = await supabase.from('sushi').insert({
+  id: payload.uuid,
+  created_at: payload.timestamp,
+  user_name: payload.user.name,
+  user_email: payload.user.email,
+  user_phone: payload.user.phone || '',
+  pickup_time: payload.pickupTime,
+  notes: payload.notes,
+  rolls: payload.rolls,      // או JSON.stringify(payload.rolls) אם השדה הוא TEXT
+  sauces: payload.sauces,    // או JSON.stringify(payload.sauces) אם השדה הוא TEXT
+  summary: payload.summary
+});
 
-    if (error) {
-      console.error('שגיאה בשמירה ל-Supabase:', error);
-      showMessage('שגיאה בשמירה ל-Supabase', true);
-      return;
-    }
+if (error) {
+  console.error('שגיאה בשמירה ל-Supabase:', error);
+  showMessage('שגיאה בשמירה ל-Supabase', true);
+  return;
+}
 
     // עדכון מקומי של השעות התפוסות
     bookedTimes.push(pickup);
