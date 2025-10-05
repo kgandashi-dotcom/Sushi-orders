@@ -421,7 +421,7 @@ async function performPostLoginSend() {
     await postToMake(payload);
 
     // שליחה ל-Supabase
-    const { error } = await supabase.from('orders').insert({
+    const { error } = await supabase.from('sushi').insert({
       id: orderUUID,
       created_at: new Date().toISOString(),
       user_name: currentUser.name,
