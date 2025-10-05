@@ -291,11 +291,20 @@ function handleCredentialResponse(response){
     if(savedPhones[currentUser.email]){
       currentUser.phone = savedPhones[currentUser.email]; // נטען מהאחסון
     } else {
-      // בבקשה ידנית בלבד
-      const ask = prompt('לא נמצא מספר טלפון ב‑Google. הכנס טלפון למשלוח אישור (פורמט +9725...):') || '';
-      currentUser.phone = ask;
-      savedPhones[currentUser.email] = ask; // שמירה ב‑localStorage
-      localStorage.setItem('savedPhones', JSON.stringify(savedPhones));
+      // בקשה ידנית עם בדיקה בסיסית של פורמט
+      let phone = '';
+      while(!phone || !/^\+9725\d{8}$/.test(phone)) {
+        phone = prompt('לא נמצא מספר טלפון ב‑Google. הכנס טלפון למשלוח אישור (פורמט +9725XXXXXXXX):');
+        if(phone === null) break; // ביטול
+        if(!/^\+9725\d{8}$/.test(phone)){
+          alert('פורמט לא חוקי. נסה שוב.');
+        }
+      }
+      currentUser.phone = phone || '';
+      if(currentUser.phone){
+        savedPhones[currentUser.email] = currentUser.phone;
+        localStorage.setItem('savedPhones', JSON.stringify(savedPhones));
+      }
     }
 
     updateSummary();
@@ -306,7 +315,6 @@ function handleCredentialResponse(response){
     showMessage('שגיאה בקריאת תשובת Google');
   }
 }
-
 // ------------- שליחה ל-Make (ושם תטפל ב-Twilio/Email) --------------
 function postToMake(payload){
   return fetch(MAKE_WEBHOOK_URL, {
