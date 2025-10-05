@@ -1,63 +1,77 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>תפריט סושי - גנדאשי</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>הזמנת רולים — גנדאשי</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- Google Sign-In -->
+  <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="לוגו" class="logo">
-    <h1>תפריט ההזמנות - גנדאשי</h1>
+    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
+    <h1>גנדאשי — תפריט הזמנות</h1>
   </header>
 
-  <main>
-    <h2>בחרו רולים</h2>
-    <div id="rolls-container" class="rolls-container"></div>
+  <main class="container">
+    <!-- תפריט -->
+    <section id="menu">
+      <h2>Inside-Out Rolls</h2>
+      <div id="insideout-list" class="list"></div>
 
-    <h2>רטבים</h2>
-    <div id="sauces-container" class="rolls-container"></div>
+      <h2>Maki Rolls</h2>
+      <div id="maki-list" class="list"></div>
 
-    <h2>צ'ופסטיקס</h2>
-    <div class="quantity-control">
-      <button id="chopsticks-minus">−</button>
-      <span id="chopsticks-count">1</span>
-      <button id="chopsticks-plus">+</button>
-    </div>
+      <h2>Onigiri</h2>
+      <div id="onigiri-list" class="list"></div>
 
-    <h2>שעת איסוף</h2>
-    <select id="pickup-time">
-      <option value="">בחר שעה</option>
-      <option value="12:00">12:00</option>
-      <option value="13:00">13:00</option>
-      <option value="14:00">14:00</option>
-      <option value="15:00">15:00</option>
-      <option value="16:00">16:00</option>
-      <option value="17:00">17:00</option>
-      <option value="18:00">18:00</option>
-      <option value="19:00">19:00</option>
-      <option value="20:00">20:00</option>
-    </select>
+      <h2>Poke</h2>
+      <div id="poke-list" class="list"></div>
+    </section>
 
-    <h2>הערות</h2>
-    <textarea id="notes" placeholder="הוסיפו הערות להזמנה..."></textarea>
+    <!-- רטבים -->
+    <section id="sauces">
+      <h2>רטבים</h2>
+      <div id="sauces-list" class="list"></div>
+      <p class="muted">2 רטבים חינם לכל רול — כל רוטב נוסף: <strong>3₪</strong></p>
+    </section>
 
-    <h2>סיכום הזמנה</h2>
-    <pre id="order-summary"></pre>
+    <!-- פרטי הזמנה -->
+    <section id="order-controls">
+      <div class="row">
+        <label>כמות צ'ופסטיקס</label>
+        <div class="quantity-control">
+          <button id="chop-minus">−</button>
+          <input id="chop-qty" type="number" value="1" readonly>
+          <button id="chop-plus">+</button>
+        </div>
+      </div>
 
-    <button id="send-order" disabled>התחבר ושלח הזמנה</button>
+      <div class="row">
+        <label for="pickup-time">שעת איסוף</label>
+        <select id="pickup-time">
+          <option value="">בחר שעה</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="notes">הערות אישיות</label>
+        <textarea id="notes" placeholder="דוגמה: ללא ג'ינג'ר"></textarea>
+      </div>
+
+      <div class="row">
+        <label>סיכום הזמנה</label>
+        <pre id="order-summary" class="summary">לא נבחרו פריטים</pre>
+      </div>
+
+      <div class="row actions">
+        <button id="send-btn" class="primary">התחבר / שלח הזמנה</button>
+      </div>
+    </section>
   </main>
 
   <script src="script.js"></script>
-
-  <!-- Google Sign-In כפתור -->
-  <div id="g_id_onload"
-       data-client_id="962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com"
-       data-callback="handleGoogleLogin">
-  </div>
 </body>
 </html>
