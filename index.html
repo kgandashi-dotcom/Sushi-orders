@@ -3,72 +3,70 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>גנדאשי — תפריט והזמנות</title>
-
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Google Identity (client-only) -->
+  <title>הזמנת רולים</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Identity -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- jwt-decode for reading credential payload -->
+  <!-- jwt-decode -->
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
-  <header class="site-header">
-    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
-    <h1>גנדאשי — הזמנות רולים</h1>
+  <header>
+    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo"/>
+    <h1>תפריט רולים - משלוחים</h1>
   </header>
 
   <main class="container">
-    <section class="menu-section">
-      <h2 class="section-title">Inside-Out Rolls</h2>
-      <div id="inside-list" class="list"></div>
+    <!-- תפריט -->
+    <section class="card">
+      <h2>Inside‑Out Rolls</h2>
+      <div id="insideout-container" class="grid"></div>
 
-      <h2 class="section-title">Maki Rolls</h2>
-      <div id="maki-list" class="list"></div>
+      <h2>Maki Rolls</h2>
+      <div id="maki-container" class="grid"></div>
 
-      <h2 class="section-title">Onigiri</h2>
-      <div id="onigiri-list" class="list"></div>
+      <h2>Onigiri</h2>
+      <div id="onigiri-container" class="grid"></div>
 
-      <h2 class="section-title">Poke</h2>
-      <div id="poke-list" class="list"></div>
+      <h2>Poke</h2>
+      <div id="poke-container" class="grid"></div>
     </section>
 
-    <section class="sauces-section">
-      <h2 class="section-title">רטבים</h2>
-      <div id="sauces-list" class="list"></div>
-      <p class="muted">2 רטבים חינם לכל רול — כל רוטב נוסף יעלה <strong>3₪</strong></p>
+    <!-- רטבים -->
+    <section class="card">
+      <h2>רטבים</h2>
+      <div id="sauces-container" class="grid"></div>
+      <p class="muted">כל רול מקבל 2 רטבים חינם. כל רוטב נוסף יעלה 3₪.</p>
     </section>
 
-    <section class="order-controls">
-      <div class="row">
-        <label>כמות צ'ופסטיקס</label>
-        <div class="quantity-control">
-          <button id="chop-minus">−</button>
-          <input id="chop-qty" type="number" value="1" readonly>
-          <button id="chop-plus">+</button>
-        </div>
+    <!-- פרטים נוספים -->
+    <section class="card">
+      <h2>פרטי הזמנה</h2>
+
+      <label>כמות צ'ופסטיקס</label>
+      <div class="quantity-control">
+        <button id="chopsticks-minus">−</button>
+        <input id="chopsticks-qty" type="number" value="1" readonly />
+        <button id="chopsticks-plus">+</button>
       </div>
 
-      <div class="row">
-        <label for="pickup-time">שעת איסוף</label>
-        <select id="pickup-time">
-          <option value="">בחר שעה</option>
-        </select>
-      </div>
+      <label>הערות אישיות</label>
+      <textarea id="notes" placeholder="הערות למשלוח (לדוגמה: צלוחיות נפרדות)"></textarea>
 
-      <div class="row">
-        <label for="notes">הערות</label>
-        <textarea id="notes" placeholder="הערות להזמנה (למשל: ללא סויה)..."></textarea>
-      </div>
+      <label>שעת איסוף</label>
+      <select id="pickup-time"></select>
 
-      <div class="row">
-        <label>סיכום הזמנה</label>
-        <pre id="order-summary" class="summary">בחר פריטים כדי לראות סיכום</pre>
-      </div>
+      <div id="availability-note" class="muted"></div>
+    </section>
 
-      <div class="row actions">
-        <button id="send-btn" class="primary" disabled>התחבר / שלח הזמנה</button>
+    <!-- סיכום ושליחה -->
+    <section class="card">
+      <h2>סיכום הזמנה</h2>
+      <pre id="order-summary">טרם נבחרו פריטים</pre>
+      <div class="actions">
+        <button id="send-order" class="primary">התחבר / שלח הזמנה</button>
       </div>
+      <div id="status-message" class="muted"></div>
     </section>
   </main>
 
