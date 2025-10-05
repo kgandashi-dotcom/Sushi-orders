@@ -312,9 +312,10 @@ function performPostLoginSend(){
     initPickupTimes(); // לרענן אופציות
     return;
   }
-
+  const orderUUID = generateUUID(); 
   // הכנת payload לשליחה ל‑Make: כל המידע
   const payload = {
+    uuid: orderUUID, 
     timestamp: new Date().toISOString(),
     user: currentUser,
     pickupTime: pickup,
@@ -347,7 +348,13 @@ function performPostLoginSend(){
       payload.sauces.push({id, name:sdata.name, qty, extraPrice: Math.max(0, qty - (payload.rolls.reduce((a,b)=>a+b.qty,0)*2)) * 3 });
     }
   });
-
+ function generateUUID() {
+  // יוצר UUID פשוט, ניתן להשתמש בספרייה חיצונית אם רוצים יותר בטוח
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+} 
   // לשלוח ל‑Make
   postToMake(payload)
     .then(res=>{
