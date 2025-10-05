@@ -4,72 +4,77 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>הזמנת רולים</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- Google Identity -->
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- jwt-decode -->
+
+  <!-- jwt-decode לשימוש בפענוח ה-credential של גוגל -->
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
-  <header>
-    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo"/>
-    <h1>תפריט רולים - משלוחים</h1>
-  </header>
+  <div class="container">
+    <header>
+      <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
+      <h1>תפריט רולים — SUSHI</h1>
+    </header>
 
-  <main class="container">
-    <!-- תפריט -->
-    <section class="card">
-      <h2>Inside‑Out Rolls</h2>
-      <div id="insideout-container" class="grid"></div>
+    <main>
+      <section id="menu">
+        <div class="category-title">Inside-out Rolls</div>
+        <div id="insideout-rolls" class="category-container"></div>
 
-      <h2>Maki Rolls</h2>
-      <div id="maki-container" class="grid"></div>
+        <div class="category-title">Maki Rolls</div>
+        <div id="maki-rolls" class="category-container"></div>
 
-      <h2>Onigiri</h2>
-      <div id="onigiri-container" class="grid"></div>
+        <div class="category-title">Onigiri</div>
+        <div id="onigiri-rolls" class="category-container"></div>
 
-      <h2>Poke</h2>
-      <div id="poke-container" class="grid"></div>
-    </section>
+        <div class="category-title">Poke</div>
+        <div id="poke-rolls" class="category-container"></div>
+      </section>
 
-    <!-- רטבים -->
-    <section class="card">
-      <h2>רטבים</h2>
-      <div id="sauces-container" class="grid"></div>
-      <p class="muted">כל רול מקבל 2 רטבים חינם. כל רוטב נוסף יעלה 3₪.</p>
-    </section>
+      <section id="sauces">
+        <div class="category-title">רטבים</div>
+        <div id="sauces-container" class="category-container"></div>
+        <p class="note">כל רול מקבל 2 רטבים חינם. רוטב נוסף עולה 3₪.</p>
+      </section>
 
-    <!-- פרטים נוספים -->
-    <section class="card">
-      <h2>פרטי הזמנה</h2>
+      <section id="chopsticks">
+        <div class="category-title">כמות צ'ופסטיקס</div>
+        <div class="quantity-control">
+          <button id="chopsticks-minus">−</button>
+          <input id="chopsticks-qty" type="number" readonly value="1">
+          <button id="chopsticks-plus">+</button>
+        </div>
+      </section>
 
-      <label>כמות צ'ופסטיקס</label>
-      <div class="quantity-control">
-        <button id="chopsticks-minus">−</button>
-        <input id="chopsticks-qty" type="number" value="1" readonly />
-        <button id="chopsticks-plus">+</button>
-      </div>
+      <section id="notes-section">
+        <div class="category-title">הערות אישיות</div>
+        <textarea id="notes" placeholder="הערות למשל: ללא גלוטן, הגעה בשער 3..."></textarea>
+      </section>
 
-      <label>הערות אישיות</label>
-      <textarea id="notes" placeholder="הערות למשלוח (לדוגמה: צלוחיות נפרדות)"></textarea>
+      <section id="pickup-section">
+        <div class="category-title">בחר שעת איסוף</div>
+        <select id="pickup-time">
+          <option value="">בחר שעה</option>
+        </select>
+        <p class="note small" id="pickup-note"></p>
+      </section>
 
-      <label>שעת איסוף</label>
-      <select id="pickup-time"></select>
+      <section id="summary-section">
+        <div class="category-title">סיכום הזמנה</div>
+        <pre id="order-summary">הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.</pre>
+        <button id="send-order">התחבר / שלח הזמנה</button>
+      </section>
 
-      <div id="availability-note" class="muted"></div>
-    </section>
+      <div id="messages" aria-live="polite"></div>
+    </main>
+  </div>
 
-    <!-- סיכום ושליחה -->
-    <section class="card">
-      <h2>סיכום הזמנה</h2>
-      <pre id="order-summary">טרם נבחרו פריטים</pre>
-      <div class="actions">
-        <button id="send-order" class="primary">התחבר / שלח הזמנה</button>
-      </div>
-      <div id="status-message" class="muted"></div>
-    </section>
-  </main>
-
+  <!-- JS -->
   <script src="script.js"></script>
 </body>
 </html>
