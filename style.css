@@ -1,53 +1,83 @@
+/* --- בסיס --- */
 body {
-  font-family: Arial, sans-serif;
-  background: url('https://i.imgur.com/m6KeXAB.jpeg') no-repeat center center fixed;
-  background-size: cover;
+  font-family: 'Arial', sans-serif;
+  background: #f2f2f2; /* צבע אחיד לנראות נקייה */
   margin: 0;
   padding: 0;
+  direction: rtl;
 }
 
 header {
-  background: rgba(255,255,255,0.88);
-  display: flex;
-  align-items: center;
-  padding: 10px 20px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  text-align: center;
+  padding: 20px;
+  background-color: rgba(255,255,255,0.88);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
-header img.logo { width: 80px; margin-left: 15px; }
-header h1 { margin: 0; }
+header .logo {
+  width: 80px;
+  margin-bottom: 10px;
+}
 
-main { padding: 20px; }
+main {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: rgba(255,255,255,0.88);
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
 
-.category { margin-bottom: 20px; }
+/* --- כותרות --- */
+h2 {
+  margin-top: 25px;
+  color: #7a2a2a;
+}
 
+/* --- קונטיינרים של רולים --- */
 .rolls-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  background: rgba(255,255,255,0.88);
-  padding: 10px;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+/* --- כרטיסי רול --- */
+.roll-card {
+  background-color: #ffffff;
+  flex: 1 1 220px;
+  padding: 12px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
 }
 
-.roll-card, .sauce-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  flex: 1 1 200px;
+.roll-card:hover {
+  transform: translateY(-4px);
 }
 
-.roll-card h3, .sauce-card h3 { margin: 0 0 5px 0; font-size: 1.1rem; }
-.roll-card p, .sauce-card p { margin: 0 0 5px 0; font-size: 0.9rem; }
+.roll-card h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.1rem;
+  color: #7a2a2a;
+}
 
+.roll-card p {
+  margin: 0 0 10px 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* --- כפתורי כמות --- */
 .quantity-control {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 6px;
   user-select: none;
-  margin-bottom: 10px;
+  margin-top: 5px;
 }
 
 .quantity-control button {
@@ -63,27 +93,74 @@ main { padding: 20px; }
   transition: background-color 0.3s ease;
 }
 
-.quantity-control button:hover { background-color: #e89898; }
+.quantity-control button:hover {
+  background-color: #e99;
+}
 
-#order-summary {
-  background: rgba(255,255,255,0.88);
-  padding: 10px;
+.quantity-control input {
+  width: 40px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  height: 36px;
+  background-color: #f9f9f9;
+}
+
+/* --- כפתור שליחה/התחברות --- */
+#send-order {
+  display: block;
+  width: 100%;
+  margin-top: 25px;
+  padding: 14px 0;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #7a2a2a;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.25);
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+#send-order:hover {
+  background-color: #a13b3b;
+  transform: translateY(-2px);
+}
+
+#send-order:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* --- textarea --- */
+textarea {
+  width: 100%;
+  min-height: 70px;
+  padding: 8px;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+/* --- סיכום הזמנה --- */
+#order-summary {
+  background-color: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  font-family: monospace;
   white-space: pre-wrap;
 }
 
-#send-order {
-  background-color: #7a2a2a;
-  color: #fff;
-  font-size: 1.1rem;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 10px;
+/* --- הערות לרטבים --- */
+.sauce-note {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 5px;
+  margin-bottom: 10px;
 }
-#send-order:hover { background-color: #a13838; }
-
-textarea { width: 100%; min-height: 50px; margin-bottom: 10px; }
-select { width: 100%; padding: 5px; margin-bottom: 10px; }
