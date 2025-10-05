@@ -3,43 +3,43 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>הזמנת רולים — גנדאשי</title>
+  <title>גנדאשי — תפריט והזמנות</title>
+
   <link rel="stylesheet" href="style.css">
-  <!-- Google Identity Services -->
+
+  <!-- Google Identity (client-only) -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- jwt-decode for reading credential payload -->
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
-  <header>
+  <header class="site-header">
     <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
-    <h1>גנדאשי — תפריט הזמנות</h1>
+    <h1>גנדאשי — הזמנות רולים</h1>
   </header>
 
   <main class="container">
-    <!-- תפריט -->
-    <section id="menu">
-      <h2>Inside-Out Rolls</h2>
-      <div id="insideout-list" class="list"></div>
+    <section class="menu-section">
+      <h2 class="section-title">Inside-Out Rolls</h2>
+      <div id="inside-list" class="list"></div>
 
-      <h2>Maki Rolls</h2>
+      <h2 class="section-title">Maki Rolls</h2>
       <div id="maki-list" class="list"></div>
 
-      <h2>Onigiri</h2>
+      <h2 class="section-title">Onigiri</h2>
       <div id="onigiri-list" class="list"></div>
 
-      <h2>Poke</h2>
+      <h2 class="section-title">Poke</h2>
       <div id="poke-list" class="list"></div>
     </section>
 
-    <!-- רטבים -->
-    <section id="sauces">
-      <h2>רטבים</h2>
+    <section class="sauces-section">
+      <h2 class="section-title">רטבים</h2>
       <div id="sauces-list" class="list"></div>
-      <p class="muted">2 רטבים חינם לכל רול — כל רוטב נוסף: <strong>3₪</strong></p>
+      <p class="muted">2 רטבים חינם לכל רול — כל רוטב נוסף יעלה <strong>3₪</strong></p>
     </section>
 
-    <!-- פרטי הזמנה -->
-    <section id="order-controls">
+    <section class="order-controls">
       <div class="row">
         <label>כמות צ'ופסטיקס</label>
         <div class="quantity-control">
@@ -57,17 +57,17 @@
       </div>
 
       <div class="row">
-        <label for="notes">הערות אישיות</label>
-        <textarea id="notes" placeholder="דוגמה: ללא ג'ינג'ר"></textarea>
+        <label for="notes">הערות</label>
+        <textarea id="notes" placeholder="הערות להזמנה (למשל: ללא סויה)..."></textarea>
       </div>
 
       <div class="row">
         <label>סיכום הזמנה</label>
-        <pre id="order-summary" class="summary">לא נבחרו פריטים</pre>
+        <pre id="order-summary" class="summary">בחר פריטים כדי לראות סיכום</pre>
       </div>
 
       <div class="row actions">
-        <button id="send-btn" class="primary">התחבר / שלח הזמנה</button>
+        <button id="send-btn" class="primary" disabled>התחבר / שלח הזמנה</button>
       </div>
     </section>
   </main>
