@@ -2,45 +2,62 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>הזמנת רולים</title>
+  <title>תפריט סושי - גנדאשי</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Google Identity Services -->
+
+  <!-- Google Sign-In -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
   <header>
-    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
-    <h1>תפריט רולים</h1>
+    <img src="logo.png" alt="לוגו" class="logo">
+    <h1>תפריט ההזמנות - גנדאשי</h1>
   </header>
 
   <main>
-    <section id="menu-section">
-      <div id="rolls-container"></div>
-      <h2>רטבים</h2>
-      <div id="sauces-container"></div>
+    <h2>בחרו רולים</h2>
+    <div id="rolls-container" class="rolls-container"></div>
 
-      <h2>כמות צ'ופסטיקס</h2>
-      <div class="quantity-control">
-        <button id="chopsticks-minus">−</button>
-        <input type="number" id="chopsticks-qty" value="1" readonly>
-        <button id="chopsticks-plus">+</button>
-      </div>
+    <h2>רטבים</h2>
+    <div id="sauces-container" class="rolls-container"></div>
 
-      <h2>הערות אישיות</h2>
-      <textarea id="notes" placeholder="רשום כאן הערות"></textarea>
+    <h2>צ'ופסטיקס</h2>
+    <div class="quantity-control">
+      <button id="chopsticks-minus">−</button>
+      <span id="chopsticks-count">1</span>
+      <button id="chopsticks-plus">+</button>
+    </div>
 
-      <h2>שעת איסוף</h2>
-      <select id="pickup-time"></select>
+    <h2>שעת איסוף</h2>
+    <select id="pickup-time">
+      <option value="">בחר שעה</option>
+      <option value="12:00">12:00</option>
+      <option value="13:00">13:00</option>
+      <option value="14:00">14:00</option>
+      <option value="15:00">15:00</option>
+      <option value="16:00">16:00</option>
+      <option value="17:00">17:00</option>
+      <option value="18:00">18:00</option>
+      <option value="19:00">19:00</option>
+      <option value="20:00">20:00</option>
+    </select>
 
-      <h2>סיכום הזמנה</h2>
-      <pre id="order-summary">בחר רולים ורטבים להצגת הסיכום</pre>
+    <h2>הערות</h2>
+    <textarea id="notes" placeholder="הוסיפו הערות להזמנה..."></textarea>
 
-      <button id="send-order">שלח הזמנה / התחבר</button>
-    </section>
+    <h2>סיכום הזמנה</h2>
+    <pre id="order-summary"></pre>
+
+    <button id="send-order" disabled>התחבר ושלח הזמנה</button>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
   <script src="script.js"></script>
+
+  <!-- Google Sign-In כפתור -->
+  <div id="g_id_onload"
+       data-client_id="962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com"
+       data-callback="handleGoogleLogin">
+  </div>
 </body>
 </html>
