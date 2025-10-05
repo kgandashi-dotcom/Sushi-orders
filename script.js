@@ -332,100 +332,115 @@ function showMessage(txt, isError=true){
 }
 
 // פעולה שקוראת אחרי שהמשתמש התחבר (או אם כבר היה מחובר)
-function performPostLoginSend(){
-  // בדיקות
-  const s = computeSummary();
-  if(s.totalRolls === 0){
-    showMessage('יש לבחור לפחות רול אחד');
-    return;
-  }
-  const pickup = $id('pickup-time').value;
-  if(!pickup){ showMessage('יש לבחור שעת איסוף'); return; }
-
-  // נבדוק הגבלת יומיים — מקסימום 15 רולים ליום
-  const today = (new Date()).toISOString().slice(0,10);
-  const todayCount = dailyRollCount[today] || 0;
-  if(todayCount + s.totalRolls > 15){
-    showMessage(`לא ניתן להזמין — הושגו כבר ${todayCount} רולים היום. המקסימום ליום הוא 15.`, true);
-    return;
-  }
-
-  // נבדוק אם השעה תפוסה
-  if(bookedTimes.includes(pickup)){
-    showMessage('השעה שבחרת כבר תפוסה, בחר שעה אחרת', true);
-    initPickupTimes(); // לרענן אופציות
-    return;
-  }
-
-  const orderUUID = generateUUID(); 
-  // הכנת payload לשליחה ל‑Make: כל המידע
-  const payload = {
-    uuid: orderUUID, 
-    timestamp: new Date().toISOString(),
-    user: currentUser,
-    pickupTime: pickup,
-    chopsticks: chopsticksCount,
-    notes: $id('notes').value.trim(),
-    rolls: [],
-    sauces: [],
-    summary: $id('order-summary').textContent
-  };
-
-  // לאסוף רולים
-  const allCart = [...document.querySelectorAll('#insideout-rolls .roll-card'),
-                   ...document.querySelectorAll('#maki-rolls .roll-card'),
-                   ...document.querySelectorAll('#onigiri-rolls .roll-card'),
-                   ...document.querySelectorAll('#poke-rolls .roll-card')];
-  allCart.forEach(card=>{
-    const id = card.dataset.id;
-    const qty = selectedRolls[id] || 0;
-    if(qty>0){
-      const item = [...insideOutRollsData,...makiRollsData,...onigiriData,...pokeData].find(x=>x.id===id);
-      payload.rolls.push({id, name:item.name, qty, price:item.price});
+async function performPostLoginSend() {
+  try {
+    const s = computeSummary();
+    if (s.totalRolls === 0) {
+      showMessage('יש לבחור לפחות רול אחד');
+      return;
     }
-  });
 
-  // רטבים
-  Object.keys(selectedSauces).forEach(id=>{
-    const qty = selectedSauces[id]||0;
-    if(qty>0){
-      const sdata = saucesData.find(s=>s.id===id);
-      payload.sauces.push({id, name:sdata.name, qty, extraPrice: Math.max(0, qty - (payload.rolls.reduce((a,b)=>a+b.qty,0)*2)) * 3 });
+    const pickup = $id('pickup-time').value;
+    if (!pickup) {
+      showMessage('יש לבחור שעת איסוף');
+      return;
     }
-  });
 
-  function generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  } 
+    // בדיקה יומית — מקסימום 15 רולים
+    const today = new Date().toISOString().slice(0, 10);
+    const todayCount = dailyRollCount[today] || 0;
+    if (todayCount + s.totalRolls > 15) {
+      showMessage(`לא ניתן להזמין — הושגו כבר ${todayCount} רולים היום (מקסימום 15).`, true);
+      return;
+    }
 
-  // לשלוח ל‑Make
-  postToMake(payload)
-    .then(res=>{
-      if(!res.ok) throw new Error('Make returned ' + res.status);
-      
-      // הצלחה — עדכון bookedTimes לפי כל רול
-      const totalRolls = payload.rolls.reduce((a,b)=>a+b.qty,0);
-      for(let i=0; i<totalRolls; i++){
-        bookedTimes.push(pickup);
-      }
-      localStorage.setItem('bookedTimes', JSON.stringify(bookedTimes));
-
-      // עדכון מספר רולים יומי
-      dailyRollCount[today] = (dailyRollCount[today]||0) + totalRolls;
-      localStorage.setItem('dailyRollCount', JSON.stringify(dailyRollCount));
-
-      showMessage('ההזמנה נשלחה בהצלחה! הודעת אישור תישלח במייל ובוואטסאפ.', false);
-      
-      // רענון אפשרויות זמנים
+    // בדיקה אם השעה תפוסה
+    if (bookedTimes.includes(pickup)) {
+      showMessage('השעה שבחרת כבר תפוסה, בחר שעה אחרת', true);
       initPickupTimes();
-    })
-    .catch(err=>{
-      console.error(err);
-      showMessage('שגיאה בשליחת ההזמנה ל‑Make. בדוק את ה‑Webhook.', true);
+      return;
+    }
+
+    // יצירת מזהה ייחודי
+    const orderUUID = generateUUID();
+
+    // בניית payload מלא
+    const payload = {
+      uuid: orderUUID,
+      timestamp: new Date().toISOString(),
+      user: currentUser,
+      pickupTime: pickup,
+      chopsticks: chopsticksCount,
+      notes: $id('notes').value.trim(),
+      rolls: [],
+      sauces: [],
+      summary: $id('order-summary').textContent
+    };
+
+    // איסוף הרולים שנבחרו
+    const allCart = [...document.querySelectorAll('#insideout-rolls .roll-card'),
+                     ...document.querySelectorAll('#maki-rolls .roll-card'),
+                     ...document.querySelectorAll('#onigiri-rolls .roll-card'),
+                     ...document.querySelectorAll('#poke-rolls .roll-card')];
+    allCart.forEach(card => {
+      const id = card.dataset.id;
+      const qty = selectedRolls[id] || 0;
+      if (qty > 0) {
+        const item = [...insideOutRollsData, ...makiRollsData, ...onigiriData, ...pokeData].find(x => x.id === id);
+        payload.rolls.push({ id, name: item.name, qty, price: item.price });
+      }
     });
+
+    // איסוף רטבים
+    Object.keys(selectedSauces).forEach(id => {
+      const qty = selectedSauces[id] || 0;
+      if (qty > 0) {
+        const sdata = saucesData.find(s => s.id === id);
+        payload.sauces.push({
+          id,
+          name: sdata.name,
+          qty,
+          extraPrice: Math.max(0, qty - (payload.rolls.reduce((a, b) => a + b.qty, 0) * 2)) * 3
+        });
+      }
+    });
+
+    // שליחה ל-Make
+    await postToMake(payload);
+
+    // שליחה ל-Supabase
+    const { error } = await supabase.from('orders').insert({
+      id: orderUUID,
+      created_at: new Date().toISOString(),
+      user_name: currentUser.name,
+      user_email: currentUser.email,
+      user_phone: currentUser.phone || '',
+      pickup_time: pickup,
+      notes: payload.notes,
+      rolls: payload.rolls,
+      sauces: payload.sauces,
+      summary: payload.summary
+    });
+
+    if (error) {
+      console.error('שגיאה בשמירה ל-Supabase:', error);
+      showMessage('שגיאה בשמירה ל-Supabase', true);
+      return;
+    }
+
+    // עדכון מקומי של השעות התפוסות
+    bookedTimes.push(pickup);
+    localStorage.setItem('bookedTimes', JSON.stringify(bookedTimes));
+    dailyRollCount[today] = (dailyRollCount[today] || 0) + s.totalRolls;
+    localStorage.setItem('dailyRollCount', JSON.stringify(dailyRollCount));
+
+    showMessage('ההזמנה נשלחה ונשמרה בהצלחה!', false);
+    initPickupTimes();
+
+  } catch (err) {
+    console.error('שגיאה בשליחת ההזמנה:', err);
+    showMessage('שגיאה בשליחה — בדוק חיבור ל-Make או ל-Supabase.', true);
+  }
 }
 
 // ------------- לחצן שליחה / התחברות --------------
