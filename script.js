@@ -3,7 +3,11 @@
    - ודא שה‑Google OAuth Client ID שלך רשום ב-Google Cloud Console under Authorized JS origins
    - ודא ש‑MAKE_WEBHOOK_URL נכון ומטפל ב‑payload לשליחת מייל/Whatsapp דרך Make
 */
+const SUPABASE_URL = 'https://oxjokdjwdvmmdtcvqvon.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94am9rZGp3ZHZtbWR0Y3Zxdm9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzgwMzMsImV4cCI6MjA3NDY1NDAzM30.DmKp79UiPi9iOU50UutevdqRcPyREMUJ7NT5ZmBHDsg';
 
+// יצירת חיבור
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const GOOGLE_CLIENT_ID = "962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com";
 const MAKE_WEBHOOK_URL   = "https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r"; // שלך
 
