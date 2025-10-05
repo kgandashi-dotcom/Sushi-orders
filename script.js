@@ -145,14 +145,12 @@ function initPickupTimes(){
     for(let m of [0,30]){
       if(h===22 && m>30) continue;
       const label = `${String(h).padStart(2,'0')}:${m===0?'00':'30'}`;
-      // אם הזמן כבר תפוס (in bookedTimes) אל תהיה אופציה
+      if(bookedTimes.includes(label)) continue; // לא מוסיף כלל אם תפוס
       const opt = document.createElement('option');
       opt.value = label; opt.textContent = label;
-      if(bookedTimes.includes(label)) opt.disabled = true;
       sel.appendChild(opt);
     }
   }
-  // הודעת תפוס/זמין
   $id('pickup-note').textContent = bookedTimes.length ? `יש כבר ${bookedTimes.length} שעות תפוסות` : '';
 }
 
