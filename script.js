@@ -297,8 +297,8 @@ function handleCredentialResponse(response){
     } else {
       // בקשה ידנית עם בדיקה בסיסית של פורמט
       let phone = '';
-      while(!phone || !/^\+9725\d{8}$/.test(phone)) {
-        phone = prompt('לא נמצא מספר טלפון ב‑Google. הכנס טלפון למשלוח אישור (פורמט +9725XXXXXXXX):');
+      while(!phone || !/^\05\d{8}$/.test(phone)) {
+        phone = prompt('לא נמצא מספר טלפון ב‑Google. הכנס טלפון למשלוח אישור (05XXXXXXXX):');
         if(phone === null) break; // ביטול
         if(!/^\05\d{8}$/.test(phone)){
           alert('פורמט לא חוקי. נסה שוב.');
