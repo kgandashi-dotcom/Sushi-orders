@@ -348,6 +348,7 @@ function performPostLoginSend(){
     initPickupTimes(); // לרענן אופציות
     return;
   }
+
   const orderUUID = generateUUID(); 
   // הכנת payload לשליחה ל‑Make: כל המידע
   const payload = {
@@ -384,28 +385,34 @@ function performPostLoginSend(){
       payload.sauces.push({id, name:sdata.name, qty, extraPrice: Math.max(0, qty - (payload.rolls.reduce((a,b)=>a+b.qty,0)*2)) * 3 });
     }
   });
- function generateUUID() {
-  // יוצר UUID פשוט, ניתן להשתמש בספרייה חיצונית אם רוצים יותר בטוח
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-} 
+
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  } 
+
   // לשלוח ל‑Make
   postToMake(payload)
     .then(res=>{
       if(!res.ok) throw new Error('Make returned ' + res.status);
-      // הצלחה — לשמור בקובץ מקומי שהתור תפוס ולהגדיל count יומי
-      bookedTimes.push(pickup);
+      
+      // הצלחה — עדכון bookedTimes לפי כל רול
+      const totalRolls = payload.rolls.reduce((a,b)=>a+b.qty,0);
+      for(let i=0; i<totalRolls; i++){
+        bookedTimes.push(pickup);
+      }
       localStorage.setItem('bookedTimes', JSON.stringify(bookedTimes));
-      const today = (new Date()).toISOString().slice(0,10);
-      dailyRollCount[today] = (dailyRollCount[today]||0) + (payload.rolls.reduce((a,b)=>a+b.qty,0));
+
+      // עדכון מספר רולים יומי
+      dailyRollCount[today] = (dailyRollCount[today]||0) + totalRolls;
       localStorage.setItem('dailyRollCount', JSON.stringify(dailyRollCount));
+
       showMessage('ההזמנה נשלחה בהצלחה! הודעת אישור תישלח במייל ובוואטסאפ.', false);
+      
       // רענון אפשרויות זמנים
       initPickupTimes();
-      // לאפס סל בסיסי (רק אם תרצה)
-      // selectedRolls = {}; selectedSauces = {}; initMenu(); updateSummary();
     })
     .catch(err=>{
       console.error(err);
