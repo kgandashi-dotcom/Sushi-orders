@@ -285,19 +285,24 @@ function handleCredentialResponse(response){
     const decoded = jwt_decode(response.credential);
     currentUser = {
       name: decoded.name || decoded.given_name || 'Google User',
-      email: decoded.email || '',
-      // phone כמעט אף פעם לא מגיע מ-OneTap; נבקש אם חסר
-      phone: decoded.phone_number || ''
+      email: decoded.email || ''
     };
-    if(!currentUser.phone){
-      // בבקשה ידנית בלבד — לא ניתן להשיג בטוח מ-GIS
-      const ask = prompt('לא נמצא מספר טלפון ב־Google. הכנס טלפון למשלוח אישור (השתמש בפורמט +9725...):');
-      currentUser.phone = ask || '';
+
+    // לבדוק אם כבר שמור מספר טלפון למייל הזה
+    const savedPhones = JSON.parse(localStorage.getItem('savedPhones') || '{}');
+    if(savedPhones[currentUser.email]){
+      currentUser.phone = savedPhones[currentUser.email]; // נטען מהאחסון
+    } else {
+      // בבקשה ידנית בלבד
+      const ask = prompt('לא נמצא מספר טלפון ב‑Google. הכנס טלפון למשלוח אישור (פורמט +9725...):') || '';
+      currentUser.phone = ask;
+      savedPhones[currentUser.email] = ask; // שמירה ב‑localStorage
+      localStorage.setItem('savedPhones', JSON.stringify(savedPhones));
     }
+
     updateSummary();
-    // לאחר התחברות נבצע את שליחת ההזמנה (אם התנאים תקינים)
-    performPostLoginSend();
-    checkAdminAndAddResetButton(); // מוסיף את הכפתור רק למנהל
+    performPostLoginSend(); // שולח הזמנה אוטומטית
+    checkAdminAndAddResetButton(); // מוסיף כפתור מנהל אם צריך
   }catch(e){
     console.error('decode error', e);
     showMessage('שגיאה בקריאת תשובת Google');
