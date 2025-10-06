@@ -421,17 +421,18 @@ async function performPostLoginSend() {
     await postToMake(payload);
 
     // שליחה ל-Supabase
-const { error } = await supabase.from('sushi').insert({
-  id: payload.uuid,
+const { error } = await supabase.from('Sushi').insert({
+  Id: payload.uuid,
   created_at: payload.timestamp,
-  user_name: payload.user.name,
-  user_email: payload.user.email,
-  user_phone: payload.user.phone || '',
+  User_name: payload.user.name,
+  User_email: payload.user.email,
+  User_phone: payload.user.phone || '',
   pickup_time: payload.pickupTime,
   notes: payload.notes,
-  rolls: payload.rolls,      // או JSON.stringify(payload.rolls) אם השדה הוא TEXT
-  sauces: payload.sauces,    // או JSON.stringify(payload.sauces) אם השדה הוא TEXT
-  summary: payload.summary
+  Rolls: payload.rolls,      // או JSON.stringify(payload.rolls) אם לא JSONB
+  sauces: payload.sauces,    // כנ"ל
+  chopsticks_count: payload.chopsticks, 
+  Summary: payload.summary
 });
 
 if (error) {
