@@ -66,430 +66,187 @@ const saucesData = [
 ];
 
 // ----------------- UI בנייה -----------------
-function $id(id){ return document.getElementById(id); }
-
+function $id(id){return document.getElementById(id);}
 function createRollCard(item, containerId){
-  const container = $id(containerId);
-  const card = document.createElement('div');
-  card.className = 'roll-card';
-  card.dataset.id = item.id;
-  card.dataset.price = item.price;
+  const container=$id(containerId);
+  const card=document.createElement('div'); card.className='roll-card'; card.dataset.id=item.id; card.dataset.price=item.price;
 
-  const info = document.createElement('div');
-  info.className = 'info';
-  info.innerHTML = `<h3>${item.name}</h3><p>${item.description}</p>`;
+  const info=document.createElement('div'); info.className='info';
+  info.innerHTML=`<h3>${item.name}</h3><p>${item.description}</p>`;
 
-  const controls = document.createElement('div');
-  controls.className = 'quantity-control';
-  const btnMinus = document.createElement('button'); btnMinus.textContent = '−';
-  const inputQty = document.createElement('input'); inputQty.type='number'; inputQty.value=0; inputQty.readOnly=true;
-  const btnPlus = document.createElement('button'); btnPlus.textContent = '+';
+  const controls=document.createElement('div'); controls.className='quantity-control';
+  const btnMinus=document.createElement('button'); btnMinus.textContent='−';
+  const inputQty=document.createElement('input'); inputQty.type='number'; inputQty.value=0; inputQty.readOnly=true;
+  const btnPlus=document.createElement('button'); btnPlus.textContent='+';
 
   btnPlus.addEventListener('click', ()=>{
-    const id = item.id;
-    selectedRolls[id] = (selectedRolls[id]||0) + 1;
-    inputQty.value = selectedRolls[id];
-    updateSummary();
+    const id=item.id;
+    selectedRolls[id]=(selectedRolls[id]||0)+1; inputQty.value=selectedRolls[id]; updateSummary();
   });
   btnMinus.addEventListener('click', ()=>{
-    const id = item.id;
-    if((selectedRolls[id]||0) > 0){
-      selectedRolls[id]--; inputQty.value = selectedRolls[id];
-      updateSummary();
-    }
+    const id=item.id;
+    if((selectedRolls[id]||0)>0){selectedRolls[id]--; inputQty.value=selectedRolls[id]; updateSummary();}
   });
 
-  controls.appendChild(btnMinus); controls.appendChild(inputQty); controls.appendChild(btnPlus);
-  card.appendChild(info); card.appendChild(controls);
+  controls.append(btnMinus,inputQty,btnPlus);
+  card.append(info,controls);
   container.appendChild(card);
 }
 
 function createSauceCard(item){
-  const container = $id('sauces-container');
-  const card = document.createElement('div');
-  card.className='roll-card';
-  card.dataset.id = item.id;
-  card.dataset.price = item.price;
+  const container=$id('sauces-container');
+  const card=document.createElement('div'); card.className='roll-card'; card.dataset.id=item.id; card.dataset.price=item.price;
 
-  const info = document.createElement('div'); info.className='info';
-  info.innerHTML = `<h3>${item.name}</h3><p>2 חינם לכל רול — מעבר לכך ${item.price}₪ לרוטב נוסף</p>`;
+  const info=document.createElement('div'); info.className='info';
+  info.innerHTML=`<h3>${item.name}</h3><p>2 חינם לכל רול — מעבר לכך ${item.price}₪ לרוטב נוסף</p>`;
 
-  const controls = document.createElement('div'); controls.className='quantity-control';
-  const btnMinus = document.createElement('button'); btnMinus.textContent='−';
-  const inputQty = document.createElement('input'); inputQty.type='number'; inputQty.value=0; inputQty.readOnly=true;
-  const btnPlus = document.createElement('button'); btnPlus.textContent='+';
+  const controls=document.createElement('div'); controls.className='quantity-control';
+  const btnMinus=document.createElement('button'); btnMinus.textContent='−';
+  const inputQty=document.createElement('input'); inputQty.type='number'; inputQty.value=0; inputQty.readOnly=true;
+  const btnPlus=document.createElement('button'); btnPlus.textContent='+';
 
   btnPlus.addEventListener('click', ()=>{ const id=item.id; selectedSauces[id]=(selectedSauces[id]||0)+1; inputQty.value=selectedSauces[id]; updateSummary(); });
   btnMinus.addEventListener('click', ()=>{ const id=item.id; if((selectedSauces[id]||0)>0){ selectedSauces[id]--; inputQty.value=selectedSauces[id]; updateSummary(); } });
 
-  controls.appendChild(btnMinus); controls.appendChild(inputQty); controls.appendChild(btnPlus);
-  card.appendChild(info); card.appendChild(controls);
+  controls.append(btnMinus,inputQty,btnPlus);
+  card.append(info,controls);
   container.appendChild(card);
 }
 
-// אתחול תפריט
+// ---------------- INIT MENU ----------------
 function initMenu(){
-  // נקי קודם
-  ['insideout-rolls','maki-rolls','onigiri-rolls','poke-rolls','sauces-container'].forEach(id=>{
-    const el = $id(id); if(el) el.innerHTML='';
-  });
-
-  insideOutRollsData.forEach(r=> createRollCard(r,'insideout-rolls'));
-  makiRollsData.forEach(r=> createRollCard(r,'maki-rolls'));
-  onigiriData.forEach(r=> createRollCard(r,'onigiri-rolls'));
-  pokeData.forEach(r=> createRollCard(r,'poke-rolls'));
-  saucesData.forEach(s=> createSauceCard(s));
+  ['insideout-rolls','maki-rolls','onigiri-rolls','poke-rolls','sauces-container'].forEach(id=>{$id(id).innerHTML='';});
+  insideOutRollsData.forEach(r=>createRollCard(r,'insideout-rolls'));
+  makiRollsData.forEach(r=>createRollCard(r,'maki-rolls'));
+  onigiriData.forEach(r=>createRollCard(r,'onigiri-rolls'));
+  pokeData.forEach(r=>createRollCard(r,'poke-rolls'));
+  saucesData.forEach(s=>createSauceCard(s));
 }
 
-// ------------- שעות איסוף 19:00–22:30 חצי שעה --------------
+// ---------------- PICKUP TIMES ----------------
 function initPickupTimes(){
-  const sel = $id('pickup-time');
-  sel.innerHTML = '<option value="">בחר שעה</option>';
-  for(let h=19; h<=22; h++){
+  const sel=$id('pickup-time'); sel.innerHTML='<option value="">בחר שעה</option>';
+  for(let h=19;h<=22;h++){
     for(let m of [0,30]){
       if(h===22 && m>30) continue;
-      const label = `${String(h).padStart(2,'0')}:${m===0?'00':'30'}`;
-      if(bookedTimes.includes(label)) continue; // לא מוסיף כלל אם תפוס
-      const opt = document.createElement('option');
-      opt.value = label; opt.textContent = label;
+      const label=`${String(h).padStart(2,'0')}:${m===0?'00':'30'}`;
+      if(bookedTimes.includes(label)) continue;
+      const opt=document.createElement('option'); opt.value=label; opt.textContent=label;
       sel.appendChild(opt);
     }
   }
   $id('pickup-note').textContent = bookedTimes.length ? `יש כבר ${bookedTimes.length} שעות תפוסות` : '';
 }
 
-// ------------- סיכום וסכומים --------------
+// ---------------- SUMMARY ----------------
 function computeSummary(){
-  let total = 0;
-  let totalRolls = 0;
-  const rollsLines = [];
-
-  // רולים מכל הקטגוריות
-  const allDatas = [...insideOutRollsData,...makiRollsData,...onigiriData,...pokeData];
-  for(const id in selectedRolls){
-    const qty = selectedRolls[id] || 0;
-    if(qty>0){
-      const item = allDatas.find(x=>x.id===id);
-      if(!item) continue;
-      rollsLines.push(`${item.name} x${qty} — ${item.price * qty}₪`);
-      total += item.price * qty;
-      totalRolls += qty;
-    }
-  }
-
-  // רטבים — 2 חינם לכל רול
-  let sauceLines = [];
-  let extraSauceCost = 0;
-  const freeAllowance = totalRolls * 2;
-  let usedSaucesCount = 0;
-  for(const id in selectedSauces){
-    const qty = selectedSauces[id] || 0;
-    if(qty>0){
-      const item = saucesData.find(s=>s.id===id);
-      sauceLines.push(`${item.name} x${qty}`);
-      usedSaucesCount += qty;
-    }
-  }
-  const extra = Math.max(0, usedSaucesCount - freeAllowance);
-  extraSauceCost = extra * 3;
-  total += extraSauceCost;
-
-  return { rollsLines, sauceLines, totalRolls, usedSaucesCount, extra, extraSauceCost, total };
+  let total=0,totalRolls=0;
+  const rollsLines=[];
+  const allDatas=[...insideOutRollsData,...makiRollsData,...onigiriData,...pokeData];
+  for(const id in selectedRolls){const qty=selectedRolls[id]||0; if(qty>0){const item=allDatas.find(x=>x.id===id); rollsLines.push(`${item.name} x${qty} — ${item.price*qty}₪`); total+=item.price*qty; totalRolls+=qty;}}
+  let sauceLines=[]; let extraSauceCost=0; const freeAllowance=totalRolls*2; let usedSaucesCount=0;
+  for(const id in selectedSauces){const qty=selectedSauces[id]||0; if(qty>0){const item=saucesData.find(s=>s.id===id); sauceLines.push(`${item.name} x${qty}`); usedSaucesCount+=qty;}}
+  const extra=Math.max(0,usedSaucesCount-freeAllowance); extraSauceCost=extra*3; total+=extraSauceCost;
+  return {rollsLines,sauceLines,totalRolls,usedSaucesCount,extra,extraSauceCost,total};
 }
 
 function updateSummary(){
-  const s = computeSummary();
-  let text = `הזמנה חדשה:\n\n`;
-
-  if(s.rollsLines.length) text += s.rollsLines.join('\n') + '\n\n';
-  else text += '(לא נבחרו רולים)\n\n';
-
-  text += 'רטבים:\n';
-  if(s.sauceLines.length) text += s.sauceLines.join('\n') + '\n';
-  else text += '(לא נבחרו רטבים)\n';
-  if(s.extra > 0) text += `\nעלות רטבים נוספים: ${s.extra} × 3₪ = ${s.extraSauceCost}₪\n`;
-
-  text += `\nכמות צ'ופסטיקס: ${chopsticksCount}\n`;
-
-  const notes = $id('notes').value.trim();
-  if(notes) text += `\nהערות: ${notes}\n`;
-
-  const pickup = $id('pickup-time').value;
-  text += `\nשעת איסוף: ${pickup || '(לא נבחרה)'}\n`;
-
-  if(currentUser) text += `\nלקוח: ${currentUser.name} (${currentUser.email})\n`;
-
-  text += `\nסה"כ לתשלום: ${s.total}₪\n`;
-
-  $id('order-summary').textContent = text;
-
-  // כפתור שליחה פעיל רק אם נבחרו רולים ושעה
-  const sendBtn = $id('send-order');
-  sendBtn.disabled = !(s.totalRolls>0 && !!pickup);
+  const s=computeSummary(); let text=`הזמנה חדשה:\n\n`;
+  if(s.rollsLines.length) text+=s.rollsLines.join('\n')+'\n\n'; else text+='(לא נבחרו רולים)\n\n';
+  text+='רטבים:\n'; if(s.sauceLines.length) text+=s.sauceLines.join('\n')+'\n'; else text+='(לא נבחרו רטבים)\n';
+  if(s.extra>0) text+=`\nעלות רטבים נוספים: ${s.extra} × 3₪ = ${s.extraSauceCost}₪\n`;
+  text+=`\nכמות צ'ופסטיקס: ${chopsticksCount}\n`;
+  const notes=$id('notes').value.trim(); if(notes) text+=`\nהערות: ${notes}\n`;
+  const pickup=$id('pickup-time').value; text+=`\nשעת איסוף: ${pickup||'(לא נבחרה)'}\n`;
+  if(currentUser) text+=`\nלקוח: ${currentUser.name} (${currentUser.email})\n`;
+  text+=`\nסה"כ לתשלום: ${s.total}₪\n`;
+  $id('order-summary').textContent=text;
+  $id('send-order').disabled=!(s.totalRolls>0 && !!pickup);
 }
 
-// ------------- עזרי UI --------------
-$id('chopsticks-minus').addEventListener('click', ()=>{
-  if(chopsticksCount>1) chopsticksCount--;
-  $id('chopsticks-qty').value = chopsticksCount;
-  updateSummary();
-});
-$id('chopsticks-plus').addEventListener('click', ()=>{
-  chopsticksCount++;
-  $id('chopsticks-qty').value = chopsticksCount;
-  updateSummary();
+// ---------------- CHOPSTICKS ----------------
+$id('chopsticks-minus').addEventListener('click',()=>{if(chopsticksCount>1) chopsticksCount--; $id('chopsticks-qty').value=chopsticksCount; updateSummary();});
+$id('chopsticks-plus').addEventListener('click',()=>{chopsticksCount++; $id('chopsticks-qty').value=chopsticksCount; updateSummary();});
+$id('pickup-time').addEventListener('change',updateSummary);
+$id('notes').addEventListener('input',updateSummary);
+
+// ---------------- TABS ----------------
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    $id(btn.dataset.target).classList.add('active');
+  });
 });
 
-// עדכון summary כשמחליפים שעת איסוף
-$id('pickup-time').addEventListener('change', updateSummary);
-$id('notes').addEventListener('input', updateSummary);
-function checkAdminAndAddResetButton() {
-  const adminEmail = 'kgandashi@gmail.com'; // מייל המנהל
-  const existingBtn = document.getElementById('reset-orders');
-
-  if(existingBtn) return;
-
-  if(currentUser && currentUser.email === adminEmail){
-    const resetBtn = document.createElement('button');
-    resetBtn.textContent = 'אפס הזמנות';
-    resetBtn.id = 'reset-orders';
-    resetBtn.style.margin = '10px';
-    resetBtn.style.backgroundColor = '#f44336';
-    resetBtn.style.color = '#fff';
-    resetBtn.style.padding = '6px 12px';
-    resetBtn.style.border = 'none';
-    resetBtn.style.borderRadius = '4px';
-    resetBtn.style.cursor = 'pointer';
-
-    resetBtn.addEventListener('click', ()=>{
-      if(confirm('אתה בטוח שברצונך לאפס את כל ההזמנות?')){
-        bookedTimes = [];
-        dailyRollCount = {};
-        localStorage.setItem('bookedTimes', JSON.stringify(bookedTimes));
-        localStorage.setItem('dailyRollCount', JSON.stringify(dailyRollCount));
-        initPickupTimes();
-        updateSummary();
-        alert('כל ההזמנות אופסו בהצלחה!');
-      }
-    });
-
-    document.body.appendChild(resetBtn);
-  }
-}
-// ------------- Google login flow --------------
-function googleInit(){
-  // לא קורא מיד — נקרא בלחיצה על כפתור
-  // חשוב: Google Client ID חייב להיות מאושר ב‑Origins
-}
-
+// ---------------- GOOGLE LOGIN ----------------
 function handleCredentialResponse(response){
   try{
-    const decoded = jwt_decode(response.credential);
-    currentUser = {
-      name: decoded.name || decoded.given_name || 'Google User',
-      email: decoded.email || ''
-    };
-
-    // לבדוק אם כבר שמור מספר טלפון למייל הזה
-    const savedPhones = JSON.parse(localStorage.getItem('savedPhones') || '{}');
-    if(savedPhones[currentUser.email]){
-      currentUser.phone = savedPhones[currentUser.email]; // נטען מהאחסון
-    } else {
-      // בקשה ידנית עם בדיקה בסיסית של פורמט
-      let phone = '';
-      while(!phone || !/^05\d{8}$/.test(phone)) {
-        phone = prompt('לא נמצא מספר טלפון ב‑Google. הכנס טלפון למשלוח אישור (05XXXXXXXX):');
-        if(phone === null) break; // ביטול
-       if(!/^05\d{8}$/.test(phone)){
-          alert('פורמט לא חוקי. נסה שוב.');
-        }
+    const decoded=jwt_decode(response.credential);
+    currentUser={name:decoded.name||decoded.given_name||'Google User',email:decoded.email||''};
+    const savedPhones=JSON.parse(localStorage.getItem('savedPhones')||'{}');
+    if(savedPhones[currentUser.email]) currentUser.phone=savedPhones[currentUser.email];
+    else {
+      let phone=''; while(!phone || !/^05\d{8}$/.test(phone)){
+        phone=prompt('לא נמצא מספר טלפון ב‑Google. הכנס טלפון (05XXXXXXXX):'); if(phone===null) break;
+        if(!/^05\d{8}$/.test(phone)) alert('פורמט לא חוקי. נסה שוב.');
       }
-      currentUser.phone = phone || '';
-      if(currentUser.phone){
-        savedPhones[currentUser.email] = currentUser.phone;
-        localStorage.setItem('savedPhones', JSON.stringify(savedPhones));
-      }
+      currentUser.phone=phone||''; if(currentUser.phone){savedPhones[currentUser.email]=currentUser.phone; localStorage.setItem('savedPhones',JSON.stringify(savedPhones));}
     }
-
     updateSummary();
-    performPostLoginSend(); // שולח הזמנה אוטומטית
-    checkAdminAndAddResetButton(); // מוסיף כפתור מנהל אם צריך
-  }catch(e){
-    console.error('decode error', e);
-    showMessage('שגיאה בקריאת תשובת Google');
-  }
-}
-// ------------- שליחה ל-Make (ושם תטפל ב-Twilio/Email) --------------
-function postToMake(payload){
-  return fetch(MAKE_WEBHOOK_URL, {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify(payload)
-  });
+    performPostLoginSend();
+  }catch(e){console.error('decode error',e); showMessage('שגיאה בקריאת תשובת Google');}
 }
 
-// פונקציה ליצירת UUID
-function generateUUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
+// ---------------- MAKE & SUPABASE ----------------
+function postToMake(payload){return fetch(MAKE_WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}
+function generateUUID(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0,v=c==='x'?r:(r&0x3|0x8); return v.toString(16);});}
+function showMessage(txt,isError=true){const m=$id('messages'); m.textContent=txt; m.style.color=isError?'#b71c1c':'#2a7a2a'; setTimeout(()=>{if(m.textContent===txt) m.textContent='';},6000);}
 
-function showMessage(txt, isError=true){
-  const m = $id('messages');
-  m.textContent = txt;
-  m.style.color = isError ? '#b71c1c' : '#2a7a2a';
-  setTimeout(()=>{ if(m.textContent === txt) m.textContent = ''; }, 6000);
-}
+async function performPostLoginSend(){
+  try{
+    const s=computeSummary(); if(s.totalRolls===0){showMessage('יש לבחור לפחות רול אחד'); return;}
+    const pickup=$id('pickup-time').value; if(!pickup){showMessage('יש לבחור שעת איסוף'); return;}
+    const today=new Date().toISOString().slice(0,10);
+    const todayCount=dailyRollCount[today]||0;
+    if(todayCount+s.totalRolls>15){showMessage(`לא ניתן להזמין — הושגו כבר ${todayCount} רולים היום (מקסימום 15).`); return;}
+    if(bookedTimes.includes(pickup)){showMessage('השעה תפוסה, בחר שעה אחרת'); initPickupTimes(); return;}
 
-// פעולה שקוראת אחרי שהמשתמש התחבר (או אם כבר היה מחובר)
-async function performPostLoginSend() {
-  try {
-    const s = computeSummary();
-    if (s.totalRolls === 0) {
-      showMessage('יש לבחור לפחות רול אחד');
-      return;
-    }
+    const orderUUID=generateUUID();
+    const payload={uuid:orderUUID,timestamp:new Date().toISOString(),user:currentUser,pickupTime:pickup,chopsticks:chopsticksCount,notes:$id('notes').value.trim(),rolls:[],sauces:[],summary:$id('order-summary').textContent};
 
-    const pickup = $id('pickup-time').value;
-    if (!pickup) {
-      showMessage('יש לבחור שעת איסוף');
-      return;
-    }
-
-    // בדיקה יומית — מקסימום 15 רולים
-    const today = new Date().toISOString().slice(0, 10);
-    const todayCount = dailyRollCount[today] || 0;
-    if (todayCount + s.totalRolls > 15) {
-      showMessage(`לא ניתן להזמין — הושגו כבר ${todayCount} רולים היום (מקסימום 15).`, true);
-      return;
-    }
-
-    // בדיקה אם השעה תפוסה
-    if (bookedTimes.includes(pickup)) {
-      showMessage('השעה שבחרת כבר תפוסה, בחר שעה אחרת', true);
-      initPickupTimes();
-      return;
-    }
-
-    // יצירת מזהה ייחודי
-    const orderUUID = generateUUID();
-
-    // בניית payload מלא
-    const payload = {
-      uuid: orderUUID,
-      timestamp: new Date().toISOString(),
-      user: currentUser,
-      pickupTime: pickup,
-      chopsticks: chopsticksCount,
-      notes: $id('notes').value.trim(),
-      rolls: [],
-      sauces: [],
-      summary: $id('order-summary').textContent
-    };
-
-    // איסוף הרולים שנבחרו
-    const allCart = [...document.querySelectorAll('#insideout-rolls .roll-card'),
-                     ...document.querySelectorAll('#maki-rolls .roll-card'),
-                     ...document.querySelectorAll('#onigiri-rolls .roll-card'),
-                     ...document.querySelectorAll('#poke-rolls .roll-card')];
-    allCart.forEach(card => {
-      const id = card.dataset.id;
-      const qty = selectedRolls[id] || 0;
-      if (qty > 0) {
-        const item = [...insideOutRollsData, ...makiRollsData, ...onigiriData, ...pokeData].find(x => x.id === id);
-        payload.rolls.push({ id, name: item.name, qty, price: item.price });
-      }
+    [...document.querySelectorAll('#insideout-rolls .roll-card,#maki-rolls .roll-card,#onigiri-rolls .roll-card,#poke-rolls .roll-card')].forEach(card=>{
+      const id=card.dataset.id; const qty=selectedRolls[id]||0;
+      if(qty>0){const item=[...insideOutRollsData,...makiRollsData,...onigiriData,...pokeData].find(x=>x.id===id); payload.rolls.push({id,name:item.name,qty,price:item.price});}
     });
 
-    // איסוף רטבים
-    Object.keys(selectedSauces).forEach(id => {
-      const qty = selectedSauces[id] || 0;
-      if (qty > 0) {
-        const sdata = saucesData.find(s => s.id === id);
-        payload.sauces.push({
-          id,
-          name: sdata.name,
-          qty,
-          extraPrice: Math.max(0, qty - (payload.rolls.reduce((a, b) => a + b.qty, 0) * 2)) * 3
-        });
-      }
-    });
-
-    // שליחה ל-Make
+    Object.keys(selectedSauces).forEach(id=>{const qty=selectedSauces[id]||0;if(qty>0){const sdata=saucesData.find(s=>s.id===id); payload.sauces.push({id,name:sdata.name,qty,extraPrice:Math.max(0,qty-(payload.rolls.reduce((a,b)=>a+b.qty,0)*2))*3});}});
     await postToMake(payload);
 
-    // שליחה ל-Supabase
-const { error } = await supabase.from('Sushi').insert({
-  Id: payload.uuid,
-  created_at: payload.timestamp,
-  User_name: payload.user.name,
-  User_email: payload.user.email,
-  User_phone: payload.user.phone || '',
-  pickup_time: payload.pickupTime,
-  notes: payload.notes,
-  Rolls: payload.rolls,      // או JSON.stringify(payload.rolls) אם לא JSONB
-  sauces: payload.sauces,    // כנ"ל
-  chopsticks_count: payload.chopsticks, 
-  Summary: payload.summary
-});
+    const { error } = await supabase.from('Sushi').insert({Id:payload.uuid,created_at:payload.timestamp,User_name:payload.user.name,User_email:payload.user.email,User_phone:payload.user.phone||'',pickup_time:payload.pickupTime,notes:payload.notes,Rolls:payload.rolls,sauces:payload.sauces,chopsticks_count:payload.chopsticks,Summary:payload.summary});
+    if(error){console.error('Supabase error',error); showMessage('שגיאה בשמירה ל-Supabase',true); return;}
 
-if (error) {
-  console.error('שגיאה בשמירה ל-Supabase:', error);
-  showMessage('שגיאה בשמירה ל-Supabase', true);
-  return;
+    bookedTimes.push(pickup); localStorage.setItem('bookedTimes',JSON.stringify(bookedTimes));
+    dailyRollCount[today]=(dailyRollCount[today]||0)+s.totalRolls; localStorage.setItem('dailyRollCount',JSON.stringify(dailyRollCount));
+    showMessage('ההזמנה נשלחה ונשמרה בהצלחה!',false); initPickupTimes();
+  }catch(err){console.error(err); showMessage('שגיאה בשליחה — בדוק חיבור ל-Make או ל-Supabase.',true);}
 }
 
-    // עדכון מקומי של השעות התפוסות
-    bookedTimes.push(pickup);
-    localStorage.setItem('bookedTimes', JSON.stringify(bookedTimes));
-    dailyRollCount[today] = (dailyRollCount[today] || 0) + s.totalRolls;
-    localStorage.setItem('dailyRollCount', JSON.stringify(dailyRollCount));
-
-    showMessage('ההזמנה נשלחה ונשמרה בהצלחה!', false);
-    initPickupTimes();
-
-  } catch (err) {
-    console.error('שגיאה בשליחת ההזמנה:', err);
-    showMessage('שגיאה בשליחה — בדוק חיבור ל-Make או ל-Supabase.', true);
-  }
-}
-
-// ------------- לחצן שליחה / התחברות --------------
-$id('send-order').addEventListener('click', ()=>{
-  // בדיקה בסיסית לפני קריאה לגוגל
-  const totalSelectedRolls = Object.values(selectedRolls).reduce((a,b)=>a+(b||0),0);
-  const pickup = $id('pickup-time').value;
-  if(totalSelectedRolls === 0){
-    showMessage('יש לבחור לפחות רול אחד', true); return;
-  }
-  if(!pickup){ showMessage('יש לבחור שעת איסוף', true); return; }
-
-  // אם כבר מחובר — ישלח מיד
-  if(currentUser){
-    performPostLoginSend();
-    return;
-  }
-
-  // אחרת — נתחבר באמצעות Google One‑Tap / SignIn
-  google.accounts.id.initialize({
-    client_id: GOOGLE_CLIENT_ID,
-    callback: handleCredentialResponse,
-    ux_mode: 'popup' // מוודא שההתחברות לא תנווט את הדף
-  });
-  google.accounts.id.prompt(); // מציג את הprompt / popup
+// ---------------- SEND ORDER BUTTON ----------------
+$id('send-order').addEventListener('click',()=>{
+  const totalSelectedRolls=Object.values(selectedRolls).reduce((a,b)=>a+(b||0),0);
+  const pickup=$id('pickup-time').value;
+  if(totalSelectedRolls===0){showMessage('יש לבחור לפחות רול אחד',true); return;}
+  if(!pickup){showMessage('יש לבחור שעת איסוף',true); return;}
+  if(currentUser){performPostLoginSend(); return;}
+  google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleCredentialResponse,ux_mode:'popup'});
+  google.accounts.id.prompt();
 });
 
-// ------------- התחלה כאשר DOM מוכן --------------
-window.addEventListener('DOMContentLoaded', ()=>{
+// ---------------- INIT ----------------
+window.addEventListener('DOMContentLoaded',()=>{
   initMenu();
   initPickupTimes();
   updateSummary();
-
-  // מאזינים לכל לחיצה על כרטיסים כדי לעדכן סיכום (כיוון שאנו מעדכנים selectedRolls/selectedSauces)
-  document.body.addEventListener('click', (e)=> {
-    // גמיש — updateSummary בתוך event handlers של כפתורים כבר קורא אותו
-    // כאן נשאיר למקרה שקורית פעולה אחרת
-  });
 });
