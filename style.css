@@ -1,36 +1,114 @@
 :root{
   --accent:#7a2a2a;
   --accent-dark:#5e1b1b;
-  --muted:#f0f0f0;
-  --danger:#d9534f;
+  --muted:#f6f5f4;
+  --panel:#ffffff;
+  --danger:#b71c1c;
 }
+
+/* Reset & base */
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(180deg,#f6f5f4,#efecec);direction:rtl;color:#222;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
-.container{max-width:1020px;margin:18px auto;padding:18px;background:rgba(255,255,255,0.88);border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.12);}
-header{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
-.logo{width:70px;height:auto;border-radius:8px;}
-h1{margin:0;color:var(--accent);font-size:1.5rem;}
-.user-controls{margin-left:auto;display:flex;gap:8px;}
-.user-controls button{padding:6px 12px;border:none;border-radius:6px;background:var(--accent);color:#fff;cursor:pointer;}
-nav.tabs{display:flex;gap:6px;margin:12px 0;flex-wrap:wrap;}
-nav.tabs button{padding:6px 12px;border:none;border-radius:6px;background:#f0f0f0;cursor:pointer;}
-nav.tabs button.active{background:var(--accent);color:#fff;}
-.category-title{font-weight:700;color:var(--accent);margin:18px 0 8px 0;padding-bottom:6px;border-bottom:2px solid rgba(122,42,42,0.12);}
-.category-container{display:flex;flex-direction:column;gap:10px;}
-.roll-card{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-radius:10px;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,0.06);}
-.roll-card .info{flex:1 1 auto;}
-.roll-card h3{margin:0 0 6px 0;color:var(--accent);font-size:1.05rem;}
-.roll-card p{margin:0;color:#444;font-size:0.93rem;}
-.quantity-control{display:flex;align-items:center;gap:8px;}
-.quantity-control button{width:38px;height:36px;border-radius:8px;border:none;background:#f0c0c0;color:var(--accent);font-weight:700;font-size:1.2rem;cursor:pointer;}
-.quantity-control button:active{transform:translateY(1px);}
-.quantity-control input{width:52px;text-align:center;border:1px solid #ddd;border-radius:6px;padding:6px;background:#fff;}
-.note{color:#6b6b6b;margin:6px 0 0 0;font-size:0.92rem;}
-.small{font-size:0.86rem;color:#8a8a8a;}
-#order-summary{background:#fff;padding:12px;border-radius:8px;min-height:110px;white-space:pre-wrap;font-family:"Courier New",monospace;margin-top:12px;box-shadow:0 3px 8px rgba(0,0,0,0.06);}
-#send-order{margin-top:12px;padding:12px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:1.05rem;cursor:pointer;}
-#send-order:disabled{background:#bbb;cursor:not-allowed;}
-#messages{margin-top:12px;color:var(--danger);font-weight:700;}
-.hidden{display:none;}
-#profile-section{padding:12px;background:#fff;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,0.06);margin-top:12px;}
-@media(max-width:720px){.roll-card{flex-direction:column;align-items:flex-start;}.quantity-control{margin-top:8px;}.container{padding:12px;}.user-controls{flex-wrap:wrap;}}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter, system-ui, "Arial", sans-serif;
+  background: linear-gradient(180deg,#f6f5f4,#efecec);
+  direction: rtl;
+  -webkit-font-smoothing:antialiased;
+  color:#222;
+}
+
+/* App container */
+#app{ max-width:1100px; margin:0 auto; padding-bottom:88px; }
+
+/* Topbar */
+.topbar{
+  position:sticky; top:0; z-index:60;
+  display:flex; justify-content:space-between; align-items:center;
+  gap:12px; padding:10px 14px; background:rgba(255,255,255,0.98);
+  border-bottom:1px solid rgba(0,0,0,0.04);
+  backdrop-filter: blur(6px);
+}
+.brand{ display:flex; align-items:center; gap:12px; min-width:0; }
+.logo{ width:48px; height:48px; border-radius:8px; object-fit:cover; }
+.brand h1{ margin:0; font-size:1.05rem; color:var(--accent); }
+
+/* tabs horizontal scroll */
+.tabs{ display:flex; gap:8px; overflow:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch; }
+.tab{
+  flex:0 0 auto; padding:8px 12px; border-radius:10px; background:var(--panel);
+  border:1px solid #eee; cursor:pointer; font-weight:700; white-space:nowrap;
+}
+.tab.active{ background:var(--accent); color:#fff; border-color:var(--accent-dark); }
+
+/* auth inline */
+.auth-inline{ display:flex; gap:8px; align-items:center; margin-right:8px; }
+.btn{ padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:700; }
+.btn.primary{ background:var(--accent); color:#fff; }
+.btn.secondary{ background:#fff; color:var(--accent); border:1px solid #eee; }
+.btn.danger{ background:var(--danger); color:#fff; }
+.btn.plain{ background:transparent; color:#666; border:1px solid #eee; }
+
+/* Main layout: two columns on desktop, single column on mobile */
+.main{ display:flex; gap:16px; align-items:flex-start; padding:12px; }
+.menu-area{ flex:1; display:flex; flex-direction:column; gap:12px; padding-right:6px; }
+.side{ width:360px; min-width:260px; }
+
+/* category wrap & cards */
+.category-wrap{ display:flex; flex-direction:column; gap:10px; padding:6px 0; }
+.roll-card{
+  display:flex; justify-content:space-between; align-items:center; gap:12px;
+  background:var(--panel); padding:12px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.06);
+}
+.roll-card .info{ flex:1; }
+.roll-card h3{ margin:0; color:var(--accent); font-size:1rem; }
+.roll-card p{ margin:6px 0 0 0; color:#444; font-size:0.92rem; }
+
+/* quantity */
+.quantity-control{ display:flex; align-items:center; gap:8px; }
+.quantity-control button{ width:40px; height:38px; border-radius:8px; background:#f0c0c0; color:var(--accent); border:none; font-weight:800; font-size:1.2rem; cursor:pointer; }
+.quantity-control input{ width:56px; text-align:center; border:1px solid #e6e6e6; padding:6px; border-radius:8px; }
+
+/* panels */
+.panel{ background:var(--panel); padding:12px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.05); margin-bottom:12px; }
+.panel h3{ margin:0 0 8px 0; color:var(--accent); font-weight:800; }
+
+/* summary pre */
+#order-summary{ background:#fafafa; padding:10px; border-radius:8px; min-height:110px; white-space:pre-wrap; font-family: "Courier New", monospace; }
+
+/* bottom bar mobile */
+.bottom-bar{
+  position:fixed; left:0; right:0; bottom:0; z-index:70;
+  display:flex; justify-content:space-between; align-items:center; gap:8px;
+  padding:10px; background:rgba(255,255,255,0.98); border-top:1px solid rgba(0,0,0,0.06);
+  box-shadow:0 -8px 30px rgba(0,0,0,0.06);
+}
+.summary-short{ font-size:0.95rem; color:#333; padding:6px 10px; border-radius:8px; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.04); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* toast messages */
+.toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:92px; background:#fff; padding:8px 12px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.12); display:none; z-index:80; }
+
+/* profile screen (full slide) */
+.screen{ position:fixed; inset:0; z-index:80; background:rgba(0,0,0,0.35); display:flex; flex-direction:column; transform:translateY(100%); transition:transform .28s ease; }
+.screen.on{ transform:translateY(0%); }
+.screen.off{ transform:translateY(100%); }
+.screen-header{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding:12px; background:var(--panel); }
+.screen-body{ padding:16px; background:linear-gradient(#fff,#fff); overflow:auto; flex:1; }
+.screen-body label{ display:block; margin:10px 0; }
+.orders-list{ margin-top:12px; white-space:pre-wrap; font-family:monospace; }
+
+/* modal (send) slide-up */
+.modal{ position:fixed; left:0; right:0; bottom:0; z-index:85; display:flex; justify-content:center; align-items:flex-end; pointer-events:none; }
+.modal .modal-sheet{ width:100%; max-width:720px; background:#fff; border-radius:14px 14px 0 0; padding:16px; box-shadow:0 -8px 26px rgba(0,0,0,0.2); pointer-events:auto; transform:translateY(100%); transition:transform .28s ease; }
+.modal.on .modal-sheet{ transform:translateY(0%); }
+
+/* responsive mobile adjustments */
+@media (max-width:900px){
+  .main{ flex-direction:column; }
+  .side{ width:100%; }
+  .panel{ margin-bottom:10px; }
+  #app{ padding-bottom:120px; }
+  .topbar{ padding:10px; }
+  .brand h1{ font-size:1rem; }
+  .tabs{ gap:6px; }
+}
