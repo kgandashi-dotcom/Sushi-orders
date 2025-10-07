@@ -1,118 +1,83 @@
 <!DOCTYPE html>
-
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>הזמנת רולים — SUSHI</title>
-
-  <!-- CSS -->
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>סושי</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- Supabase client (UMD) -->
-
-  <script src="https://unpkg.com/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-
-  <!-- Google Identity Services -->
-
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-  <!-- jwt-decode -->
-
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-
 </head>
 <body>
-  <div class="container">
 
-```
-<header>
-  <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
-  <h1>תפריט רולים — SUSHI</h1>
-  <div class="user-buttons">
-    <div id="login-btn"></div>
-    <button id="profile-btn" style="display:none;">פרופיל</button>
-    <button id="logout-btn" style="display:none;">התנתקות</button>
+<header class="container">
+  <div class="brand-left">
+    <img src="logo.png" alt="Logo" class="logo">
+    <h1>סושי</h1>
+  </div>
+  <div class="brand-right">
+    <nav class="menu-tabs" role="navigation" aria-label="תפריט קטגוריות">
+      <button class="tab active" data-target="insideout-rolls">Inside-out</button>
+      <button class="tab" data-target="maki-rolls">Maki</button>
+      <button class="tab" data-target="onigiri-rolls">Onigiri</button>
+      <button class="tab" data-target="poke-rolls">Poke</button>
+      <button class="tab" data-target="sauces-container">רטבים</button>
+    </nav>
+    <div class="user-actions">
+      <button id="profile-btn" class="btn secondary">פרופיל</button>
+      <button id="auth-btn" class="btn primary">התחבר</button>
+    </div>
   </div>
 </header>
 
-<!-- לשוניות -->
-<nav class="tabs">
-  <button class="tab-btn active" data-target="insideout-rolls">Inside-out</button>
-  <button class="tab-btn" data-target="maki-rolls">Maki</button>
-  <button class="tab-btn" data-target="onigiri-rolls">Onigiri</button>
-  <button class="tab-btn" data-target="poke-rolls">Poke</button>
-  <button class="tab-btn" data-target="sauces-container">רטבים</button>
-</nav>
-
-<main>
-  <section id="menu">
-    <div class="category-title">Inside-out Rolls</div>
+<main class="container">
+  <section id="menu-area">
     <div id="insideout-rolls" class="category-container"></div>
-
-    <div class="category-title">Maki Rolls</div>
-    <div id="maki-rolls" class="category-container" style="display:none"></div>
-
-    <div class="category-title">Onigiri</div>
-    <div id="onigiri-rolls" class="category-container" style="display:none"></div>
-
-    <div class="category-title">Poke</div>
-    <div id="poke-rolls" class="category-container" style="display:none"></div>
+    <div id="maki-rolls" class="category-container"></div>
+    <div id="onigiri-rolls" class="category-container"></div>
+    <div id="poke-rolls" class="category-container"></div>
   </section>
 
-  <section id="sauces">
-    <div class="category-title">רטבים</div>
-    <div id="sauces-container" class="category-container" style="display:none"></div>
-    <p class="note">כל רול מקבל 2 רטבים חינם. רוטב נוסף עולה 3₪.</p>
-  </section>
+  <aside id="side-area">
+    <section id="sauces-section" class="panel">
+      <div class="panel-title">רטבים</div>
+      <div id="sauces-container" class="category-container"></div>
+      <p class="note">כל רול מקבל 2 רטבים חינם. רוטב נוסף 3₪.</p>
+    </section>
 
-  <section id="chopsticks">
-    <div class="category-title">כמות צ'ופסטיקס</div>
-    <div class="quantity-control">
-      <button id="chopsticks-minus">−</button>
-      <input id="chopsticks-qty" type="number" readonly value="1">
-      <button id="chopsticks-plus">+</button>
-    </div>
-  </section>
+    <section class="panel">
+      <div class="panel-title">כמות צ'ופסטיקס</div>
+      <div class="quantity-control">
+        <button id="chopsticks-minus">−</button>
+        <input id="chopsticks-qty" type="number" readonly value="1">
+        <button id="chopsticks-plus">+</button>
+      </div>
+    </section>
 
-  <section id="notes-section">
-    <div class="category-title">הערות אישיות</div>
-    <textarea id="notes" placeholder="הערות למשל: ללא גלוטן, הגעה בשער 3..."></textarea>
-  </section>
+    <section class="panel">
+      <div class="panel-title">בחר שעת איסוף</div>
+      <select id="pickup-time"><option value="">בחר שעה</option></select>
+      <p class="note small" id="pickup-note"></p>
+    </section>
 
-  <section id="pickup-section">
-    <div class="category-title">בחר שעת איסוף</div>
-    <select id="pickup-time">
-      <option value="">בחר שעה</option>
-    </select>
-    <p class="note small" id="pickup-note"></p>
-  </section>
+    <section class="panel">
+      <div class="panel-title">הערות אישיות</div>
+      <textarea id="notes" placeholder="לדוגמה: ללא גלוטן, הגעה בשער 3..."></textarea>
+    </section>
 
-  <section id="summary-section">
-    <div class="category-title">סיכום הזמנה</div>
-    <pre id="order-summary">הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.</pre>
-    <button id="send-order">שלח הזמנה</button>
-  </section>
+    <section class="panel">
+      <div class="panel-title">סיכום הזמנה</div>
+      <pre id="order-summary">הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.</pre>
+      <div class="actions-row">
+        <button id="send-order" class="btn primary">שלח הזמנה</button>
+        <button id="guest-btn" class="btn secondary">שלח כאורח</button>
+      </div>
+    </section>
 
-  <div id="messages" aria-live="polite"></div>
-
-  <!-- פרופיל והיסטוריה -->
-  <section id="profile-panel" class="profile-panel" style="display:none;">
-    <h3>פרופיל</h3>
-    <div id="profile-info"></div>
-    <h4>היסטוריית הזמנות</h4>
-    <div id="order-history"></div>
-  </section>
-
+    <div id="messages" aria-live="polite"></div>
+  </aside>
 </main>
-```
 
-  </div>
-
-  <!-- JS -->
-
-  <script src="script.js"></script>
-
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
