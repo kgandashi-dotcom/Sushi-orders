@@ -1,60 +1,55 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>הזמנת רולים</title>
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css">
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>הזמנת רולים</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://unpkg.com/@supabase/supabase-js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
 <div class="container">
   <header>
     <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
     <h1>תפריט רולים — SUSHI</h1>
+    <button id="login-btn" class="login-btn">התחבר</button>
   </header>
 
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab-btn active" data-target="insideout-rolls-section">Inside-Out Rolls</button>
-    <button class="tab-btn" data-target="maki-rolls-section">Maki Rolls</button>
-    <button class="tab-btn" data-target="onigiri-rolls-section">Onigiri</button>
-    <button class="tab-btn" data-target="poke-rolls-section">Poke</button>
-    <button class="tab-btn" data-target="sauces-section">רטבים</button>
+  <!-- חלונית פרטי משתמש -->
+  <div id="user-panel" class="user-panel">
+    <h4>פרטי משתמש</h4>
+    <label>שם:<br><input type="text" id="user-name"></label><br>
+    <label>מייל:<br><input type="email" id="user-email" readonly></label><br>
+    <label>טלפון:<br><input type="text" id="user-phone" placeholder="05XXXXXXXX"></label><br>
+    <button id="save-user">שמור</button>
+    <button id="view-orders">צפה בהיסטוריה</button>
+  </div>
+
+  <!-- לשוניות -->
+  <div class="menu-tabs">
+    <div class="tab active" data-target="insideout-rolls">Inside-out Rolls</div>
+    <div class="tab" data-target="maki-rolls">Maki Rolls</div>
+    <div class="tab" data-target="onigiri-rolls">Onigiri</div>
+    <div class="tab" data-target="poke-rolls">Poke</div>
+    <div class="tab" data-target="sauces-container">רטבים</div>
   </div>
 
   <main>
-    <section id="insideout-rolls-section" class="tab-content active">
-      <div class="category-title">Inside-Out Rolls</div>
+    <section id="menu">
       <div id="insideout-rolls" class="category-container"></div>
-    </section>
-
-    <section id="maki-rolls-section" class="tab-content">
-      <div class="category-title">Maki Rolls</div>
       <div id="maki-rolls" class="category-container"></div>
-    </section>
-
-    <section id="onigiri-rolls-section" class="tab-content">
-      <div class="category-title">Onigiri</div>
       <div id="onigiri-rolls" class="category-container"></div>
-    </section>
-
-    <section id="poke-rolls-section" class="tab-content">
-      <div class="category-title">Poke</div>
       <div id="poke-rolls" class="category-container"></div>
     </section>
 
-    <section id="sauces-section" class="tab-content">
-      <div class="category-title">רטבים</div>
+    <section id="sauces">
       <div id="sauces-container" class="category-container"></div>
       <p class="note">כל רול מקבל 2 רטבים חינם. רוטב נוסף עולה 3₪.</p>
     </section>
-
-    <section id="chopsticks-section">
+    
+    <section id="chopsticks">
       <div class="category-title">כמות צ'ופסטיקס</div>
       <div class="quantity-control">
         <button id="chopsticks-minus">−</button>
@@ -70,16 +65,14 @@
 
     <section id="pickup-section">
       <div class="category-title">בחר שעת איסוף</div>
-      <select id="pickup-time">
-        <option value="">בחר שעה</option>
-      </select>
+      <select id="pickup-time"><option value="">בחר שעה</option></select>
       <p class="note small" id="pickup-note"></p>
     </section>
 
     <section id="summary-section">
       <div class="category-title">סיכום הזמנה</div>
       <pre id="order-summary">הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.</pre>
-      <button id="send-order">התחבר / שלח הזמנה</button>
+      <button id="send-order">שלח הזמנה</button>
     </section>
 
     <div id="messages" aria-live="polite"></div>
