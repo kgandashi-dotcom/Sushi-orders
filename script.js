@@ -66,6 +66,21 @@ const saucesData = [
 ];
 
 // ----------------- UI בנייה -----------------
+function $id(id){ return document.getElementById(id); }
+function showMessage(txt,isError=true){
+  const m = $id('messages');
+  m.textContent = txt;
+  m.style.color = isError ? '#b71c1c':'#2a7a2a';
+  setTimeout(()=>{ if(m.textContent===txt)m.textContent=''; },6000);
+}
+function generateUUID(){
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){
+    const r=Math.random()*16|0, v=c==='x'?r:(r&0x3|0x8);
+    return v.toString(16);
+  });
+}
+
+
 function createRollCard(item,containerId){
   const container=$id(containerId);
   const card=document.createElement('div');
