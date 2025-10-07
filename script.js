@@ -1,10 +1,13 @@
 /* ================== CONFIG ================== */
+/* TODO: החלף את הערכים הבאים ברשומות שלך לפני הפעלת האתר */
 const SUPABASE_URL = 'https://oxjokdjwdvmmdtcvqvon.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94am9rZGp3ZHZtbWR0Y3Zxdm9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzgwMzMsImV4cCI6MjA3NDY1NDAzM30.DmKp79UiPi9iOU50UutevdqRcPyREMUJ7NT5ZmBHDsg';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-const GOOGLE_CLIENT_ID = '962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com';
+const SUPABASE_KEY = 'YOUR_SUPABASE_KEY_HERE'; // <-- TODO: הכנס את מפתח ה-API של Supabase
+const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE'; // <-- TODO: הכנס את Google OAuth client id
 const MAKE_WEBHOOK_URL = 'https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r';
+
+const supabase = typeof supabase !== 'undefined' && supabase.createClient
+  ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
 
 /* ================== STORAGE / STATE ================== */
 let bookedTimes = JSON.parse(localStorage.getItem('bookedTimes') || '[]');
@@ -12,43 +15,43 @@ let dailyRollCount = JSON.parse(localStorage.getItem('dailyRollCount') || '{}');
 let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 let chopsticksCount = 1;
 let selectedRolls = {};
-let selectedSauces = {};
+let selectedSauces = {}; // {sauceId: qty}
 
-/* ================== MENU DATA ================== */
+/* ================== MENU DATA (מלא) ================== */
 const insideOutRollsData = [
-  {id:"bingo", name:"רול בינגו - 50₪", description:"סלמון נא, שמנת, אבוקדו בציפוי שומשום קלוי", price:50},
-  {id:"luna", name:"רול לונה - 50₪", description:"ספייסי סלמון אפוי על רול בטטה, אבוקדו ושיטאקי", price:50},
-  {id:"belgian", name:"רול ריי - 55₪", description:"טרטר ספייסי טונה נא על רול מלפפון, עירית ואושינקו", price:55},
-  {id:"crazy-bruno", name:"רול קרייזי ברונו - 60₪", description:"דג לבן, טונה, סלמון בציפוי שומשום קלוי", price:60},
-  {id:"happy-bruno", name:"רול האפי ברונו - 60₪", description:"סלמון בציפוי שקדים קלויים ורוטב טריאקי", price:60},
-  {id:"mila", name:"רול מילה - 50₪", description:"בטטה, עירית ואבוקדו בעיטוף סלמון צרוב", price:50},
-  {id:"newton", name:"רול ניוטון - 55₪", description:"טונה אדומה, אבוקדו, בטטה בציפוי פנקו ורוטב בוטנים", price:55},
-  {id:"oli", name:"רול אולי - 50₪", description:"דג לבן, מלפפון, אבוקדו בציפוי שומשום", price:50},
-  {id:"milli", name:"רול מילי - 50₪", description:"מקל סורימי, דג לבן אפוי, אושינקו בציפוי פנקו", price:50},
-  {id:"scar", name:"רול סקאר - 50₪", description:"ספייסי סלמון אפוי עם אבוקדו, מלפפון ובטטה בעיטור מיונז וצ’יפס", price:50},
-  {id:"magi", name:"רול מגי🌱 - 40₪", description:"מלפפון, בטטה, עירית ואבוקדו בעיטור בטטה ורוטב בוטנים", price:40},
-  {id:"tyson", name:"רול טייסון וקיילה - 50₪", description:"סלמון נא, קנפיו, בטטה בעיטוף שבבי פנקו סגול", price:50},
-  {id:"lucy", name:"רול לוסי - 55₪", description:"סלמון נא, פטריות שיטאקי ואושינקו בציפוי טוביקו", price:55},
-  {id:"billy", name:"רול בילי - 50₪", description:"דג לבן צרוב, עירית, בטטה מצופה בפנקו", price:50},
-  {id:"lucky", name:"רול לאקי - 50₪", description:"טרטר ספייסי סלמון עם אבוקדו, מלפפון ועירית", price:50}
+  {id:"bingo", name:"רול בינגו", description:"סלמון נא, שמנת, אבוקדו בציפוי שומשום קלוי", price:50},
+  {id:"luna", name:"רול לונה", description:"ספייסי סלמון אפוי על רול בטטה, אבוקדו ושיטאקי", price:50},
+  {id:"belgian", name:"רול ריי", description:"טרטר ספייסי טונה נא על רול מלפפון, עירית ואושינקו", price:55},
+  {id:"crazy-bruno", name:"רול קרייזי ברונו", description:"דג לבן, טונה, סלמון בציפוי שומשום קלוי", price:60},
+  {id:"happy-bruno", name:"רול האפי ברונו", description:"סלמון בציפוי שקדים קלויים ורוטב טריאקי", price:60},
+  {id:"mila", name:"רול מילה", description:"בטטה, עירית ואבוקדו בעיטוף סלמון צרוב", price:50},
+  {id:"newton", name:"רול ניוטון", description:"טונה אדומה, אבוקדו, בטטה בציפוי פנקו ורוטב בוטנים", price:55},
+  {id:"oli", name:"רול אולי", description:"דג לבן, מלפפון, אבוקדו בציפוי שומשום", price:50},
+  {id:"milli", name:"רול מילי", description:"מקל סורימי, דג לבן אפוי, אושינקו בציפוי פנקו", price:50},
+  {id:"scar", name:"רול סקאר", description:"ספייסי סלמון אפוי עם אבוקדו, מלפפון ובטטה בעיטור מיונז וצ'יפס", price:50},
+  {id:"magi", name:"רול מגי🌱", description:"מלפפון, בטטה, עירית ואבוקדו בעיטור בטטה ורוטב בוטנים", price:40},
+  {id:"tyson", name:"רול טייסון וקיילה", description:"סלמון נא, קנפיו, בטטה בעיטוף שבבי פנקו סגול", price:50},
+  {id:"lucy", name:"רול לוסי", description:"סלמון נא, פטריות שיטאקי ואושינקו בציפוי טוביקו", price:55},
+  {id:"billy", name:"רול בילי", description:"דג לבן צרוב, עירית, בטטה מצופה בפנקו", price:50},
+  {id:"lucky", name:"רול לאקי", description:"טרטר ספייסי סלמון עם אבוקדו, מלפפון ועירית", price:50}
 ];
 
 const makiRollsData = [
-  {id:"alfi", name:"רול אלפי - 35₪", description:"מאקי סלמון", price:35},
-  {id:"maymay", name:"רול מיי מיי🌱 - 25₪", description:"מאקי בטטה ואבוקדו", price:25},
-  {id:"snoopy", name:"רול סנופי🌱 - 25₪", description:"מאקי אושינקו וקנפיו", price:25}
+  {id:"alfi", name:"רול אלפי", description:"מאקי סלמון", price:35},
+  {id:"maymay", name:"רול מיי מיי🌱", description:"מאקי בטטה ואבוקדו", price:25},
+  {id:"snoopy", name:"רול סנופי🌱", description:"מאקי אושינקו וקנפיו", price:25}
 ];
 
 const onigiriData = [
-  {id:"rocky", name:"אוניגירי רוקי - 35₪", description:"טרטר טונה אדומה עם ספייסי מיונז ובצל ירוק", price:35},
-  {id:"johnny", name:"אוניגירי ג׳וני - 30₪", description:"טרטר סלמון עם ספייסי מיונז ובצל ירוק", price:30},
-  {id:"gisel", name:"אוניגירי ג׳יזל🌱 - 25₪", description:"אבוקדו ובטטה", price:25}
+  {id:"rocky", name:"אוניגירי רוקי", description:"טרטר טונה אדומה עם ספייסי מיונז ובצל ירוק", price:35},
+  {id:"johnny", name:"אוניגירי ג׳וני", description:"טרטר סלמון עם ספייסי מיונז ובצל ירוק", price:30},
+  {id:"gisel", name:"אוניגירי ג׳יזל🌱", description:"אבוקדו ובטטה", price:25}
 ];
 
 const pokeData = [
-  {id:"dog", name:"בול-דוג - 60₪", description:"אורז סושי, סלמון במרינדה, אדממה, מלפפון, אבוקדו, בצל ירוק. מעל שומשום ורוטב ספייסי מיונז", price:60},
-  {id:"pit", name:"פיט-בול - 70₪", description:"אורז סושי, טונה במרינדה, אדממה, מנגו, כרוב סגול, פטריות שיטאקי. מעל בצל שאלוט מטוגן ורוטב אננס מתוק", price:70},
-  {id:"trir", name:"בול-טרייר🌱 - 45₪", description:"אורז סושי, אדממה, מלפפון, פטריות שיטאקי, גזר ואבוקדו. מעל שומשום ורוטב בוטנים", price:45}
+  {id:"dog", name:"בול-דוג", description:"אורז סושי, סלמון במרינדה, אדממה, מלפפון, אבוקדו, בצל ירוק. מעל שומשום ורוטב ספייסי מיונז", price:60},
+  {id:"pit", name:"פיט-בול", description:"אורז סושי, טונה במרינדה, אדממה, מנגו, כרוב סגול, פטריות שיטאקי. מעל בצל שאלוט מטוגן ורוטב אננס מתוק", price:70},
+  {id:"trir", name:"בול-טרייר🌱", description:"אורז סושי, אדממה, מלפפון, פטריות שיטאקי, גזר ואבוקדו. מעל שומשום ורוטב בוטנים", price:45}
 ];
 
 const saucesData = [
@@ -64,12 +67,12 @@ function $id(id){ return document.getElementById(id); }
 function showMessage(txt,isError=true){
   const m = $id('messages');
   m.textContent = txt;
-  m.style.color = isError ? '#b71c1c':'#2a7a2a';
+  m.style.color = isError ? '#b71c1c' : '#2a7a2a';
   setTimeout(()=>{ if(m.textContent===txt) m.textContent=''; },6000);
 }
 function generateUUID(){
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){
-    const r=Math.random()*16|0, v=c==='x'?r:(r&0x3|0x8);
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
+    const r = Math.random()*16|0; const v = c==='x'? r : (r&0x3|0x8);
     return v.toString(16);
   });
 }
@@ -78,70 +81,77 @@ function generateUUID(){
 function createRollCard(item, containerId){
   const container = $id(containerId);
   const card = document.createElement('div');
-  card.className='roll-card';
-  card.dataset.id=item.id;
-  card.dataset.price=item.price;
+  card.className = 'roll-card';
+  card.dataset.id = item.id;
+  card.dataset.price = item.price;
+
   const info = document.createElement('div');
-  info.className='info';
-  info.innerHTML=`<h3>${item.name}</h3><p>${item.description}</p>`;
+  info.className = 'info';
+  info.innerHTML = `<h3>${item.name} — ${item.price}₪</h3><p>${item.description}</p>`;
+
   const controls = document.createElement('div');
-  controls.className='quantity-control';
-  const btnMinus = document.createElement('button'); btnMinus.textContent='−';
-  const inputQty = document.createElement('input'); inputQty.type='number';
-  inputQty.value=selectedRolls[item.id]||0; inputQty.readOnly=true;
-  const btnPlus = document.createElement('button'); btnPlus.textContent='+';
+  controls.className = 'quantity-control';
+  const btnMinus = document.createElement('button'); btnMinus.textContent = '−';
+  const inputQty = document.createElement('input'); inputQty.type='number'; inputQty.readOnly=true; inputQty.value = selectedRolls[item.id]||0;
+  const btnPlus = document.createElement('button'); btnPlus.textContent = '+';
+
   btnPlus.addEventListener('click', ()=>{
-    selectedRolls[item.id] = (selectedRolls[item.id]||0)+1;
+    selectedRolls[item.id] = (selectedRolls[item.id]||0) + 1;
     inputQty.value = selectedRolls[item.id];
     updateSummary();
   });
   btnMinus.addEventListener('click', ()=>{
-    if((selectedRolls[item.id]||0)>0){
+    if((selectedRolls[item.id]||0) > 0){
       selectedRolls[item.id]--;
       inputQty.value = selectedRolls[item.id];
       updateSummary();
     }
   });
-  controls.append(btnMinus,inputQty,btnPlus);
-  card.append(info,controls);
+
+  controls.append(btnMinus, inputQty, btnPlus);
+  card.append(info, controls);
   container.appendChild(card);
 }
 
 function createSauceCard(item){
   const container = $id('sauces-container');
   const card = document.createElement('div');
-  card.className='roll-card';
-  card.dataset.id=item.id;
-  card.dataset.price=item.price;
+  card.className = 'roll-card';
+  card.dataset.id = item.id;
+  card.dataset.price = item.price;
+
   const info = document.createElement('div');
-  info.className='info';
-  info.innerHTML=`<h3>${item.name}</h3><p>2 חינם לכל רול — מעבר לכך ${item.price}₪</p>`;
+  info.className = 'info';
+  info.innerHTML = `<h3>${item.name}</h3><p>2 חינם לכל רול — מעבר לכך ${item.price}₪</p>`;
+
   const controls = document.createElement('div');
-  controls.className='quantity-control';
-  const btnMinus = document.createElement('button'); btnMinus.textContent='−';
-  const inputQty = document.createElement('input'); inputQty.type='number';
-  inputQty.value=selectedSauces[item.id]||0; inputQty.readOnly=true;
-  const btnPlus = document.createElement('button'); btnPlus.textContent='+';
+  controls.className = 'quantity-control';
+  const btnMinus = document.createElement('button'); btnMinus.textContent = '−';
+  const inputQty = document.createElement('input'); inputQty.type='number'; inputQty.readOnly=true; inputQty.value = selectedSauces[item.id] || 0;
+  const btnPlus = document.createElement('button'); btnPlus.textContent = '+';
+
   btnPlus.addEventListener('click', ()=>{
-    selectedSauces[item.id] = (selectedSauces[item.id]||0)+1;
+    selectedSauces[item.id] = (selectedSauces[item.id]||0) + 1;
     inputQty.value = selectedSauces[item.id];
     updateSummary();
   });
   btnMinus.addEventListener('click', ()=>{
-    if((selectedSauces[item.id]||0)>0){
+    if((selectedSauces[item.id]||0) > 0){
       selectedSauces[item.id]--;
       inputQty.value = selectedSauces[item.id];
       updateSummary();
     }
   });
-  controls.append(btnMinus,inputQty,btnPlus);
-  card.append(info,controls);
+
+  controls.append(btnMinus, inputQty, btnPlus);
+  card.append(info, controls);
   container.appendChild(card);
 }
 
 function initMenu(){
   ['insideout-rolls','maki-rolls','onigiri-rolls','poke-rolls','sauces-container'].forEach(id=>{
-    const el=$id(id); if(el) el.innerHTML='';
+    const el = $id(id);
+    if(el) el.innerHTML = '';
   });
   insideOutRollsData.forEach(r=>createRollCard(r,'insideout-rolls'));
   makiRollsData.forEach(r=>createRollCard(r,'maki-rolls'));
@@ -160,7 +170,7 @@ function initPickupTimes(){
       const label = `${String(h).padStart(2,'0')}:${m===0?'00':'30'}`;
       if(bookedTimes.includes(label)) continue;
       const opt = document.createElement('option');
-      opt.value=label; opt.textContent=label;
+      opt.value = label; opt.textContent = label;
       sel.appendChild(opt);
     }
   }
@@ -168,140 +178,343 @@ function initPickupTimes(){
 }
 
 /* ================== SUMMARY ================== */
-function computeSummary(){
-  let total=0, totalRolls=0;
-  const rollsLines=[];
-  const all=[...insideOutRollsData,...makiRollsData,...onigiriData,...pokeData];
+function computeSummaryObject(){
+  const all = [...insideOutRollsData,...makiRollsData,...onigiriData,...pokeData];
+  let total = 0;
+  let totalRolls = 0;
+  const rolls = [];
+
   for(const id in selectedRolls){
-    const qty = selectedRolls[id]||0;
+    const qty = selectedRolls[id] || 0;
     if(qty>0){
-      const item = all.find(x=>x.id===id);
-      rollsLines.push(`${item.name} x${qty} — ${item.price*qty}₪`);
-      total += item.price*qty;
+      const item = all.find(x=>x.id === id);
+      if(!item) continue;
+      rolls.push({id:item.id, name:item.name, qty, lineTotal: item.price * qty, unitPrice: item.price});
+      total += item.price * qty;
       totalRolls += qty;
     }
   }
-  let sauceLines=[], usedSaucesCount=0;
+
+  let sauces = [];
+  let usedSaucesCount = 0;
   for(const id in selectedSauces){
-    const qty = selectedSauces[id]||0;
+    const qty = selectedSauces[id] || 0;
     if(qty>0){
       const s = saucesData.find(x=>x.id===id);
-      sauceLines.push(`${s.name} x${qty}`);
+      sauces.push({id:s.id, name:s.name, qty, unitPrice: s.price});
       usedSaucesCount += qty;
     }
   }
-  const extra = Math.max(0, usedSaucesCount-(totalRolls*2));
-  const extraSauceCost = extra*3;
+
+  const freeSauces = totalRolls * 2;
+  const extraSauces = Math.max(0, usedSaucesCount - freeSauces);
+  // charge extra sauces proportionally (simplest: each extra costs 3₪; total)
+  const extraSauceCost = extraSauces * 3;
   total += extraSauceCost;
-  return {rollsLines,sauceLines,totalRolls,usedSaucesCount,extra,extraSauceCost,total};
+
+  return { rolls, sauces, totalRolls, usedSaucesCount, freeSauces, extraSauces, extraSauceCost, total };
 }
 
 function updateSummary(){
-  const s = computeSummary();
+  const s = computeSummaryObject();
   let text = `הזמנה חדשה:\n\n`;
-  text += s.rollsLines.length ? s.rollsLines.join('\n')+'\n\n' : '(לא נבחרו רולים)\n\n';
+  if(s.rolls.length){
+    s.rolls.forEach(r => text += `${r.name} x${r.qty} — ${r.lineTotal}₪\n`);
+    text += '\n';
+  } else {
+    text += `(לא נבחרו רולים)\n\n`;
+  }
+
   text += 'רטבים:\n';
-  text += s.sauceLines.length ? s.sauceLines.join('\n')+'\n' : '(לא נבחרו רטבים)\n';
-  if(s.extra>0) text += `\nעלות רטבים נוספים: ${s.extra} × 3₪ = ${s.extraSauceCost}₪\n`;
+  if(s.sauces.length){
+    s.sauces.forEach(su => text += `${su.name} x${su.qty}\n`);
+  } else {
+    text += '(לא נבחרו רטבים)\n';
+  }
+
+  if(s.extraSauces>0){
+    text += `\nעלות רטבים נוספים: ${s.extraSauces} × 3₪ = ${s.extraSauceCost}₪\n`;
+  }
+
   text += `\nכמות צ'ופסטיקס: ${chopsticksCount}\n`;
-  const notes=$id('notes').value.trim();
-  if(notes) text+=`\nהערות: ${notes}\n`;
+  const notes = $id('notes').value.trim();
+  if(notes) text += `\nהערות: ${notes}\n`;
   const pickup = $id('pickup-time').value;
   text += `\nשעת איסוף: ${pickup || '(לא נבחרה)'}\n`;
-  if(currentUser) text+=`\nלקוח: ${currentUser.name} (${currentUser.email||currentUser.phone||'אורח'})\n`;
+  if(currentUser) text += `\nלקוח: ${currentUser.name} (${currentUser.email||currentUser.phone||'אורח'})\n`;
   text += `\nסה"כ לתשלום: ${s.total}₪\n`;
-  $id('order-summary').textContent=text;
-  $id('send-order').disabled = !(s.totalRolls>0 && !!pickup);
+
+  $id('order-summary').textContent = text;
+  $id('send-order').disabled = !(s.totalRolls > 0 && !!pickup);
 }
 
-/* ================== INIT ================== */
-window.addEventListener('DOMContentLoaded', ()=>{
-  const today = new Date().toISOString().slice(0,10);
-  if(localStorage.getItem('lastResetDate')!==today){
-    bookedTimes=[]; dailyRollCount={};
-    localStorage.setItem('bookedTimes',JSON.stringify(bookedTimes));
-    localStorage.setItem('dailyRollCount',JSON.stringify(dailyRollCount));
-    localStorage.setItem('lastResetDate',today);
-  }
-  initMenu(); initPickupTimes(); updateSummary(); updateAuthUI();
-  const firstTab=document.querySelectorAll('.tab')[0]; if(firstTab) firstTab.click();
-  document.querySelectorAll('.modal').forEach(modal=>{
-    modal.addEventListener('click', (e)=>{ if(e.target===modal) modal.style.display='none'; });
-  });
+/* ================== TABS, CHOPSTICKS, INPUTS ================== */
+document.addEventListener('click', (e)=>{
+  // generic for dynamic buttons if needed
 });
 
-/* ================== TABS ================== */
 document.querySelectorAll('.tab').forEach(tab=>{
   tab.addEventListener('click', ()=>{
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     tab.classList.add('active');
     ['insideout-rolls','maki-rolls','onigiri-rolls','poke-rolls'].forEach(id=>{
-      const el=$id(id); if(el) el.style.display='none';
+      const el = $id(id);
+      if(!el) return;
+      el.style.display = (id === tab.dataset.target) ? 'flex' : 'none';
     });
-    const t = tab.dataset.target; if(t && $id(t)) $id(t).style.display='flex';
+    // sauces is on aside so don't hide it
   });
 });
 
-/* ================== CHOPSTICKS ================== */
-$id('chopsticks-minus').addEventListener('click',()=>{ if(chopsticksCount>1) chopsticksCount--; $id('chopsticks-qty').value=chopsticksCount; updateSummary(); });
-$id('chopsticks-plus').addEventListener('click',()=>{ chopsticksCount++; $id('chopsticks-qty').value=chopsticksCount; updateSummary(); });
-$id('pickup-time').addEventListener('change',updateSummary);
-$id('notes').addEventListener('input',updateSummary);
+$id('chopsticks-minus').addEventListener('click', ()=>{ if(chopsticksCount>1) chopsticksCount--; $id('chopsticks-qty').value = chopsticksCount; updateSummary(); });
+$id('chopsticks-plus').addEventListener('click', ()=>{ chopsticksCount++; $id('chopsticks-qty').value = chopsticksCount; updateSummary(); });
+$id('pickup-time').addEventListener('change', updateSummary);
+$id('notes').addEventListener('input', updateSummary);
 
 /* ================== AUTH & PROFILE ================== */
-function openModal(modalId){ const m=$id(modalId); if(m){ m.style.display='flex'; m.setAttribute('aria-hidden','false'); } }
-function closeModal(modalId){ const m=$id(modalId); if(m){ m.style.display='none'; m.setAttribute('aria-hidden','true'); } }
+function openModal(id){ const m = $id(id); if(m){ m.style.display = 'flex'; m.setAttribute('aria-hidden','false'); } }
+function closeModal(id){ const m = $id(id); if(m){ m.style.display = 'none'; m.setAttribute('aria-hidden','true'); } }
 
 $id('profile-btn').addEventListener('click', ()=>{
   if(!currentUser){
     google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, ux_mode:'popup' });
-    google.accounts.id.prompt(); return;
+    google.accounts.id.prompt();
+    return;
   }
   openModal('profile-modal');
-  $id('user-name').value=currentUser.name||'';
-  $id('user-email').value=currentUser.email||'';
-  $id('user-phone').value=currentUser.phone||'';
+  $id('user-name').value = currentUser.name || '';
+  $id('user-email').value = currentUser.email || '';
+  $id('user-phone').value = currentUser.phone || '';
 });
 
-$id('close-profile').addEventListener('click',()=>closeModal('profile-modal'));
+$id('close-profile').addEventListener('click', ()=> closeModal('profile-modal'));
+
 $id('auth-btn').addEventListener('click', ()=>{
-  if(currentUser){ currentUser=null; localStorage.removeItem('currentUser'); updateAuthUI(); showMessage('התנתקת',false); closeModal('profile-modal'); return; }
+  if(currentUser){
+    // logout
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    updateAuthUI();
+    showMessage('התנתקת', false);
+    return;
+  }
   google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, ux_mode:'popup' });
   google.accounts.id.prompt();
 });
-function handleCredentialResponse(response){
+
+window.handleCredentialResponse = function(response){
   try{
     const decoded = jwt_decode(response.credential);
-    currentUser = { name:decoded.name||decoded.given_name||'', email:decoded.email||'', googleId:decoded.sub };
-    localStorage.setItem('currentUser',JSON.stringify(currentUser));
-    updateAuthUI(); showMessage(`שלום ${currentUser.name}`,false);
-  }catch(e){ showMessage('כשל בזיהוי'); }
-}
+    currentUser = { name: decoded.name || decoded.given_name || '', email: decoded.email || '', phone: '' };
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    updateAuthUI();
+    showMessage(`שלום ${currentUser.name}`, false);
+    // show profile for editing phone
+    openModal('profile-modal');
+    $id('user-name').value = currentUser.name || '';
+    $id('user-email').value = currentUser.email || '';
+    $id('user-phone').value = currentUser.phone || '';
+  } catch(e){
+    console.error(e);
+    showMessage('שגיאה בזיהוי Google', true);
+  }
+};
+
+$id('save-user').addEventListener('click', ()=>{
+  if(!currentUser) currentUser = {};
+  currentUser.name = $id('user-name').value.trim();
+  currentUser.phone = $id('user-phone').value.trim();
+  // simple phone validation
+  if(currentUser.phone && !/^05\d{8}$/.test(currentUser.phone)){
+    showMessage('פורמט טלפון אינו תקין (05XXXXXXXX)', true);
+    return;
+  }
+  localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  closeModal('profile-modal');
+  updateAuthUI();
+  showMessage('פרטי משתמש נשמרו', false);
+  updateSummary();
+});
+
+$id('logout-btn').addEventListener('click', ()=>{
+  currentUser = null;
+  localStorage.removeItem('currentUser');
+  updateAuthUI();
+  closeModal('profile-modal');
+  showMessage('התנתקת', false);
+});
+
+/* update auth UI */
 function updateAuthUI(){
+  const authBtn = $id('auth-btn');
+  const profileBtn = $id('profile-btn');
   if(currentUser){
-    $id('auth-btn').textContent='התנתק';
-    $id('profile-btn').style.display='inline-block';
+    authBtn.textContent = 'התנתק';
+    profileBtn.style.display = 'inline-block';
   } else {
-    $id('auth-btn').textContent='כניסה';
-    $id('profile-btn').style.display='none';
+    authBtn.textContent = 'התחבר';
+    profileBtn.style.display = 'inline-block';
   }
 }
 
-/* ================== SEND ORDER ================== */
-$id('send-order').addEventListener('click', async ()=>{
-  const s = computeSummary();
-  if(s.totalRolls===0){ showMessage('לא נבחרו רולים'); return; }
-  const pickupTime=$id('pickup-time').value;
-  if(!pickupTime){ showMessage('יש לבחור שעת איסוף'); return; }
-  bookedTimes.push(pickupTime);
-  localStorage.setItem('bookedTimes',JSON.stringify(bookedTimes));
+/* ================== SEND FLOW ================== */
+$id('send-order').addEventListener('click', ()=> {
+  // open modal offering login vs guest if not logged in
+  if(!currentUser){
+    openModal('send-choice-modal');
+    return;
+  }
+  // otherwise perform send
+  performSend();
+});
+
+$id('guest-btn').addEventListener('click', ()=> openModal('send-choice-modal'));
+$id('cancel-send').addEventListener('click', ()=> closeModal('send-choice-modal'));
+$id('continue-login').addEventListener('click', ()=> {
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, ux_mode:'popup' });
+  google.accounts.id.prompt();
+});
+$id('continue-guest').addEventListener('click', ()=> {
+  $id('guest-phone-row').style.display = 'block';
+});
+$id('guest-send-confirm').addEventListener('click', async ()=>{
+  const phone = $id('guest-phone').value.trim();
+  if(!/^05\d{8}$/.test(phone)){ showMessage('אנא הכנס טלפון תקין (05XXXXXXXX)', true); return; }
+  const prevUser = currentUser;
+  currentUser = { name: 'אורח', email: '', phone };
+  await performSend();
+  currentUser = prevUser;
+  closeModal('send-choice-modal');
+});
+
+async function performSend(){
+  const s = computeSummaryObject();
+  if(s.totalRolls === 0){ showMessage('יש לבחור לפחות רול אחד', true); return; }
+  const pickup = $id('pickup-time').value;
+  if(!pickup){ showMessage('יש לבחור שעת איסוף', true); return; }
+
+  // daily limit check
+  const today = new Date().toISOString().slice(0,10);
+  const todayCount = dailyRollCount[today] || 0;
+  if(todayCount + s.totalRolls > 15){
+    showMessage(`לא ניתן להזמין — הושגו כבר ${todayCount} רולים היום (מקסימום 15).`, true);
+    return;
+  }
+
+  if(bookedTimes.includes(pickup)){ showMessage('השעה תפוסה, בחר שעה אחרת', true); initPickupTimes(); return; }
+
+  const orderUUID = generateUUID();
+  const payload = {
+    id: orderUUID,
+    timestamp: new Date().toISOString(),
+    user: currentUser || { name: 'אורח', email:'', phone: '' },
+    pickupTime: pickup,
+    chopsticks: chopsticksCount,
+    notes: $id('notes').value.trim(),
+    rolls: s.rolls,
+    sauces: s.sauces,
+    summary: $id('order-summary').textContent,
+    total: s.total
+  };
+
   try{
-    await fetch(MAKE_WEBHOOK_URL,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({order:s, user:currentUser}) });
-    showMessage('הזמנה נשלחה בהצלחה!',false);
-    selectedRolls={}; selectedSauces={}; chopsticksCount=1;
-    $id('chopsticks-qty').value=chopsticksCount;
-    $id('notes').value='';
-    $id('pickup-time').value='';
-    initMenu(); initPickupTimes(); updateSummary();
-  } catch(e){ showMessage('שגיאה בשליחת ההזמנה'); }
+    // send to Make webhook
+    await fetch(MAKE_WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+
+    // insert to Supabase if available
+    if(supabase && SUPABASE_KEY && SUPABASE_KEY !== 'YOUR_SUPABASE_KEY_HERE'){
+      const { error } = await supabase.from('orders').insert({
+        id: payload.id,
+        created_at: payload.timestamp,
+        user_name: payload.user.name,
+        user_email: payload.user.email || '',
+        user_phone: payload.user.phone || '',
+        pickup_time: payload.pickupTime,
+        notes: payload.notes,
+        rolls: payload.rolls,
+        sauces: payload.sauces,
+        chopsticks_count: payload.chopsticks,
+        total: payload.total,
+        summary: payload.summary
+      });
+      if(error){ console.error('Supabase insert error', error); showMessage('שגיאה בשמירה ל-DB', true); return; }
+    } else {
+      console.warn('Supabase מנותב כ-undefined או מפתח לא הוזן - דילוג על שמירה ב-DB');
+    }
+
+    // update local booked times and daily counts
+    bookedTimes.push(pickup);
+    localStorage.setItem('bookedTimes', JSON.stringify(bookedTimes));
+    dailyRollCount[today] = (dailyRollCount[today] || 0) + s.totalRolls;
+    localStorage.setItem('dailyRollCount', JSON.stringify(dailyRollCount));
+
+    showMessage('ההזמנה נשלחה ונשמרה בהצלחה!', false);
+
+    // reset selection
+    selectedRolls = {};
+    selectedSauces = {};
+    chopsticksCount = 1;
+    $id('chopsticks-qty').value = 1;
+    $id('notes').value = '';
+    $id('pickup-time').value = '';
+
+    initMenu();
+    initPickupTimes();
+    updateSummary();
+
+  } catch(err){
+    console.error(err);
+    showMessage('שגיאה בשליחת ההזמנה', true);
+  }
+}
+
+/* ================== HISTORY VIEW ================== */
+$id('view-orders')?.addEventListener('click', async ()=>{
+  if(!currentUser || (!currentUser.email && !currentUser.phone)){ showMessage('אין פרטי משתמש כדי למצוא היסטוריה', true); return; }
+  openModal('history-modal');
+  $id('orders-list').textContent = 'טוען…';
+  if(!supabase || SUPABASE_KEY === 'YOUR_SUPABASE_KEY_HERE'){ $id('orders-list').textContent = 'אין חיבור ל-Supabase (מפתח לא הוזן).'; return; }
+  try{
+    let query = supabase.from('orders').select('*').order('created_at', { ascending: false });
+    if(currentUser.email) query = query.eq('user_email', currentUser.email);
+    else query = query.eq('user_phone', currentUser.phone);
+    const { data, error } = await query;
+    if(error){ console.error(error); $id('orders-list').textContent = 'שגיאה בטעינת ההיסטוריה'; return; }
+    if(!data || data.length===0){ $id('orders-list').textContent = 'אין הזמנות קודמות'; return; }
+    $id('orders-list').textContent = data.map(o => `${o.created_at}\n${o.summary}`).join('\n\n—–\n\n');
+  } catch(e){
+    console.error(e); $id('orders-list').textContent = 'שגיאה בטעינת ההיסטוריה';
+  }
+});
+$id('close-history').addEventListener('click', ()=> closeModal('history-modal'));
+
+/* ================== INIT / UTIL ================== */
+window.addEventListener('DOMContentLoaded', ()=>{
+  // daily reset
+  const today = new Date().toISOString().slice(0,10);
+  if(localStorage.getItem('lastResetDate') !== today){
+    bookedTimes = [];
+    dailyRollCount = {};
+    localStorage.setItem('bookedTimes', JSON.stringify(bookedTimes));
+    localStorage.setItem('dailyRollCount', JSON.stringify(dailyRollCount));
+    localStorage.setItem('lastResetDate', today);
+  } else {
+    bookedTimes = JSON.parse(localStorage.getItem('bookedTimes') || '[]');
+    dailyRollCount = JSON.parse(localStorage.getItem('dailyRollCount') || '{}');
+    currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+  }
+
+  initMenu();
+  initPickupTimes();
+  updateSummary();
+  updateAuthUI();
+
+  // default show first tab
+  const firstTab = document.querySelectorAll('.tab')[0];
+  if(firstTab) firstTab.click();
+
+  // close modals on outside click
+  document.querySelectorAll('.modal').forEach(modal=>{
+    modal.addEventListener('click', (e)=>{ if(e.target === modal) modal.style.display = 'none'; });
+  });
 });
