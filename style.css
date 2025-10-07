@@ -88,7 +88,6 @@ h1 {
 .btn.primary { background: var(--accent); color: #fff; }
 .btn.secondary { background: #fff; color: var(--accent); border: 1px solid #ddd; }
 .btn.danger { background: var(--danger); color: #fff; }
-.btn.plain { background: transparent; color: #555; border: 1px solid #eee; }
 
 /* Layout main */
 main {
