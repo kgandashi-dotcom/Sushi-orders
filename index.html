@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>תפריט רולים — SUSHI</title>
+  <title>הזמנת רולים — SUSHI</title>
 
   <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
@@ -15,32 +15,33 @@
   <header>
     <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
     <h1>תפריט רולים — SUSHI</h1>
-    <div class="user-controls">
+    <div class="user-buttons">
       <button id="login-btn">התחבר</button>
       <button id="guest-btn">שלח כאורח</button>
       <button id="profile-btn">פרופיל</button>
+      <button id="logout-btn">התנתק</button>
     </div>
   </header>
 
+  <div id="profile-section" class="hidden">
+    <pre id="profile-info"></pre>
+  </div>
+
   <nav class="tabs">
-    <button class="tab-link active" data-target="insideout-rolls">Inside-out Rolls</button>
-    <button class="tab-link" data-target="maki-rolls">Maki Rolls</button>
-    <button class="tab-link" data-target="onigiri-rolls">Onigiri</button>
-    <button class="tab-link" data-target="poke-rolls">Poke</button>
-    <button class="tab-link" data-target="sauces-container">רטבים</button>
+    <button class="tab-btn active" data-target="insideout-rolls">Inside-out Rolls</button>
+    <button class="tab-btn" data-target="maki-rolls">Maki Rolls</button>
+    <button class="tab-btn" data-target="onigiri-rolls">Onigiri</button>
+    <button class="tab-btn" data-target="poke-rolls">Poke</button>
+    <button class="tab-btn" data-target="sauces-container">רטבים</button>
   </nav>
 
   <main>
     <section id="menu">
-      <div class="category-container" id="insideout-rolls"></div>
-      <div class="category-container" id="maki-rolls"></div>
-      <div class="category-container" id="onigiri-rolls"></div>
-      <div class="category-container" id="poke-rolls"></div>
-    </section>
-
-    <section id="sauces">
-      <div class="category-container" id="sauces-container"></div>
-      <p class="note">כל רול מקבל 2 רטבים חינם. רוטב נוסף עולה 3₪.</p>
+      <div id="insideout-rolls" class="category-container"></div>
+      <div id="maki-rolls" class="category-container hidden"></div>
+      <div id="onigiri-rolls" class="category-container hidden"></div>
+      <div id="poke-rolls" class="category-container hidden"></div>
+      <div id="sauces-container" class="category-container hidden"></div>
     </section>
 
     <section id="chopsticks">
@@ -69,12 +70,6 @@
       <div class="category-title">סיכום הזמנה</div>
       <pre id="order-summary">הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.</pre>
       <button id="send-order">שלח הזמנה</button>
-    </section>
-
-    <section id="profile-section" class="hidden">
-      <h3>פרופיל משתמש</h3>
-      <p id="profile-info"></p>
-      <button id="logout-btn">התנתק</button>
     </section>
 
     <div id="messages" aria-live="polite"></div>
