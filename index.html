@@ -1,125 +1,137 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>סושי אונליין</title>
-<link rel="stylesheet" href="styles.css">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>סושי אונליין — הזמנות</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- External libs -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
 <body>
+  <div class="container">
 
-<header class="container">
-  <div class="brand-left">
-    <img src="logo.png" alt="לוגו סושי" class="logo">
-    <h1>סושי אונליין</h1>
-  </div>
-  <div class="brand-right">
-    <nav class="menu-tabs" role="navigation" aria-label="תפריט קטגוריות">
-      <button class="tab active" data-target="insideout-rolls">Inside-out</button>
-      <button class="tab" data-target="maki-rolls">Maki</button>
-      <button class="tab" data-target="onigiri-rolls">Onigiri</button>
-      <button class="tab" data-target="poke-rolls">Poke</button>
-      <button class="tab" data-target="sauces-container">רטבים</button>
-    </nav>
-    <div class="user-actions">
-      <button id="profile-btn" class="btn secondary">פרופיל</button>
-      <button id="auth-btn" class="btn primary">התחבר</button>
-    </div>
-  </div>
-</header>
-
-<main class="container">
-  <section id="menu-area">
-    <div id="insideout-rolls" class="category-container"></div>
-    <div id="maki-rolls" class="category-container" style="display:none;"></div>
-    <div id="onigiri-rolls" class="category-container" style="display:none;"></div>
-    <div id="poke-rolls" class="category-container" style="display:none;"></div>
-  </section>
-
-  <aside id="side-area">
-    <section class="panel" id="sauces-section">
-      <div class="panel-title">רטבים</div>
-      <div id="sauces-container" class="category-container"></div>
-      <p class="note">כל רול מקבל 2 רטבים חינם. רוטב נוסף 3₪.</p>
-    </section>
-
-    <section class="panel">
-      <div class="panel-title">כמות צ'ופסטיקס</div>
-      <div class="quantity-control">
-        <button id="chopsticks-minus">−</button>
-        <input id="chopsticks-qty" type="number" readonly value="1">
-        <button id="chopsticks-plus">+</button>
+    <header class="site-header">
+      <div class="brand-left">
+        <img src="logo.png" alt="לוגו" class="logo">
+        <h1>סושי אונליין</h1>
       </div>
-    </section>
 
-    <section class="panel">
-      <div class="panel-title">בחר שעת איסוף</div>
-      <select id="pickup-time"><option value="">בחר שעה</option></select>
-      <p class="note small" id="pickup-note"></p>
-    </section>
+      <div class="brand-right">
+        <nav class="menu-tabs" role="navigation" aria-label="תפריט קטגוריות">
+          <button class="tab active" data-target="insideout-rolls">Inside-out</button>
+          <button class="tab" data-target="maki-rolls">Maki</button>
+          <button class="tab" data-target="onigiri-rolls">Onigiri</button>
+          <button class="tab" data-target="poke-rolls">Poke</button>
+          <button class="tab" data-target="sauces-container">רטבים</button>
+        </nav>
 
-    <section class="panel">
-      <div class="panel-title">הערות אישיות</div>
-      <textarea id="notes" placeholder="לדוגמה: ללא גלוטן, הגעה בשער 3..."></textarea>
-    </section>
-
-    <section class="panel">
-      <div class="panel-title">סיכום הזמנה</div>
-      <pre id="order-summary">הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.</pre>
-      <div class="actions-row">
-        <button id="send-order" class="btn primary">שלח הזמנה</button>
-        <button id="guest-btn" class="btn secondary">שלח כאורח</button>
+        <div class="user-actions">
+          <button id="profile-btn" class="btn secondary">פרופיל</button>
+          <button id="auth-btn" class="btn primary">התחבר</button>
+        </div>
       </div>
-    </section>
+    </header>
 
-    <div id="messages" aria-live="polite"></div>
-  </aside>
-</main>
+    <main>
+      <section id="menu-area">
+        <div id="insideout-rolls" class="category-container"></div>
+        <div id="maki-rolls" class="category-container" style="display:none;"></div>
+        <div id="onigiri-rolls" class="category-container" style="display:none;"></div>
+        <div id="poke-rolls" class="category-container" style="display:none;"></div>
+      </section>
 
-<!-- מודאל פרופיל -->
-<div class="modal" id="profile-modal">
-  <div class="modal-content">
-    <h3>פרטי משתמש</h3>
-    <label>שם</label>
-    <input id="user-name" type="text">
-    <label>אימייל</label>
-    <input id="user-email" type="email" readonly>
-    <label>טלפון</label>
-    <input id="user-phone" type="text" placeholder="05XXXXXXXX">
-    <div class="actions-row">
-      <button id="save-user" class="btn primary">שמור</button>
-      <button id="logout-btn" class="btn danger">התנתק</button>
-      <button id="close-profile" class="btn secondary">סגור</button>
+      <aside id="side-area">
+        <section id="sauces-section" class="panel">
+          <div class="panel-title">רטבים</div>
+          <div id="sauces-container" class="category-container"></div>
+          <p class="note">כל רול מקבל 2 רטבים חינם. רוטב נוסף 3₪.</p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">כמות צ'ופסטיקס</div>
+          <div class="quantity-control">
+            <button id="chopsticks-minus">−</button>
+            <input id="chopsticks-qty" type="number" readonly value="1">
+            <button id="chopsticks-plus">+</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">בחר שעת איסוף</div>
+          <select id="pickup-time"><option value="">בחר שעה</option></select>
+          <p class="note small" id="pickup-note"></p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">הערות אישיות</div>
+          <textarea id="notes" placeholder="לדוגמה: ללא גלוטן, הגעה בשער 3..."></textarea>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">סיכום הזמנה</div>
+          <pre id="order-summary">הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.</pre>
+          <div class="actions-row">
+            <button id="send-order" class="btn primary">שלח הזמנה</button>
+            <button id="guest-btn" class="btn secondary">שלח כאורח</button>
+            <button id="view-orders" class="btn plain">הצג היסטוריה</button>
+          </div>
+        </section>
+
+        <div id="messages" aria-live="polite"></div>
+      </aside>
+    </main>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="modal" aria-hidden="true">
+      <div class="modal-content">
+        <h3>פרטי משתמש</h3>
+        <label>שם <input id="user-name" type="text"></label>
+        <label>אימייל <input id="user-email" type="email" readonly></label>
+        <label>טלפון <input id="user-phone" type="text" placeholder="05XXXXXXXX"></label>
+        <div class="actions-row">
+          <button id="save-user" class="btn primary">שמור</button>
+          <button id="logout-btn" class="btn danger">התנתק</button>
+          <button id="close-profile" class="btn secondary">סגור</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- מודאל היסטוריה -->
-<div class="modal" id="history-modal">
-  <div class="modal-content">
-    <h3>היסטוריית הזמנות</h3>
-    <pre id="orders-list">טוען…</pre>
-    <button id="close-history" class="btn secondary">סגור</button>
-  </div>
-</div>
-
-<!-- מודאל בחירה בין אורח או התחברות -->
-<div class="modal" id="send-choice-modal">
-  <div class="modal-content">
-    <h3>שליחת הזמנה</h3>
-    <button id="continue-login" class="btn primary">התחבר</button>
-    <button id="continue-guest" class="btn secondary">שלח כאורח</button>
-    <div id="guest-phone-row" style="display:none;">
-      <label>טלפון (05XXXXXXXX)</label>
-      <input id="guest-phone" type="text">
-      <button id="guest-send-confirm" class="btn primary">שלח</button>
+    <!-- Send choice modal -->
+    <div id="send-choice-modal" class="modal" aria-hidden="true">
+      <div class="modal-content">
+        <h3>שליחת הזמנה</h3>
+        <div class="actions-row">
+          <button id="continue-login" class="btn primary">המשך עם Google</button>
+          <button id="continue-guest" class="btn secondary">שלח כאורח</button>
+          <button id="cancel-send" class="btn plain">ביטול</button>
+        </div>
+        <div id="guest-phone-row" style="display:none; margin-top:12px;">
+          <label>טלפון אורח <input id="guest-phone" type="text" placeholder="05XXXXXXXX"></label>
+          <button id="guest-send-confirm" class="btn primary">שלח</button>
+        </div>
+      </div>
     </div>
-    <button id="cancel-send" class="btn secondary">בטל</button>
-  </div>
-</div>
 
-<script src="script.js"></script>
+    <!-- History Modal -->
+    <div id="history-modal" class="modal" aria-hidden="true">
+      <div class="modal-content">
+        <h3>היסטוריית הזמנות</h3>
+        <pre id="orders-list">טוען…</pre>
+        <div class="actions-row">
+          <button id="close-history" class="btn secondary">סגור</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- App script -->
+  <script src="script.js"></script>
 </body>
 </html>
