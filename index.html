@@ -858,10 +858,10 @@ function setupSendOrder() {
           });
           totalPrice += extraSauces * 3;
 
-          const orderData = {
-            user_name: currentUser.name,
-            email: currentUser.email,
-            phone: currentUser.phone,
+const orderData = {
+  user_name: orderUser.name,
+  email: orderUser.email,
+  phone: orderUser.phone,
             order_date: new Date().toISOString().split('T')[0],
             pickup_time: pickupTime,
             items: JSON.stringify(orderItems),
