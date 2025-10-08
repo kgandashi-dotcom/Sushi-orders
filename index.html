@@ -413,7 +413,12 @@
     // ========================================
 
     function initGoogleAuth() {
-      window.google?.accounts?.id?.initialize({
+  if (!window.google?.accounts?.id) {
+    console.log('Google OAuth לא נטען עדיין');
+    setTimeout(initGoogleAuth, 500);
+    return;
+  }
+  window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: handleGoogleLogin
       });
