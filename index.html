@@ -819,132 +819,129 @@ const PREP_TIME_PER_ROLL = 10;
     // ========================================
     // שליחת הזמנה
     // ========================================
-
 function setupSendOrder() {
-  document.getElementById('send-order').addEventListener('click', async () => {
+  document.getElementById('send-order').addEventListener('click', async function() {
     let orderUser = currentUser;
     
     if (!currentUser) {
-  // הזמנה כאורח
-  const guestName = prompt('שם מלא:');
-  if (!guestName || guestName.trim() === '') {
-    showMessage('חייב להזין שם', 'red');
-    return;
-  }
-  
-  const contactInfo = prompt('הזן מספר טלפון או אימייל:');
-  if (!contactInfo || contactInfo.trim() === '') {
-    showMessage('חייב להזין פרטי יצירת קשר', 'red');
-    return;
-  }
-  
-  // בדיקה אם זה אימייל או טלפון
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const phoneRegex = /^0(5[0-9]|[2-4]|[8-9])\d{7}$/;
-  
-  let guestEmail = '';
-  let guestPhone = '';
-  
-  if (emailRegex.test(contactInfo.trim())) {
-    // זה אימייל
-    guestEmail = contactInfo.trim();
-    guestPhone = 'לא סופק';
-  } else if (phoneRegex.test(contactInfo.replace(/[-\s]/g, ''))) {
-    // זה טלפון
-    guestPhone = contactInfo.replace(/[-\s]/g, '');
-    guestEmail = `guest_${Date.now()}@temp.com`;
-  } else {
-    showMessage('פורמט לא תקין! הזן אימייל (example@mail.com) או טלפון (0501234567)', 'red');
-    return;
-  }
-  
-  orderUser = {
-    name: guestName.trim(),
-    phone: guestPhone,
-    email: guestEmail
-  };
-}
-
-        const pickupTime = document.getElementById('pickup-time').value;
-        if (!pickupTime) {
-          showMessage('נא לבחור שעת איסוף', 'red');
-          return;
-        }
-
-        const totalRolls = Object.values(orderItems).reduce((a,b) => a+b, 0);
-        if (totalRolls === 0) {
-          showMessage('עליך לבחור לפחות רול אחד', 'red');
-          return;
-        }
-
-        if (totalRolls > 15) {
-          showMessage('לא ניתן להזמין יותר מ־15 רולים ביום', 'red');
-          return;
-        }
-
-        try {
-          // חישוב מחיר
-          const totalSauces = Object.values(sauceSelections).reduce((a,b) => a+b, 0);
-          const freeSauces = totalRolls * 2;
-          const extraSauces = Math.max(0, totalSauces - freeSauces);
-          
-          let totalPrice = 0;
-          Object.keys(orderItems).forEach(key => {
-            const [category, idx] = key.split('_');
-            const item = menuData[category][parseInt(idx)];
-            totalPrice += item.price * orderItems[key];
-          });
-          totalPrice += extraSauces * 3;
-const summaryText = document.getElementById('order-summary').textContent;
-
-c
-const orderData = {
-  user_name: orderUser.name,
-  email: orderUser.email,
-  phone: orderUser.phone,
-            order_date: new Date().toISOString().split('T')[0],
-            pickup_time: pickupTime,
-            items: JSON.stringify(orderItems),
-            sauces: JSON.stringify(sauceSelections),
-            chopsticks: chopsticksCount,
-            notes: document.getElementById('notes').value,
-            total_price: totalPrice,
-            total_rolls: totalRolls,
-            items_summary: summaryText
-          };
-
-          // שמירה ב-Supabase
-          if (!supabase) {
-  showMessage('Supabase לא מחובר - בדוק את ההגדרות', 'red');
-  return;
-}
-
-const { error: dbError } = await supabase
-  .from('Sushi')
-  .insert([orderData]);
-
-if (dbError) throw dbError;
-
-          // שליחה ל-Make.com
-          await fetch(MAKE_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
-          });
-
-          showMessage('✅ ההזמנה נשלחה בהצלחה!', 'green');
-          
-          // איפוס טופס
-          resetOrder();
-          
-          // רענון שעות
-          await loadExistingOrders();
-
-        } catch (err) {
-          showMessage('❌ שגיאה בשליחת ההזמנה: ' + err.message, 'red');
-        }
-      });
+      const guestName = prompt('שם מלא:');
+      if (!guestName || guestName.trim() === '') {
+        showMessage('חייב להזין שם', 'red');
+        return;
+      }
+      
+      const contactInfo = prompt('הזן מספר טלפון או אימייל:');
+      if (!contactInfo || contactInfo.trim() === '') {
+        showMessage('חייב להזין פרטי יצירת קשר', 'red');
+        return;
+      }
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phoneRegex = /^0(5[0-9]|[2-4]|[8-9])\d{7}$/;
+      
+      let guestEmail = '';
+      let guestPhone = '';
+      
+      if (emailRegex.test(contactInfo.trim())) {
+        guestEmail = contactInfo.trim();
+        guestPhone = 'לא סופק';
+      } else if (phoneRegex.test(contactInfo.replace(/[-\s]/g, ''))) {
+        guestPhone = contactInfo.replace(/[-\s]/g, '');
+        guestEmail = 'guest_' + Date.now() + '@temp.com';
+      } else {
+        showMessage('פורמט לא תקין! הזן אימייל (example@mail.com) או טלפון (0501234567)', 'red');
+        return;
+      }
+      
+      orderUser = {
+        name: guestName.trim(),
+        phone: guestPhone,
+        email: guestEmail
+      };
     }
+
+    const pickupTime = document.getElementById('pickup-time').value;
+    if (!pickupTime) {
+      showMessage('נא לבחור שעת איסוף', 'red');
+      return;
+    }
+
+    let totalRolls = 0;
+    for (let key in orderItems) {
+      totalRolls += orderItems[key];
+    }
+
+    if (totalRolls === 0) {
+      showMessage('עליך לבחור לפחות רול אחד', 'red');
+      return;
+    }
+
+    if (totalRolls > 15) {
+      showMessage('לא ניתן להזמין יותר מ־15 רולים ביום', 'red');
+      return;
+    }
+
+    try {
+      let totalSauces = 0;
+      for (let key in sauceSelections) {
+        totalSauces += sauceSelections[key];
+      }
+
+      const freeSauces = totalRolls * 2;
+      const extraSauces = Math.max(0, totalSauces - freeSauces);
+      
+      let totalPrice = 0;
+      for (let key in orderItems) {
+        const parts = key.split('_');
+        const category = parts[0];
+        const idx = parseInt(parts[1]);
+        const item = menuData[category][idx];
+        totalPrice += item.price * orderItems[key];
+      }
+      totalPrice += extraSauces * 3;
+
+      const summaryText = document.getElementById('order-summary').textContent;
+
+      const orderData = {
+        user_name: orderUser.name,
+        email: orderUser.email,
+        phone: orderUser.phone,
+        order_date: new Date().toISOString().split('T')[0],
+        pickup_time: pickupTime,
+        items: JSON.stringify(orderItems),
+        sauces: JSON.stringify(sauceSelections),
+        chopsticks: chopsticksCount,
+        notes: document.getElementById('notes').value,
+        total_price: totalPrice,
+        total_rolls: totalRolls,
+        items_summary: summaryText
+      };
+
+      if (!supabase) {
+        showMessage('Supabase לא מחובר - בדוק את ההגדרות', 'red');
+        return;
+      }
+
+      const result = await supabase.from('Sushi').insert([orderData]);
+
+      if (result.error) throw result.error;
+
+      await fetch(MAKE_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+
+      showMessage('✅ ההזמנה נשלחה בהצלחה!', 'green');
+      
+      resetOrder();
+      await loadExistingOrders();
+
+    } catch (err) {
+      showMessage('❌ שגיאה בשליחת ההזמנה: ' + err.message, 'red');
+    }
+  });
+}
 
     // ========================================
     // איפוס הזמנה
