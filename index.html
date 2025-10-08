@@ -99,12 +99,32 @@ const GOOGLE_CLIENT_ID='962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googl
 let currentUser=null, chopsticksCount=1, selectedRolls={};
 
 // ================== DATA ==================
-const insideOutRollsData=[{id:"bingo",name:"רול בינגו - 50₪",description:"סלמון נא, שמנת, אבוקדו בציפוי שומשום קלוי",price:50},{id:"luna",name:"רול לונה - 50₪",description:"ספייסי סלמון אפוי על רול בטטה, אבוקדו ושיטאקי",price:50}]; // מלא את כל הרולים פה כמו בקוד המקורי
-const makiRollsData=[{id:"alfi",name:"רול אלפי - 35₪",description:"מאקי סלמון",price:35}];
-const onigiriData=[{id:"rocky",name:"אוניגירי רוקי - 35₪",description:"טרטר טונה אדומה עם ספייסי מיונז ובצל ירוק",price:35}];
-const pokeData=[{id:"dog",name:"בול-דוג - 60₪",description:"אורז סושי, סלמון במרינדה, אדממה, מלפפון, אבוקדו, בצל ירוק. מעל שומשום ורוטב ספייסי מיונז",price:60}];
-const oshizushiData=[{id:"oshi1",name:"אושי-סושי 1 - 55₪",description:"תיאור אושי 1",price:55}];
-const saucesData=[{id:"spicy-mayo",name:"ספייסי מיונז"},{id:"teriyaki",name:"טריאקי"},{id:"ginger-wasabi",name:"ג'ינג'ר וואסאבי"}];
+const insideOutRollsData=[
+  {id:"bingo",name:"רול בינגו - 50₪",description:"סלמון נא, שמנת, אבוקדו בציפוי שומשום קלוי",price:50},
+  {id:"luna",name:"רול לונה - 50₪",description:"ספייסי סלמון אפוי על רול בטטה, אבוקדו ושיטאקי",price:50},
+  {id:"dragon",name:"רול דרגון - 55₪",description:"טייגר רול עם סלמון, אבוקדו, שמנת",price:55}
+];
+const makiRollsData=[
+  {id:"alfi",name:"רול אלפי - 35₪",description:"מאקי סלמון",price:35},
+  {id:"veggie",name:"רול ירקות - 30₪",description:"מאקי עם ירקות טריים",price:30}
+];
+const onigiriData=[
+  {id:"rocky",name:"אוניגירי רוקי - 35₪",description:"טרטר טונה אדומה עם ספייסי מיונז ובצל ירוק",price:35},
+  {id:"salmon",name:"אוניגירי סלמון - 30₪",description:"אוניגירי עם סלמון נא",price:30}
+];
+const pokeData=[
+  {id:"dog",name:"בול-דוג - 60₪",description:"אורז סושי, סלמון במרינדה, אדממה, מלפפון, אבוקדו, בצל ירוק. מעל שומשום ורוטב ספייסי מיונז",price:60},
+  {id:"tuna",name:"בול-טונה - 65₪",description:"טונה אדומה, אבוקדו, אדממה, מלפפון, רוטב סויה",price:65}
+];
+const oshizushiData=[
+  {id:"oshi1",name:"אושי-סושי 1 - 55₪",description:"סלמון, אורז, אבוקדו בצורת אושי",price:55},
+  {id:"oshi2",name:"אושי-סושי 2 - 60₪",description:"טונה אדומה, אורז, ירקות טריים",price:60}
+];
+const saucesData=[
+  {id:"spicy-mayo",name:"ספייסי מיונז"},
+  {id:"teriyaki",name:"טריאקי"},
+  {id:"ginger-wasabi",name:"ג'ינג'ר וואסאבי"}
+];
 
 // ================== INITIALIZATION ==================
 function populateRolls(){
