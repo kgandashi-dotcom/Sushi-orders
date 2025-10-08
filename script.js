@@ -1,11 +1,12 @@
 /* ================== CONFIG ================== */
-/* TODO: החלף את הערכים הבאים ברשומות שלך לפני הפעלת האתר */
+/* TODO: החלף את הערכים הבאים במפתחות שלך אם אתה רוצה שימוש ב-Supabase ו-Google Sign-In */
 const SUPABASE_URL = 'https://oxjokdjwdvmmdtcvqvon.supabase.co';
-const SUPABASE_KEY = 'YOUR_SUPABASE_KEY_HERE'; // <-- TODO: הכנס את מפתח ה-API של Supabase
-const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE'; // <-- TODO: הכנס את Google OAuth client id
+const SUPABASE_KEY = 'YOUR_SUPABASE_KEY_HERE'; // <-- הכנס כאן את המפתח שלך או השאר מחרוזת ריקה כדי לדלג על שמירה ב-DB
+const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE'; // <-- הכנס כאן את Google OAuth Client ID או השאר ריק
 const MAKE_WEBHOOK_URL = 'https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r';
 
-const supabase = typeof supabase !== 'undefined' && supabase.createClient
+/* supabase client (אם זמין) */
+const supabase = (typeof supabase !== 'undefined' && SUPABASE_KEY && SUPABASE_KEY !== 'YOUR_SUPABASE_KEY_HERE')
   ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
   : null;
 
@@ -14,10 +15,10 @@ let bookedTimes = JSON.parse(localStorage.getItem('bookedTimes') || '[]');
 let dailyRollCount = JSON.parse(localStorage.getItem('dailyRollCount') || '{}');
 let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 let chopsticksCount = 1;
-let selectedRolls = {};
-let selectedSauces = {}; // {sauceId: qty}
+let selectedRolls = {};   // { rollId: qty }
+let selectedSauces = {};  // { sauceId: qty }
 
-/* ================== MENU DATA (מלא) ================== */
+/* ================== DATA (מלא) ================== */
 const insideOutRollsData = [
   {id:"bingo", name:"רול בינגו", description:"סלמון נא, שמנת, אבוקדו בציפוי שומשום קלוי", price:50},
   {id:"luna", name:"רול לונה", description:"ספייסי סלמון אפוי על רול בטטה, אבוקדו ושיטאקי", price:50},
@@ -64,15 +65,16 @@ const saucesData = [
 
 /* ================== HELPERS ================== */
 function $id(id){ return document.getElementById(id); }
-function showMessage(txt,isError=true){
+function showMessage(txt, isError = true){
   const m = $id('messages');
+  if(!m) return;
   m.textContent = txt;
   m.style.color = isError ? '#b71c1c' : '#2a7a2a';
-  setTimeout(()=>{ if(m.textContent===txt) m.textContent=''; },6000);
+  setTimeout(()=>{ if(m.textContent === txt) m.textContent = ''; }, 6000);
 }
 function generateUUID(){
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
-    const r = Math.random()*16|0; const v = c==='x'? r : (r&0x3|0x8);
+    const r = Math.random()*16|0; const v = c === 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
 }
@@ -80,6 +82,7 @@ function generateUUID(){
 /* ================== RENDER MENU ================== */
 function createRollCard(item, containerId){
   const container = $id(containerId);
+  if(!container) return;
   const card = document.createElement('div');
   card.className = 'roll-card';
   card.dataset.id = item.id;
@@ -91,17 +94,24 @@ function createRollCard(item, containerId){
 
   const controls = document.createElement('div');
   controls.className = 'quantity-control';
-  const btnMinus = document.createElement('button'); btnMinus.textContent = '−';
-  const inputQty = document.createElement('input'); inputQty.type='number'; inputQty.readOnly=true; inputQty.value = selectedRolls[item.id]||0;
-  const btnPlus = document.createElement('button'); btnPlus.textContent = '+';
+
+  const btnMinus = document.createElement('button');
+  btnMinus.textContent = '−';
+  const inputQty = document.createElement('input');
+  inputQty.type = 'number';
+  inputQty.readOnly = true;
+  inputQty.value = selectedRolls[item.id] || 0;
+  const btnPlus = document.createElement('button');
+  btnPlus.textContent = '+';
 
   btnPlus.addEventListener('click', ()=>{
-    selectedRolls[item.id] = (selectedRolls[item.id]||0) + 1;
+    selectedRolls[item.id] = (selectedRolls[item.id] || 0) + 1;
     inputQty.value = selectedRolls[item.id];
     updateSummary();
   });
+
   btnMinus.addEventListener('click', ()=>{
-    if((selectedRolls[item.id]||0) > 0){
+    if((selectedRolls[item.id] || 0) > 0){
       selectedRolls[item.id]--;
       inputQty.value = selectedRolls[item.id];
       updateSummary();
@@ -115,6 +125,7 @@ function createRollCard(item, containerId){
 
 function createSauceCard(item){
   const container = $id('sauces-container');
+  if(!container) return;
   const card = document.createElement('div');
   card.className = 'roll-card';
   card.dataset.id = item.id;
@@ -127,21 +138,11 @@ function createSauceCard(item){
   const controls = document.createElement('div');
   controls.className = 'quantity-control';
   const btnMinus = document.createElement('button'); btnMinus.textContent = '−';
-  const inputQty = document.createElement('input'); inputQty.type='number'; inputQty.readOnly=true; inputQty.value = selectedSauces[item.id] || 0;
+  const inputQty = document.createElement('input'); inputQty.type = 'number'; inputQty.readOnly = true; inputQty.value = selectedSauces[item.id] || 0;
   const btnPlus = document.createElement('button'); btnPlus.textContent = '+';
 
-  btnPlus.addEventListener('click', ()=>{
-    selectedSauces[item.id] = (selectedSauces[item.id]||0) + 1;
-    inputQty.value = selectedSauces[item.id];
-    updateSummary();
-  });
-  btnMinus.addEventListener('click', ()=>{
-    if((selectedSauces[item.id]||0) > 0){
-      selectedSauces[item.id]--;
-      inputQty.value = selectedSauces[item.id];
-      updateSummary();
-    }
-  });
+  btnPlus.addEventListener('click', ()=>{ selectedSauces[item.id] = (selectedSauces[item.id] || 0) + 1; inputQty.value = selectedSauces[item.id]; updateSummary(); });
+  btnMinus.addEventListener('click', ()=>{ if((selectedSauces[item.id] || 0) > 0){ selectedSauces[item.id]--; inputQty.value = selectedSauces[item.id]; updateSummary(); } });
 
   controls.append(btnMinus, inputQty, btnPlus);
   card.append(info, controls);
@@ -153,24 +154,26 @@ function initMenu(){
     const el = $id(id);
     if(el) el.innerHTML = '';
   });
-  insideOutRollsData.forEach(r=>createRollCard(r,'insideout-rolls'));
-  makiRollsData.forEach(r=>createRollCard(r,'maki-rolls'));
-  onigiriData.forEach(r=>createRollCard(r,'onigiri-rolls'));
-  pokeData.forEach(r=>createRollCard(r,'poke-rolls'));
-  saucesData.forEach(s=>createSauceCard(s));
+  insideOutRollsData.forEach(r => createRollCard(r, 'insideout-rolls'));
+  makiRollsData.forEach(r => createRollCard(r, 'maki-rolls'));
+  onigiriData.forEach(r => createRollCard(r, 'onigiri-rolls'));
+  pokeData.forEach(r => createRollCard(r, 'poke-rolls'));
+  saucesData.forEach(s => createSauceCard(s));
 }
 
 /* ================== PICKUP TIMES ================== */
 function initPickupTimes(){
   const sel = $id('pickup-time');
+  if(!sel) return;
   sel.innerHTML = '<option value="">בחר שעה</option>';
-  for(let h=19; h<=22; h++){
-    for(let m of [0,30]){
-      if(h===22 && m>30) continue;
-      const label = `${String(h).padStart(2,'0')}:${m===0?'00':'30'}`;
+  for(let h = 19; h <= 22; h++){
+    for(const m of [0,30]){
+      if(h === 22 && m > 30) continue;
+      const label = `${String(h).padStart(2,'0')}:${m === 0 ? '00' : '30'}`;
       if(bookedTimes.includes(label)) continue;
       const opt = document.createElement('option');
-      opt.value = label; opt.textContent = label;
+      opt.value = label;
+      opt.textContent = label;
       sel.appendChild(opt);
     }
   }
@@ -179,36 +182,34 @@ function initPickupTimes(){
 
 /* ================== SUMMARY ================== */
 function computeSummaryObject(){
-  const all = [...insideOutRollsData,...makiRollsData,...onigiriData,...pokeData];
+  const all = [...insideOutRollsData, ...makiRollsData, ...onigiriData, ...pokeData];
   let total = 0;
   let totalRolls = 0;
   const rolls = [];
 
   for(const id in selectedRolls){
     const qty = selectedRolls[id] || 0;
-    if(qty>0){
-      const item = all.find(x=>x.id === id);
-      if(!item) continue;
-      rolls.push({id:item.id, name:item.name, qty, lineTotal: item.price * qty, unitPrice: item.price});
-      total += item.price * qty;
-      totalRolls += qty;
-    }
+    if(qty <= 0) continue;
+    const item = all.find(x => x.id === id);
+    if(!item) continue;
+    rolls.push({ id: item.id, name: item.name, qty, unitPrice: item.price, lineTotal: item.price * qty });
+    total += item.price * qty;
+    totalRolls += qty;
   }
 
-  let sauces = [];
+  const sauces = [];
   let usedSaucesCount = 0;
   for(const id in selectedSauces){
     const qty = selectedSauces[id] || 0;
-    if(qty>0){
-      const s = saucesData.find(x=>x.id===id);
-      sauces.push({id:s.id, name:s.name, qty, unitPrice: s.price});
-      usedSaucesCount += qty;
-    }
+    if(qty <= 0) continue;
+    const s = saucesData.find(x => x.id === id);
+    if(!s) continue;
+    sauces.push({ id: s.id, name: s.name, qty, unitPrice: s.price });
+    usedSaucesCount += qty;
   }
 
   const freeSauces = totalRolls * 2;
   const extraSauces = Math.max(0, usedSaucesCount - freeSauces);
-  // charge extra sauces proportionally (simplest: each extra costs 3₪; total)
   const extraSauceCost = extraSauces * 3;
   total += extraSauceCost;
 
@@ -222,7 +223,7 @@ function updateSummary(){
     s.rolls.forEach(r => text += `${r.name} x${r.qty} — ${r.lineTotal}₪\n`);
     text += '\n';
   } else {
-    text += `(לא נבחרו רולים)\n\n`;
+    text += '(לא נבחרו רולים)\n\n';
   }
 
   text += 'רטבים:\n';
@@ -232,74 +233,84 @@ function updateSummary(){
     text += '(לא נבחרו רטבים)\n';
   }
 
-  if(s.extraSauces>0){
+  if(s.extraSauces > 0){
     text += `\nעלות רטבים נוספים: ${s.extraSauces} × 3₪ = ${s.extraSauceCost}₪\n`;
   }
 
   text += `\nכמות צ'ופסטיקס: ${chopsticksCount}\n`;
-  const notes = $id('notes').value.trim();
+  const notes = $id('notes') ? $id('notes').value.trim() : '';
   if(notes) text += `\nהערות: ${notes}\n`;
-  const pickup = $id('pickup-time').value;
+
+  const pickup = $id('pickup-time') ? $id('pickup-time').value : '';
   text += `\nשעת איסוף: ${pickup || '(לא נבחרה)'}\n`;
-  if(currentUser) text += `\nלקוח: ${currentUser.name} (${currentUser.email||currentUser.phone||'אורח'})\n`;
+  if(currentUser) text += `\nלקוח: ${currentUser.name} (${currentUser.email || currentUser.phone || 'אורח'})\n`;
+
   text += `\nסה"כ לתשלום: ${s.total}₪\n`;
 
-  $id('order-summary').textContent = text;
-  $id('send-order').disabled = !(s.totalRolls > 0 && !!pickup);
+  if($id('order-summary')) $id('order-summary').textContent = text;
+  if($id('send-order')) $id('send-order').disabled = !(s.totalRolls > 0 && !!pickup);
 }
 
-/* ================== TABS, CHOPSTICKS, INPUTS ================== */
-document.addEventListener('click', (e)=>{
-  // generic for dynamic buttons if needed
-});
-
-document.querySelectorAll('.tab').forEach(tab=>{
-  tab.addEventListener('click', ()=>{
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');
-    ['insideout-rolls','maki-rolls','onigiri-rolls','poke-rolls'].forEach(id=>{
-      const el = $id(id);
-      if(!el) return;
-      el.style.display = (id === tab.dataset.target) ? 'flex' : 'none';
+/* ================== TABS & INPUTS ================== */
+function setupTabs(){
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      const target = tab.dataset.target;
+      ['insideout-rolls','maki-rolls','onigiri-rolls','poke-rolls'].forEach(id=>{
+        const el = $id(id);
+        if(!el) return;
+        el.style.display = (id === target) ? 'flex' : 'none';
+      });
+      // sauces are in aside — keep visible
     });
-    // sauces is on aside so don't hide it
   });
-});
+}
 
-$id('chopsticks-minus').addEventListener('click', ()=>{ if(chopsticksCount>1) chopsticksCount--; $id('chopsticks-qty').value = chopsticksCount; updateSummary(); });
-$id('chopsticks-plus').addEventListener('click', ()=>{ chopsticksCount++; $id('chopsticks-qty').value = chopsticksCount; updateSummary(); });
-$id('pickup-time').addEventListener('change', updateSummary);
-$id('notes').addEventListener('input', updateSummary);
+function setupChopsticks(){
+  $id('chopsticks-minus').addEventListener('click', ()=>{ if(chopsticksCount > 1) chopsticksCount--; $id('chopsticks-qty').value = chopsticksCount; updateSummary(); });
+  $id('chopsticks-plus').addEventListener('click', ()=>{ chopsticksCount++; $id('chopsticks-qty').value = chopsticksCount; updateSummary(); });
+  if($id('pickup-time')) $id('pickup-time').addEventListener('change', updateSummary);
+  if($id('notes')) $id('notes').addEventListener('input', updateSummary);
+}
 
 /* ================== AUTH & PROFILE ================== */
-function openModal(id){ const m = $id(id); if(m){ m.style.display = 'flex'; m.setAttribute('aria-hidden','false'); } }
-function closeModal(id){ const m = $id(id); if(m){ m.style.display = 'none'; m.setAttribute('aria-hidden','true'); } }
+function openModal(modalId){ const m = $id(modalId); if(m){ m.style.display = 'flex'; m.setAttribute('aria-hidden','false'); } }
+function closeModal(modalId){ const m = $id(modalId); if(m){ m.style.display = 'none'; m.setAttribute('aria-hidden','true'); } }
 
 $id('profile-btn').addEventListener('click', ()=>{
   if(!currentUser){
-    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, ux_mode:'popup' });
-    google.accounts.id.prompt();
+    if(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID_HERE'){
+      google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, ux_mode:'popup' });
+      google.accounts.id.prompt();
+    } else {
+      showMessage('אין Google Client ID – הורד להתחברות או שלח כאורח.', true);
+    }
     return;
   }
   openModal('profile-modal');
-  $id('user-name').value = currentUser.name || '';
-  $id('user-email').value = currentUser.email || '';
-  $id('user-phone').value = currentUser.phone || '';
+  if($id('user-name')) $id('user-name').value = currentUser.name || '';
+  if($id('user-email')) $id('user-email').value = currentUser.email || '';
+  if($id('user-phone')) $id('user-phone').value = currentUser.phone || '';
 });
 
 $id('close-profile').addEventListener('click', ()=> closeModal('profile-modal'));
 
 $id('auth-btn').addEventListener('click', ()=>{
   if(currentUser){
-    // logout
     currentUser = null;
     localStorage.removeItem('currentUser');
     updateAuthUI();
     showMessage('התנתקת', false);
     return;
   }
-  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, ux_mode:'popup' });
-  google.accounts.id.prompt();
+  if(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID_HERE'){
+    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, ux_mode:'popup' });
+    google.accounts.id.prompt();
+  } else {
+    showMessage('אין Google Client ID – אין אפשרות להתחבר באמצעות Google', true);
+  }
 });
 
 window.handleCredentialResponse = function(response){
@@ -309,14 +320,12 @@ window.handleCredentialResponse = function(response){
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
     updateAuthUI();
     showMessage(`שלום ${currentUser.name}`, false);
-    // show profile for editing phone
     openModal('profile-modal');
-    $id('user-name').value = currentUser.name || '';
-    $id('user-email').value = currentUser.email || '';
-    $id('user-phone').value = currentUser.phone || '';
+    if($id('user-name')) $id('user-name').value = currentUser.name || '';
+    if($id('user-email')) $id('user-email').value = currentUser.email || '';
   } catch(e){
     console.error(e);
-    showMessage('שגיאה בזיהוי Google', true);
+    showMessage('שגיאה בהתחברות Google', true);
   }
 };
 
@@ -324,7 +333,6 @@ $id('save-user').addEventListener('click', ()=>{
   if(!currentUser) currentUser = {};
   currentUser.name = $id('user-name').value.trim();
   currentUser.phone = $id('user-phone').value.trim();
-  // simple phone validation
   if(currentUser.phone && !/^05\d{8}$/.test(currentUser.phone)){
     showMessage('פורמט טלפון אינו תקין (05XXXXXXXX)', true);
     return;
@@ -344,39 +352,39 @@ $id('logout-btn').addEventListener('click', ()=>{
   showMessage('התנתקת', false);
 });
 
-/* update auth UI */
 function updateAuthUI(){
   const authBtn = $id('auth-btn');
   const profileBtn = $id('profile-btn');
   if(currentUser){
-    authBtn.textContent = 'התנתק';
-    profileBtn.style.display = 'inline-block';
+    if(authBtn) authBtn.textContent = 'התנתק';
+    if(profileBtn) profileBtn.style.display = 'inline-block';
   } else {
-    authBtn.textContent = 'התחבר';
-    profileBtn.style.display = 'inline-block';
+    if(authBtn) authBtn.textContent = 'התחבר';
+    if(profileBtn) profileBtn.style.display = 'inline-block';
   }
 }
 
-/* ================== SEND FLOW ================== */
+/* ================== SEND ORDER ================== */
 $id('send-order').addEventListener('click', ()=> {
-  // open modal offering login vs guest if not logged in
   if(!currentUser){
     openModal('send-choice-modal');
     return;
   }
-  // otherwise perform send
   performSend();
 });
 
 $id('guest-btn').addEventListener('click', ()=> openModal('send-choice-modal'));
 $id('cancel-send').addEventListener('click', ()=> closeModal('send-choice-modal'));
 $id('continue-login').addEventListener('click', ()=> {
-  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, ux_mode:'popup' });
-  google.accounts.id.prompt();
+  if(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID_HERE'){
+    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, ux_mode:'popup' });
+    google.accounts.id.prompt();
+  } else {
+    showMessage('אין Google Client ID', true);
+  }
 });
-$id('continue-guest').addEventListener('click', ()=> {
-  $id('guest-phone-row').style.display = 'block';
-});
+$id('continue-guest').addEventListener('click', ()=> { if($id('guest-phone-row')) $id('guest-phone-row').style.display = 'block'; });
+
 $id('guest-send-confirm').addEventListener('click', async ()=>{
   const phone = $id('guest-phone').value.trim();
   if(!/^05\d{8}$/.test(phone)){ showMessage('אנא הכנס טלפון תקין (05XXXXXXXX)', true); return; }
@@ -393,7 +401,6 @@ async function performSend(){
   const pickup = $id('pickup-time').value;
   if(!pickup){ showMessage('יש לבחור שעת איסוף', true); return; }
 
-  // daily limit check
   const today = new Date().toISOString().slice(0,10);
   const todayCount = dailyRollCount[today] || 0;
   if(todayCount + s.totalRolls > 15){
@@ -407,7 +414,7 @@ async function performSend(){
   const payload = {
     id: orderUUID,
     timestamp: new Date().toISOString(),
-    user: currentUser || { name: 'אורח', email:'', phone: '' },
+    user: currentUser || { name: 'אורח', email:'', phone:'' },
     pickupTime: pickup,
     chopsticks: chopsticksCount,
     notes: $id('notes').value.trim(),
@@ -418,12 +425,16 @@ async function performSend(){
   };
 
   try{
-    // send to Make webhook
-    await fetch(MAKE_WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    // send to Make webhook (best-effort)
+    try {
+      await fetch(MAKE_WEBHOOK_URL, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
+    } catch(e){
+      console.warn('Make webhook failed', e);
+    }
 
-    // insert to Supabase if available
-    if(supabase && SUPABASE_KEY && SUPABASE_KEY !== 'YOUR_SUPABASE_KEY_HERE'){
-      const { error } = await supabase.from('orders').insert({
+    // insert to Supabase if configured
+    if(supabase){
+      const { error } = await supabase.from('orders').insert([{
         id: payload.id,
         created_at: payload.timestamp,
         user_name: payload.user.name,
@@ -436,13 +447,11 @@ async function performSend(){
         chopsticks_count: payload.chopsticks,
         total: payload.total,
         summary: payload.summary
-      });
+      }]);
       if(error){ console.error('Supabase insert error', error); showMessage('שגיאה בשמירה ל-DB', true); return; }
-    } else {
-      console.warn('Supabase מנותב כ-undefined או מפתח לא הוזן - דילוג על שמירה ב-DB');
     }
 
-    // update local booked times and daily counts
+    // update local booked times & daily count
     bookedTimes.push(pickup);
     localStorage.setItem('bookedTimes', JSON.stringify(bookedTimes));
     dailyRollCount[today] = (dailyRollCount[today] || 0) + s.totalRolls;
@@ -450,13 +459,13 @@ async function performSend(){
 
     showMessage('ההזמנה נשלחה ונשמרה בהצלחה!', false);
 
-    // reset selection
+    // reset selections
     selectedRolls = {};
     selectedSauces = {};
     chopsticksCount = 1;
-    $id('chopsticks-qty').value = 1;
-    $id('notes').value = '';
-    $id('pickup-time').value = '';
+    if($id('chopsticks-qty')) $id('chopsticks-qty').value = 1;
+    if($id('notes')) $id('notes').value = '';
+    if($id('pickup-time')) $id('pickup-time').value = '';
 
     initMenu();
     initPickupTimes();
@@ -469,18 +478,18 @@ async function performSend(){
 }
 
 /* ================== HISTORY VIEW ================== */
-$id('view-orders')?.addEventListener('click', async ()=>{
+$id('view-orders').addEventListener('click', async ()=>{
   if(!currentUser || (!currentUser.email && !currentUser.phone)){ showMessage('אין פרטי משתמש כדי למצוא היסטוריה', true); return; }
   openModal('history-modal');
   $id('orders-list').textContent = 'טוען…';
-  if(!supabase || SUPABASE_KEY === 'YOUR_SUPABASE_KEY_HERE'){ $id('orders-list').textContent = 'אין חיבור ל-Supabase (מפתח לא הוזן).'; return; }
+  if(!supabase){ $id('orders-list').textContent = 'אין חיבור ל-Supabase (מפתח לא הוזן).'; return; }
   try{
     let query = supabase.from('orders').select('*').order('created_at', { ascending: false });
     if(currentUser.email) query = query.eq('user_email', currentUser.email);
     else query = query.eq('user_phone', currentUser.phone);
     const { data, error } = await query;
     if(error){ console.error(error); $id('orders-list').textContent = 'שגיאה בטעינת ההיסטוריה'; return; }
-    if(!data || data.length===0){ $id('orders-list').textContent = 'אין הזמנות קודמות'; return; }
+    if(!data || data.length === 0){ $id('orders-list').textContent = 'אין הזמנות קודמות'; return; }
     $id('orders-list').textContent = data.map(o => `${o.created_at}\n${o.summary}`).join('\n\n—–\n\n');
   } catch(e){
     console.error(e); $id('orders-list').textContent = 'שגיאה בטעינת ההיסטוריה';
@@ -488,7 +497,7 @@ $id('view-orders')?.addEventListener('click', async ()=>{
 });
 $id('close-history').addEventListener('click', ()=> closeModal('history-modal'));
 
-/* ================== INIT / UTIL ================== */
+/* ================== INIT ================== */
 window.addEventListener('DOMContentLoaded', ()=>{
   // daily reset
   const today = new Date().toISOString().slice(0,10);
@@ -508,8 +517,10 @@ window.addEventListener('DOMContentLoaded', ()=>{
   initPickupTimes();
   updateSummary();
   updateAuthUI();
+  setupTabs();
+  setupChopsticks();
 
-  // default show first tab
+  // default first tab show
   const firstTab = document.querySelectorAll('.tab')[0];
   if(firstTab) firstTab.click();
 
