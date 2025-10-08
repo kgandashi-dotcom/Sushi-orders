@@ -858,11 +858,16 @@
           };
 
           // שמירה ב-Supabase
-          const { error: dbError } = await supabase
-            .from('Sushi')
-            .insert([orderData]);
+          if (!supabase) {
+  showMessage('Supabase לא מחובר - בדוק את ההגדרות', 'red');
+  return;
+}
 
-          if (dbError) throw dbError;
+const { error: dbError } = await supabase
+  .from('Sushi')
+  .insert([orderData]);
+
+if (dbError) throw dbError;
 
           // שליחה ל-Make.com
           await fetch(MAKE_WEBHOOK_URL, {
