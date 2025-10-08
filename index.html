@@ -91,9 +91,12 @@
     <div id="profile-modal" class="modal" aria-hidden="true">
       <div class="modal-content">
         <h3>פרטי משתמש</h3>
-        <label>שם <input id="user-name" type="text"></label>
-        <label>אימייל <input id="user-email" type="email" readonly></label>
-        <label>טלפון <input id="user-phone" type="text" placeholder="05XXXXXXXX"></label>
+        <label>שם</label>
+        <input id="user-name" type="text">
+        <label>אימייל</label>
+        <input id="user-email" type="email" readonly>
+        <label>טלפון</label>
+        <input id="user-phone" type="text" placeholder="05XXXXXXXX">
         <div class="actions-row">
           <button id="save-user" class="btn primary">שמור</button>
           <button id="logout-btn" class="btn danger">התנתק</button>
@@ -112,7 +115,8 @@
           <button id="cancel-send" class="btn plain">ביטול</button>
         </div>
         <div id="guest-phone-row" style="display:none; margin-top:12px;">
-          <label>טלפון אורח <input id="guest-phone" type="text" placeholder="05XXXXXXXX"></label>
+          <label>טלפון אורח</label>
+          <input id="guest-phone" type="text" placeholder="05XXXXXXXX">
           <button id="guest-send-confirm" class="btn primary">שלח</button>
         </div>
       </div>
@@ -131,7 +135,6 @@
 
   </div>
 
-  <!-- App script -->
   <script src="script.js"></script>
 </body>
 </html>
