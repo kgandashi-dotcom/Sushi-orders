@@ -818,21 +818,45 @@ function setupSendOrder() {
     let orderUser = currentUser;
     
     if (!currentUser) {
-      // הזמנה כאורח
-      const guestName = prompt('שם מלא:');
-      if (!guestName) return;
-      
-      const guestPhone = prompt('מספר טלפון:');
-      if (!guestPhone) return;
-      
-      const guestEmail = prompt('אימייל (אופציונלי):') || `guest_${Date.now()}@temp.com`;
-      
-      orderUser = {
-        name: guestName,
-        phone: guestPhone,
-        email: guestEmail
-      };
-    }
+  // הזמנה כאורח
+  const guestName = prompt('שם מלא:');
+  if (!guestName || guestName.trim() === '') {
+    showMessage('חייב להזין שם', 'red');
+    return;
+  }
+  
+  const contactInfo = prompt('הזן מספר טלפון או אימייל:');
+  if (!contactInfo || contactInfo.trim() === '') {
+    showMessage('חייב להזין פרטי יצירת קשר', 'red');
+    return;
+  }
+  
+  // בדיקה אם זה אימייל או טלפון
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^0(5[0-9]|[2-4]|[8-9])\d{7}$/;
+  
+  let guestEmail = '';
+  let guestPhone = '';
+  
+  if (emailRegex.test(contactInfo.trim())) {
+    // זה אימייל
+    guestEmail = contactInfo.trim();
+    guestPhone = 'לא סופק';
+  } else if (phoneRegex.test(contactInfo.replace(/[-\s]/g, ''))) {
+    // זה טלפון
+    guestPhone = contactInfo.replace(/[-\s]/g, '');
+    guestEmail = `guest_${Date.now()}@temp.com`;
+  } else {
+    showMessage('פורמט לא תקין! הזן אימייל (example@mail.com) או טלפון (0501234567)', 'red');
+    return;
+  }
+  
+  orderUser = {
+    name: guestName.trim(),
+    phone: guestPhone,
+    email: guestEmail
+  };
+}
 
         const pickupTime = document.getElementById('pickup-time').value;
         if (!pickupTime) {
