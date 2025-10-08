@@ -806,12 +806,26 @@
     // שליחת הזמנה
     // ========================================
 
-    function setupSendOrder() {
-      document.getElementById('send-order').addEventListener('click', async () => {
-        if (!currentUser) {
-          showMessage('עליך להתחבר לפני שליחת הזמנה', 'red');
-          return;
-        }
+function setupSendOrder() {
+  document.getElementById('send-order').addEventListener('click', async () => {
+    let orderUser = currentUser;
+    
+    if (!currentUser) {
+      // הזמנה כאורח
+      const guestName = prompt('שם מלא:');
+      if (!guestName) return;
+      
+      const guestPhone = prompt('מספר טלפון:');
+      if (!guestPhone) return;
+      
+      const guestEmail = prompt('אימייל (אופציונלי):') || `guest_${Date.now()}@temp.com`;
+      
+      orderUser = {
+        name: guestName,
+        phone: guestPhone,
+        email: guestEmail
+      };
+    }
 
         const pickupTime = document.getElementById('pickup-time').value;
         if (!pickupTime) {
