@@ -754,67 +754,83 @@ const PREP_TIME_PER_ROLL = 10;
     // סיכום הזמנה
     // ========================================
 
-    function updateSummary() {
-      let totalRolls = 0;
-      let totalPrice = 0;
-      let lines = [];
+function updateSummary() {
+  let totalRolls = 0;
+  let totalPrice = 0;
+  let lines = [];
 
-      // רולים
-      Object.keys(orderItems).forEach(key => {
-        const qty = orderItems[key];
-        totalRolls += qty;
-        
-        const [category, idx] = key.split('_');
-        const item = menuData[category][parseInt(idx)];
-        const itemTotal = item.price * qty;
-        totalPrice += itemTotal;
-        
-        lines.push(`${item.name} x${qty} = ${itemTotal}₪`);
-      });
+  // רולים
+  Object.keys(orderItems).forEach(key => {
+    const qty = orderItems[key];
+    totalRolls += qty;
+    
+    const [category, idx] = key.split('_');
+    const item = menuData[category][parseInt(idx)];
+    const itemTotal = item.price * qty;
+    totalPrice += itemTotal;
+    
+    lines.push(`${item.name} x${qty} = ${itemTotal}₪`);
+  });
 
-      // רטבים
-      const totalSauces = Object.values(sauceSelections).reduce((a,b) => a+b, 0);
-      const freeSauces = totalRolls * 2;
-      const extraSauces = Math.max(0, totalSauces - freeSauces);
-      const saucePrice = extraSauces * 3;
-      totalPrice += saucePrice;
+  // רטבים
+  let totalSauces = 0;
+  let saucesList = [];
 
-      if (totalSauces > 0) {
-        lines.push(`\nרטבים: ${totalSauces} (${freeSauces} חינם, ${extraSauces} בתשלום) = ${saucePrice}₪`);
-      }
-
-      // צ'ופסטיקס
-      lines.push(`צ'ופסטיקס: ${chopsticksCount}`);
-
-      // הערות
-      const notes = document.getElementById('notes').value.trim();
-      if (notes) {
-        lines.push(`\nהערות: ${notes}`);
-      }
-
-      // שעת איסוף
-      const pickupTime = document.getElementById('pickup-time').value;
-      if (pickupTime) {
-        lines.push(`\nשעת איסוף: ${pickupTime}`);
-      }
-
-      lines.push(`\n${'='.repeat(30)}\nסה"כ לתשלום: ${totalPrice}₪`);
-
-      document.getElementById('order-summary').textContent = 
-        totalRolls > 0 ? lines.join('\n') : 'הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.';
-
-      // בדיקת מגבלות
-      const sendBtn = document.getElementById('send-order');
-      if (totalRolls === 0 || !pickupTime) {
-  sendBtn.disabled = true;
-      } else if (totalRolls > 15) {
-        sendBtn.disabled = true;
-        showMessage('לא ניתן להזמין יותר מ־15 רולים ביום', 'red');
-      } else {
-        sendBtn.disabled = false;
-        document.getElementById('messages').textContent = '';
-      }
+  for (let key in sauceSelections) {
+    const qty = sauceSelections[key];
+    if (qty > 0) {
+      totalSauces += qty;
+      const idx = parseInt(key.split('_')[1]);
+      const sauceName = menuData.sauces[idx].name;
+      saucesList.push(sauceName + ' x' + qty);
     }
+  }
+
+  const freeSauces = totalRolls * 2;
+  const extraSauces = Math.max(0, totalSauces - freeSauces);
+  const saucePrice = extraSauces * 3;
+  totalPrice += saucePrice;
+
+  if (totalSauces > 0) {
+    lines.push('\nרטבים:');
+    for (let i = 0; i < saucesList.length; i++) {
+      lines.push('  • ' + saucesList[i]);
+    }
+    lines.push('סה"כ: ' + totalSauces + ' (' + freeSauces + ' חינם, ' + extraSauces + ' בתשלום) = ' + saucePrice + '₪');
+  }
+
+  // צ'ופסטיקס
+  lines.push(`צ'ופסטיקס: ${chopsticksCount}`);
+
+  // הערות
+  const notes = document.getElementById('notes').value.trim();
+  if (notes) {
+    lines.push(`\nהערות: ${notes}`);
+  }
+
+  // שעת איסוף
+  const pickupTime = document.getElementById('pickup-time').value;
+  if (pickupTime) {
+    lines.push(`\nשעת איסוף: ${pickupTime}`);
+  }
+
+  lines.push(`\n${'='.repeat(30)}\nסה"כ לתשלום: ${totalPrice}₪`);
+
+  document.getElementById('order-summary').textContent = 
+    totalRolls > 0 ? lines.join('\n') : 'הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.';
+
+  // בדיקת מגבלות
+  const sendBtn = document.getElementById('send-order');
+  if (totalRolls === 0 || !pickupTime) {
+    sendBtn.disabled = true;
+  } else if (totalRolls > 15) {
+    sendBtn.disabled = true;
+    showMessage('לא ניתן להזמין יותר מ־15 רולים ביום', 'red');
+  } else {
+    sendBtn.disabled = false;
+    document.getElementById('messages').textContent = '';
+  }
+}
 
     // ========================================
     // שליחת הזמנה
