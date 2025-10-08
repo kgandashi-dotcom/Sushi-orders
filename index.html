@@ -791,8 +791,8 @@
 
       // בדיקת מגבלות
       const sendBtn = document.getElementById('send-order');
-      if (totalRolls === 0 || !pickupTime || !currentUser) {
-        sendBtn.disabled = true;
+      if (totalRolls === 0 || !pickupTime) {
+  sendBtn.disabled = true;
       } else if (totalRolls > 15) {
         sendBtn.disabled = true;
         showMessage('לא ניתן להזמין יותר מ־15 רולים ביום', 'red');
