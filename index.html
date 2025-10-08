@@ -312,20 +312,27 @@
     // ========================================
     
     // הגדרת Supabase
-   const SUPABASE_URL = 'https://oxjokdjwdvmmdtcvqvon.supabase.co';
-   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94am9rZGp3ZHZtbWR0Y3Zxdm9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzgwMzMsImV4cCI6MjA3NDY1NDAzM30.DmKp79UiPi9iOU50UutevdqRcPyREMUJ7NT5ZmBHDsg';
-   const supabase = window.supabase?.createClient ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+ const SUPABASE_URL = 'https://oxjokdjwdvmmdtcvqvon.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94am9rZGp3ZHZtbWR0Y3Zxdm9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzgwMzMsImV4cCI6MjA3NDY1NDAzM30.DmKp79UiPi9iOU50UutevdqRcPyREMUJ7NT5ZmBHDsg';
 
-   const GOOGLE_CLIENT_ID = "962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com";
-   const MAKE_WEBHOOK_URL   = "https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r";
+let supabase = null;
 
+// המתן לטעינת Supabase ואז צור חיבור
+if (typeof window.supabase !== 'undefined') {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  console.log('✅ Supabase מחובר בהצלחה!');
+} else {
+  console.error('❌ Supabase לא נטען - בדוק את הסקריפט');
+}
 
-    // אימייל מנהל (לאיפוס)
-    const ADMIN_EMAIL = 'kgandashi@gmail.com';
+const GOOGLE_CLIENT_ID = "962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com";
+const MAKE_WEBHOOK_URL = "https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r";
 
-    // זמן הכנה לרול (בדקות)
-    const PREP_TIME_PER_ROLL = 10;
+// אימייל מנהל (לאיפוס)
+const ADMIN_EMAIL = 'kgandashi@gmail.com';
 
+// זמן הכנה לרול (בדקות)
+const PREP_TIME_PER_ROLL = 10;
     // ========================================
     // תפריט - נתונים
     // ========================================
