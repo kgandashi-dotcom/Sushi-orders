@@ -1,828 +1,330 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>סושי אונליין — קטגוריות בשורה אחת</title>
-
-  <!-- אם תרצה Supabase (אופציונלי) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-  <!-- Google Sign-In (אם תכניס client id) -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- jwt-decode קטן ליצירת פרופיל מה-credential של Google -->
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-
-  <style>
-    :root{
-      --accent: #7a2a2a;
-      --accent-dark: #5e1b1b;
-      --muted: #f6f5f4;
-      --bg: #fff;
-      --danger: #d9534f;
-    }
-
-    /* reset */
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg,#f6f5f4,#efecec);
-      color:#222;
-      direction: rtl;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
-
-    .page {
-      max-width:1200px;
-      margin:12px auto;
-      padding:14px;
-      background: rgba(255,255,255,0.96);
-      border-radius:12px;
-      box-shadow: 0 8px 26px rgba(0,0,0,0.06);
-    }
-
-    /* TOP ROW: auth button on its own row, left-top */
-    .top-row {
-      display:flex;
-      align-items:center;
-      justify-content:flex-start; /* visually left if direction:ltr inside */
-      gap:12px;
-      padding:6px 6px 8px 6px;
-    }
-    /* force left alignment inside RTL page: use a container with ltr */
-    .auth-wrap{
-      width:100%;
-      direction:ltr;
-      display:flex;
-      justify-content:flex-start; /* left of viewport */
-      align-items:center;
-    }
-    .auth-btn {
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:10px;
-      border:1px solid #eee;
-      background:#fff;
-      color:var(--accent);
-      font-weight:800;
-      cursor:pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-    }
-
-    /* LOGO row: center large logo */
-    .logo-row{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:10px 0;
-    }
-    .logo {
-      width:160px;
-      height:auto;
-      border-radius:12px;
-      object-fit:contain;
-      box-shadow:0 8px 20px rgba(0,0,0,0.06);
-      background:linear-gradient(180deg,#fff,#fafafa);
-      padding:8px;
-    }
-    @media(max-width:480px){
-      .logo { width:120px; }
-    }
-
-    /* CATEGORIES row: single-line, no wrap, horizontal scroll on small screens */
-    .categories-row {
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:8px 6px;
-      overflow-x:auto;
-      -webkit-overflow-scrolling:touch;
-      white-space:nowrap;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(122,42,42,0.2) transparent;
-    }
-    .categories-row::-webkit-scrollbar{ height:8px; }
-    .categories-row::-webkit-scrollbar-thumb{ background: rgba(122,42,42,0.15); border-radius:8px; }
-
-    .cat-btn {
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      flex:0 0 auto;
-      padding:10px 14px;
-      border-radius:999px;
-      background:#fff;
-      border:1px solid #eee;
-      cursor:pointer;
-      font-weight:800;
-      color:var(--accent);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.03);
-      white-space:nowrap;
-    }
-    .cat-btn.active {
-      background: var(--accent);
-      color:#fff;
-      border-color:var(--accent-dark);
-      box-shadow: 0 10px 26px rgba(122,42,42,0.12);
-    }
-
-    /* layout: main content with menu and aside */
-    .main {
-      display:flex;
-      gap:18px;
-      align-items:flex-start;
-      margin-top:12px;
-    }
-    .menu-area { flex:1; display:flex; flex-direction:column; gap:12px; min-width:0; }
-    .category-container { display:flex; flex-direction:column; gap:10px; padding:6px 0; }
-
-    /* aside */
-    aside.side { width:360px; flex:0 0 360px; }
-    @media(max-width:980px){
-      .main{ flex-direction:column; }
-      aside.side{ width:100%; flex:unset; }
-    }
-
-    /* cards */
-    .roll-card {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      padding:12px;
-      border-radius:10px;
-      background:var(--bg);
-      box-shadow:0 4px 14px rgba(0,0,0,0.04);
-    }
-    .roll-card .info{ flex:1 1 auto; min-width:0; }
-    .roll-card h3{ margin:0; color:var(--accent); font-size:1.02rem; }
-    .roll-card p{ margin:6px 0 0 0; color:#444; font-size:0.92rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-
-    .quantity-control { display:flex; align-items:center; gap:8px; }
-    .quantity-control button {
-      width:40px; height:36px; border-radius:8px; border:none; background:#f0c0c0; color:var(--accent); font-weight:800; cursor:pointer;
-    }
-    .quantity-control input { width:56px; text-align:center; border:1px solid #ddd; padding:6px; border-radius:6px; }
-
-    /* panels */
-    .panel { background:#fff; padding:12px; border-radius:10px; box-shadow:0 4px 14px rgba(0,0,0,0.04); margin-bottom:12px; }
-    .panel-title { font-weight:800; color:var(--accent); margin-bottom:8px; }
-
-    /* summary */
-    #order-summary { background:#fafafa; padding:10px; border-radius:8px; min-height:140px; white-space:pre-wrap; font-family: "Courier New", monospace; }
-    .actions-row { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
-
-    .note { color:#6b6b6b; font-size:0.92rem; margin-top:8px; }
-
-    /* modals */
-    .modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.35); z-index:40; padding:12px; }
-    .modal .modal-content { background:#fff; padding:16px; border-radius:10px; width:100%; max-width:520px; box-shadow:0 10px 30px rgba(0,0,0,0.2); }
-    .modal .modal-content h3{ margin:0 0 8px 0; }
-
-    /* small tweaks */
-    .btn { padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:700; }
-    .btn.primary { background:var(--accent); color:#fff; }
-    .btn.secondary { background:#fff; color:var(--accent); border:1px solid #ddd; }
-    .btn.plain { background:transparent; color:#555; border:1px solid #eee; }
-    .btn.danger { background:var(--danger); color:#fff; }
-
-    /* make sauce selected visually */
-    .sauce-selected { outline: 3px solid rgba(122,42,42,0.09); }
-
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>סושי אונליין</title>
+<style>
+  :root{
+    --accent:#7a2a2a;
+    --accent-dark:#5e1b1b;
+    --muted:#f0f0f0;
+    --danger:#d9534f;
+    --bg:#fff;
+  }
+  body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(180deg,#f6f5f4, #efecec);
+    color:#222;
+  }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 16px;
+    background:#fff;
+    flex-wrap:wrap;
+  }
+  .logo-container{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    margin-bottom:8px;
+  }
+  .logo{
+    width:120px;
+    height:auto;
+  }
+  .user-actions{
+    display:flex;
+    gap:8px;
+  }
+  .btn{
+    padding:6px 12px;
+    border-radius:8px;
+    border:none;
+    cursor:pointer;
+    font-weight:700;
+  }
+  .btn.primary{ background:var(--accent); color:#fff; }
+  .btn.secondary{ background:#fff; color:var(--accent); border:1px solid #ddd; }
+  nav.menu-tabs{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    flex-wrap:wrap;
+    width:100%;
+    margin-bottom:12px;
+  }
+  .tab{
+    padding:8px 12px;
+    border-radius:8px;
+    background:#fff;
+    border:1px solid #eee;
+    cursor:pointer;
+    font-weight:700;
+  }
+  .tab.active{ background:var(--accent); color:#fff; border-color:var(--accent-dark);}
+  main{
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+    padding:0 16px 16px 16px;
+  }
+  #menu-area{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  #side-area{
+    width:360px;
+    max-width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .category-container{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .roll-card{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:12px;
+    border-radius:10px;
+    background:var(--bg);
+    box-shadow:0 4px 14px rgba(0,0,0,0.05);
+  }
+  .roll-card img{
+    width:60px;
+    height:60px;
+    border-radius:8px;
+    object-fit:cover;
+  }
+  .roll-card .info{
+    flex:1;
+  }
+  .roll-card h3{ margin:0; color:var(--accent); font-size:1rem; }
+  .roll-card p{ margin:0; font-size:0.85rem; color:#444; }
+  .quantity-control{ display:flex; align-items:center; gap:8px; }
+  .quantity-control button{
+    width:32px;
+    height:32px;
+    border-radius:6px;
+    border:none;
+    background:#f0c0c0;
+    color:var(--accent);
+    font-weight:700;
+    font-size:1rem;
+    cursor:pointer;
+  }
+  .quantity-control input{
+    width:40px;
+    text-align:center;
+    border:1px solid #ddd;
+    border-radius:6px;
+    padding:4px;
+  }
+  .panel{
+    background:#fff;
+    padding:12px;
+    border-radius:10px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.04);
+  }
+  .panel-title{ font-weight:800; color:var(--accent); margin-bottom:8px; }
+  #order-summary{
+    background:#fafafa;
+    padding:10px;
+    border-radius:8px;
+    min-height:120px;
+    white-space:pre-wrap;
+    font-family:"Courier New", monospace;
+  }
+  .actions-row{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+  .note{ color:#6b6b6b; font-size:0.85rem; margin-top:6px; }
+  #messages{ margin-top:8px; color:var(--danger); font-weight:700; }
+  @media(max-width:980px){
+    main{ flex-direction:column; }
+    #side-area{ width:100%; }
+    nav.menu-tabs{ justify-content:flex-start; overflow-x:auto; }
+  }
+</style>
 </head>
 <body>
-  <div class="page">
-
-    <!-- top auth row -->
-    <div class="top-row">
-      <div class="auth-wrap">
-        <button id="auth-btn" class="auth-btn">התחבר</button>
-      </div>
-    </div>
-
-    <!-- logo large centered -->
-    <div class="logo-row" aria-hidden="false">
-      <!-- החלף את src לנתיב הלוגו שלך או השאר כ-is/placeholder -->
-      <img src="https://via.placeholder.com/320x120?text=SUSHI+LOGO" alt="לוגו סושי" class="logo" id="site-logo">
-    </div>
-
-    <!-- categories row: single line -->
-    <div class="categories-row" role="tablist" aria-label="קטגוריות סושי" id="categories-row">
-      <!-- קטגוריות: כל הכפתורים יצורפו/מודגשים ע"י ה-JS -->
-    </div>
-
-    <!-- main content -->
-    <div class="main">
-      <section class="menu-area" id="menu-area">
-        <div id="insideout-rolls" class="category-container" aria-live="polite"></div>
-        <div id="maki-rolls" class="category-container" style="display:none;"></div>
-        <div id="onigiri-rolls" class="category-container" style="display:none;"></div>
-        <div id="poke-rolls" class="category-container" style="display:none;"></div>
-        <div id="oshizushi-rolls" class="category-container" style="display:none;"></div>
-      </section>
-
-      <aside class="side">
-        <section class="panel">
-          <div class="panel-title">רטבים</div>
-          <div id="sauces-container" class="category-container"></div>
-          <p class="note">כל רול מקבל 2 רטבים חינם. רוטב נוסף 3₪.</p>
-        </section>
-
-        <section class="panel">
-          <div class="panel-title">כמות צ'ופסטיקס</div>
-          <div class="quantity-control">
-            <button id="chopsticks-minus">−</button>
-            <input id="chopsticks-qty" type="number" readonly value="1">
-            <button id="chopsticks-plus">+</button>
-          </div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-title">בחר שעת איסוף</div>
-          <select id="pickup-time"><option value="">בחר שעה</option></select>
-          <p class="note small" id="pickup-note"></p>
-        </section>
-
-        <section class="panel">
-          <div class="panel-title">הערות אישיות</div>
-          <textarea id="notes" placeholder="לדוגמה: ללא גלוטן, הגעה בשער 3..." rows="3"></textarea>
-        </section>
-
-        <section class="panel">
-          <div class="panel-title">סיכום הזמנה</div>
-          <pre id="order-summary">הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.</pre>
-          <div class="actions-row">
-            <button id="send-order" class="btn primary">שלח הזמנה</button>
-            <button id="guest-btn" class="btn secondary">שלח כאורח</button>
-            <button id="view-orders" class="btn plain">הצג היסטוריה</button>
-          </div>
-        </section>
-
-        <div id="messages" aria-live="polite" style="margin-top:6px;"></div>
-      </aside>
-    </div>
-
-    <!-- PROFILE MODAL -->
-    <div id="profile-modal" class="modal" aria-hidden="true">
-      <div class="modal-content">
-        <h3>פרטי משתמש</h3>
-        <label>שם</label>
-        <input id="user-name" type="text">
-        <label>אימייל</label>
-        <input id="user-email" type="email" readonly>
-        <label>טלפון</label>
-        <input id="user-phone" type="text" placeholder="05XXXXXXXX">
-        <div class="actions-row" style="margin-top:12px;">
-          <button id="save-user" class="btn primary">שמור</button>
-          <button id="logout-btn" class="btn danger">התנתק</button>
-          <button id="close-profile" class="btn secondary">סגור</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- SEND CHOICE MODAL -->
-    <div id="send-choice-modal" class="modal" aria-hidden="true">
-      <div class="modal-content">
-        <h3>שליחת הזמנה</h3>
-        <div class="actions-row">
-          <button id="continue-login" class="btn primary">המשך עם Google</button>
-          <button id="continue-guest" class="btn secondary">שלח כאורח</button>
-          <button id="cancel-send" class="btn plain">ביטול</button>
-        </div>
-        <div id="guest-phone-row" style="display:none; margin-top:12px;">
-          <label>טלפון אורח</label>
-          <input id="guest-phone" type="text" placeholder="05XXXXXXXX">
-          <button id="guest-send-confirm" class="btn primary" style="margin-top:8px;">שלח</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- HISTORY MODAL -->
-    <div id="history-modal" class="modal" aria-hidden="true">
-      <div class="modal-content">
-        <h3>היסטוריית הזמנות</h3>
-        <pre id="orders-list">טוען…</pre>
-        <div class="actions-row" style="margin-top:8px;">
-          <button id="close-history" class="btn secondary">סגור</button>
-        </div>
-      </div>
-    </div>
-
+<header>
+  <div class="user-actions">
+    <button id="profile-btn" class="btn secondary">פרופיל</button>
+    <button id="auth-btn" class="btn primary">התחבר</button>
   </div>
+  <div class="logo-container">
+    <img src="logo.png" alt="לוגו סושי" class="logo">
+  </div>
+  <nav class="menu-tabs" role="navigation" aria-label="תפריט קטגוריות">
+    <button class="tab active" data-target="insideout-rolls">Inside-out</button>
+    <button class="tab" data-target="maki-rolls">Maki</button>
+    <button class="tab" data-target="onigiri-rolls">Onigiri</button>
+    <button class="tab" data-target="poke-rolls">Poke</button>
+    <button class="tab" data-target="oshizushi-rolls">Oshizushi</button>
+  </nav>
+</header>
 
-  <script>
-  /* ================== CONFIG / KEYS (TODO) ================== */
-  const SUPABASE_URL = 'https://oxjokdjwdvmmdtcvqvon.supabase.co';
-  const SUPABASE_KEY = ''; // TODO: אם רוצים Supabase מלא — הכנסו כאן את המפתח; אם לא — השאירו ריק
-  const GOOGLE_CLIENT_ID = ''; // TODO: הכנס Google OAuth client id אם רוצים Google Sign-In, אחרת השאר ריק
-  const MAKE_WEBHOOK_URL = 'https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r';
+<main>
+  <section id="menu-area">
+    <div id="insideout-rolls" class="category-container"></div>
+    <div id="maki-rolls" class="category-container" style="display:none;"></div>
+    <div id="onigiri-rolls" class="category-container" style="display:none;"></div>
+    <div id="poke-rolls" class="category-container" style="display:none;"></div>
+    <div id="oshizushi-rolls" class="category-container" style="display:none;"></div>
+  </section>
 
-  const supabase = (typeof supabase !== 'undefined' && SUPABASE_KEY) ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+  <aside id="side-area">
+    <section class="panel">
+      <div class="panel-title">רטבים</div>
+      <div id="sauces-container" class="category-container"></div>
+      <p class="note">כל רול מקבל 2 רטבים חינם. רוטב נוסף 3₪.</p>
+    </section>
+    <section class="panel">
+      <div class="panel-title">כמות צ'ופסטיקס</div>
+      <div class="quantity-control">
+        <button id="chopsticks-minus">−</button>
+        <input id="chopsticks-qty" type="number" readonly value="1">
+        <button id="chopsticks-plus">+</button>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-title">בחר שעת איסוף</div>
+      <select id="pickup-time"><option value="">בחר שעה</option></select>
+      <p class="note small" id="pickup-note"></p>
+    </section>
+    <section class="panel">
+      <div class="panel-title">הערות אישיות</div>
+      <textarea id="notes" placeholder="לדוגמה: ללא גלוטן, הגעה בשער 3..."></textarea>
+    </section>
+    <section class="panel">
+      <div class="panel-title">סיכום הזמנה</div>
+      <pre id="order-summary">הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.</pre>
+      <div class="actions-row">
+        <button id="send-order" class="btn primary">שלח הזמנה</button>
+        <button id="guest-btn" class="btn secondary">שלח כאורח</button>
+      </div>
+    </section>
+    <div id="messages" aria-live="polite"></div>
+  </aside>
+</main>
 
-  /* ================== State ================== */
-  let bookedTimes = JSON.parse(localStorage.getItem('bookedTimes') || '[]');
-  let dailyRollCount = JSON.parse(localStorage.getItem('dailyRollCount') || '{}');
-  let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-  let chopsticksCount = 1;
-  let selectedRolls = {};   // { rollId: qty }
-  let selectedSauces = {};  // { sauceId: qty }
+<script>
+const MAKE_WEBHOOK_URL='https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r';
+let chopsticksCount=1;
+let selectedRolls={};
+let selectedSauces={};
 
-  /* ================== DATA — מלאים ================== */
-  const insideOutRollsData = [
-    {id:"bingo", name:"רול בינגו", description:"סלמון נא, שמנת, אבוקדו בציפוי שומשום קלוי", price:50},
-    {id:"luna", name:"רול לונה", description:"ספייסי סלמון אפוי על רול בטטה, אבוקדו ושיטאקי", price:50},
-    {id:"belgian", name:"רול ריי", description:"טרטר ספייסי טונה נא על רול מלפפון, עירית ואושינקו", price:55},
-    {id:"crazy-bruno", name:"רול קרייזי ברונו", description:"דג לבן, טונה, סלמון בציפוי שומשום קלוי", price:60},
-    {id:"happy-bruno", name:"רול האפי ברונו", description:"סלמון בציפוי שקדים קלויים ורוטב טריאקי", price:60},
-    {id:"mila", name:"רול מילה", description:"בטטה, עירית ואבוקדו בעיטוף סלמון צרוב", price:50},
-    {id:"newton", name:"רול ניוטון", description:"טונה אדומה, אבוקדו, בטטה בציפוי פנקו ורוטב בוטנים", price:55},
-    {id:"oli", name:"רול אולי", description:"דג לבן, מלפפון, אבוקדו בציפוי שומשום", price:50},
-    {id:"milli", name:"רול מילי", description:"מקל סורימי, דג לבן אפוי, אושינקו בציפוי פנקו", price:50},
-    {id:"scar", name:"רול סקאר", description:"ספייסי סלמון אפוי עם אבוקדו, מלפפון ובטטה בעיטור מיונז וצ'יפס", price:50},
-    {id:"magi", name:"רול מגי🌱", description:"מלפפון, בטטה, עירית ואבוקדו בעיטור בטטה ורוטב בוטנים", price:40},
-    {id:"tyson", name:"רול טייסון וקיילה", description:"סלמון נא, קנפיו, בטטה בעיטוף שבבי פנקו סגול", price:50},
-    {id:"lucy", name:"רול לוסי", description:"סלמון נא, פטריות שיטאקי ואושינקו בציפוי טוביקו", price:55},
-    {id:"billy", name:"רול בילי", description:"דג לבן צרוב, עירית, בטטה מצופה בפנקו", price:50},
-    {id:"lucky", name:"רול לאקי", description:"טרטר ספייסי סלמון עם אבוקדו, מלפפון ועירית", price:50}
-  ];
+const insideOutRollsData=[
+{id:"bingo",name:"רול בינגו - 50₪",description:"סלמון נא, שמנת, אבוקדו",price:50},
+{id:"luna",name:"רול לונה - 50₪",description:"ספייסי סלמון אפוי על רול בטטה, אבוקדו ושיטאקי",price:50}];
 
-  const makiRollsData = [
-    {id:"alfi", name:"רול אלפי", description:"מאקי סלמון", price:35},
-    {id:"maymay", name:"רול מיי מיי🌱", description:"מאקי בטטה ואבוקדו", price:25},
-    {id:"snoopy", name:"רול סנופי🌱", description:"מאקי אושינקו וקנפיו", price:25}
-  ];
+const makiRollsData=[
+{id:"alfi",name:"רול אלפי - 35₪",description:"מאקי סלמון",price:35}];
 
-  const onigiriData = [
-    {id:"rocky", name:"אוניגירי רוקי", description:"טרטר טונה אדומה עם ספייסי מיונז ובצל ירוק", price:35},
-    {id:"johnny", name:"אוניגירי ג׳וני", description:"טרטר סלמון עם ספייסי מיונז ובצל ירוק", price:30},
-    {id:"gisel", name:"אוניגירי ג׳יזל🌱", description:"אבוקדו ובטטה", price:25}
-  ];
+const onigiriData=[
+{id:"rocky",name:"אוניגירי רוקי - 35₪",description:"טרטר טונה אדומה עם ספייסי מיונז ובצל ירוק",price:35}];
 
-  const pokeData = [
-    {id:"dog", name:"בול-דוג", description:"אורז סושי, סלמון במרינדה, אדממה, מלפפון, אבוקדו, בצל ירוק. מעל שומשום ורוטב ספייסי מיונז", price:60},
-    {id:"pit", name:"פיט-בול", description:"אורז סושי, טונה במרינדה, אדממה, מנגו, כרוב סגול, פטריות שיטאקי. מעל בצל שאלוט מטוגן ורוטב אננס מתוק", price:70},
-    {id:"trir", name:"בול-טרייר🌱", description:"אורז סושי, אדממה, מלפפון, פטריות שיטאקי, גזר ואבוקדו. מעל שומשום ורוטב בוטנים", price:45}
-  ];
+const pokeData=[
+{id:"dog",name:"בול-דוג - 60₪",description:"אורז סושי, סלמון במרינדה, אדממה, מלפפון, אבוקדו",price:60}];
 
-  const oshizushiData = [
-    {id:"oshi-salmon", name:"אושי סלמון", description:"אושי פרוסות סלמון צרוב מעל אורז דחוס", price:65},
-    {id:"oshi-tuna", name:"אושי טונה", description:"אושי עם טרטר טונה ואגוזי סיישו", price:68},
-    {id:"oshi-vege", name:"אושי ירקות🌱", description:"אושי עם ירקות כבושים ואבוקדו", price:50}
-  ];
+const oshizushiData=[
+{id:"oshi1",name:"אושי 1 - 55₪",description:"רול אושי מיוחד",price:55}];
 
-  const saucesData = [
-    {id:"spicy-mayo", name:"ספייסי מיונז", price:3},
-    {id:"soy", name:"רוטב סויה", price:3},
-    {id:"teriyaki", name:"רוטב טריאקי", price:3},
-    {id:"ginger", name:"ג׳ינג׳ר", price:3},
-    {id:"wasabi", name:"וואסאבי", price:3}
-  ];
+const saucesData=[
+{id:"spicy-mayo",name:"ספייסי מיונז",price:3},
+{id:"soy",name:"סויה",price:3},
+{id:"teriyaki",name:"טריאקי",price:3},
+{id:"ginger",name:"ג׳ינג׳ר",price:3},
+{id:"wasabi",name:"וואסאבי",price:3}];
 
-  /* ================== HELPERS ================== */
-  function $id(id){ return document.getElementById(id); }
-  function showMessage(txt, isError = true){
-    const m = $id('messages');
-    if(!m) return;
-    m.textContent = txt;
-    m.style.color = isError ? '#b71c1c' : '#2a7a2a';
-    setTimeout(()=>{ if(m.textContent === txt) m.textContent = ''; }, 6000);
-  }
-  function generateUUID(){ return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){ const r = Math.random()*16|0; const v = c === 'x' ? r : (r & 0x3 | 0x8); return v.toString(16); }); }
+function $id(id){return document.getElementById(id);}
+function showMessage(txt,isError=true){const m=$id('messages');m.textContent=txt;m.style.color=isError?'#b71c1c':'#2a7a2a';setTimeout(()=>{if(m.textContent===txt)m.textContent='';},6000);}
 
-  /* ================== RENDER / UI ================== */
-  const categories = [
-    {id:'insideout-rolls', label:'Inside-out'},
-    {id:'maki-rolls', label:'Maki'},
-    {id:'onigiri-rolls', label:'Onigiri'},
-    {id:'poke-rolls', label:'Poke'},
-    {id:'oshizushi-rolls', label:'Oshizushi'}
-  ];
+function createRollCard(item, containerId){
+  const container=$id(containerId);
+  const card=document.createElement('div');
+  card.className='roll-card';
+  const info=document.createElement('div'); info.className='info';
+  info.innerHTML=`<h3>${item.name}</h3><p>${item.description}</p>`;
+  const controls=document.createElement('div'); controls.className='quantity-control';
+  const btnMinus=document.createElement('button'); btnMinus.textContent='−';
+  const inputQty=document.createElement('input'); inputQty.type='number'; inputQty.value=selectedRolls[item.id]||0; inputQty.readOnly=true;
+  const btnPlus=document.createElement('button'); btnPlus.textContent='+';
+  btnPlus.addEventListener('click',()=>{selectedRolls[item.id]=(selectedRolls[item.id]||0)+1; inputQty.value=selectedRolls[item.id]; updateSummary();});
+  btnMinus.addEventListener('click',()=>{if((selectedRolls[item.id]||0)>0){selectedRolls[item.id]--; inputQty.value=selectedRolls[item.id]; updateSummary();}});
+  controls.append(btnMinus,inputQty,btnPlus);
+  card.append(info,controls);
+  container.appendChild(card);
+}
 
-  function renderCategoryTabs(){
-    const wrap = $id('categories-row');
-    wrap.innerHTML = '';
-    categories.forEach((c, idx)=>{
-      const btn = document.createElement('button');
-      btn.className = 'cat-btn' + (idx===0 ? ' active' : '');
-      btn.textContent = c.label;
-      btn.dataset.target = c.id;
-      btn.addEventListener('click', ()=>{
-        document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        // show only target container
-        categories.forEach(cc=>{
-          const el = $id(cc.id);
-          if(!el) return;
-          el.style.display = (cc.id === c.id) ? 'flex' : 'none';
-        });
-      });
-      wrap.appendChild(btn);
-    });
-  }
+function createSauceCard(item){
+  const container=$id('sauces-container');
+  const card=document.createElement('div'); card.className='roll-card';
+  const info=document.createElement('div'); info.className='info';
+  info.innerHTML=`<h3>${item.name}</h3><p>2 חינם לכל רול — מעבר לכך ${item.price}₪</p>`;
+  const controls=document.createElement('div'); controls.className='quantity-control';
+  const btnMinus=document.createElement('button'); btnMinus.textContent='−';
+  const inputQty=document.createElement('input'); inputQty.type='number'; inputQty.value=selectedSauces[item.id]||0; inputQty.readOnly=true;
+  const btnPlus=document.createElement('button'); btnPlus.textContent='+';
+  btnPlus.addEventListener('click',()=>{selectedSauces[item.id]=(selectedSauces[item.id]||0)+1; inputQty.value=selectedSauces[item.id]; updateSummary();});
+  btnMinus.addEventListener('click',()=>{if((selectedSauces[item.id]||0)>0){selectedSauces[item.id]--; inputQty.value=selectedSauces[item.id]; updateSummary();}});
+  controls.append(btnMinus,inputQty,btnPlus);
+  card.append(info,controls);
+  container.appendChild(card);
+}
 
-  function createRollCard(item, containerId){
-    const container = $id(containerId);
-    if(!container) return;
-    const card = document.createElement('div');
-    card.className = 'roll-card';
-    const info = document.createElement('div'); info.className='info';
-    info.innerHTML = `<h3>${item.name} — ${item.price}₪</h3><p title="${item.description}">${item.description}</p>`;
-    const controls = document.createElement('div'); controls.className='quantity-control';
-    const btnMinus = document.createElement('button'); btnMinus.textContent='−';
-    const inputQty = document.createElement('input'); inputQty.type='number'; inputQty.readOnly = true; inputQty.value = selectedRolls[item.id] || 0;
-    const btnPlus = document.createElement('button'); btnPlus.textContent='+';
-    btnPlus.addEventListener('click', ()=>{
-      selectedRolls[item.id] = (selectedRolls[item.id]||0) + 1;
-      inputQty.value = selectedRolls[item.id];
-      updateSummary();
-    });
-    btnMinus.addEventListener('click', ()=>{
-      if((selectedRolls[item.id]||0) > 0){
-        selectedRolls[item.id]--;
-        inputQty.value = selectedRolls[item.id];
-        updateSummary();
-      }
-    });
-    controls.append(btnMinus, inputQty, btnPlus);
-    card.append(info, controls);
-    container.appendChild(card);
-  }
-
-  function createSauceCard(item){
-    const container = $id('sauces-container');
-    if(!container) return;
-    const card = document.createElement('div');
-    card.className = 'roll-card';
-    const info = document.createElement('div'); info.className='info';
-    info.innerHTML = `<h3>${item.name}</h3><p>2 חינם לכל רול — מעבר לכך ${item.price}₪</p>`;
-    const controls = document.createElement('div'); controls.className='quantity-control';
-    const btnMinus = document.createElement('button'); btnMinus.textContent='−';
-    const inputQty = document.createElement('input'); inputQty.type='number'; inputQty.readOnly=true; inputQty.value = selectedSauces[item.id]||0;
-    const btnPlus = document.createElement('button'); btnPlus.textContent='+';
-    btnPlus.addEventListener('click', ()=>{
-      selectedSauces[item.id] = (selectedSauces[item.id]||0) + 1;
-      inputQty.value = selectedSauces[item.id];
-      updateSummary();
-    });
-    btnMinus.addEventListener('click', ()=>{
-      if((selectedSauces[item.id]||0) > 0){
-        selectedSauces[item.id]--;
-        inputQty.value = selectedSauces[item.id];
-        updateSummary();
-      }
-    });
-    controls.append(btnMinus, inputQty, btnPlus);
-    card.append(info, controls);
-    container.appendChild(card);
-  }
-
-  function initMenu(){
-    // clear containers
-    ['insideout-rolls','maki-rolls','onigiri-rolls','poke-rolls','oshizushi-rolls'].forEach(id=>{
-      const el = $id(id); if(el) el.innerHTML = '';
-    });
-    // fill
-    insideOutRollsData.forEach(r => createRollCard(r, 'insideout-rolls'));
-    makiRollsData.forEach(r => createRollCard(r, 'maki-rolls'));
-    onigiriData.forEach(r => createRollCard(r, 'onigiri-rolls'));
-    pokeData.forEach(r => createRollCard(r, 'poke-rolls'));
-    oshizushiData.forEach(r => createRollCard(r, 'oshizushi-rolls'));
-    // sauces
-    $id('sauces-container').innerHTML = '';
-    saucesData.forEach(s => createSauceCard(s));
-  }
-
-  /* ================== PICKUP TIMES ================== */
-  function initPickupTimes(){
-    const sel = $id('pickup-time');
-    if(!sel) return;
-    sel.innerHTML = '<option value="">בחר שעה</option>';
-    for(let h=19; h<=22; h++){
-      for(const m of [0,30]){
-        if(h===22 && m>30) continue;
-        const label = `${String(h).padStart(2,'0')}:${m===0?'00':'30'}`;
-        if(bookedTimes.includes(label)) continue;
-        const opt = document.createElement('option'); opt.value = label; opt.textContent = label;
-        sel.appendChild(opt);
-      }
-    }
-    $id('pickup-note').textContent = bookedTimes.length ? `יש כבר ${bookedTimes.length} שעות תפוסות` : '';
-  }
-
-  /* ================== SUMMARY ================== */
-  function computeSummaryObject(){
-    const all = [...insideOutRollsData,...makiRollsData,...onigiriData,...pokeData,...oshizushiData];
-    let total = 0;
-    let totalRolls = 0;
-    const rolls = [];
-    for(const id in selectedRolls){
-      const qty = selectedRolls[id]||0;
-      if(qty<=0) continue;
-      const item = all.find(x=>x.id===id);
-      if(!item) continue;
-      rolls.push({ id: item.id, name: item.name, qty, unitPrice: item.price, lineTotal: item.price * qty });
-      total += item.price * qty;
-      totalRolls += qty;
-    }
-
-    const sauces = [];
-    let usedSaucesCount = 0;
-    for(const id in selectedSauces){
-      const qty = selectedSauces[id]||0;
-      if(qty<=0) continue;
-      const s = saucesData.find(x=>x.id===id);
-      if(!s) continue;
-      sauces.push({ id: s.id, name: s.name, qty, unitPrice: s.price });
-      usedSaucesCount += qty;
-    }
-
-    const freeSauces = totalRolls * 2;
-    const extraSauces = Math.max(0, usedSaucesCount - freeSauces);
-    const extraSauceCost = extraSauces * 3;
-    total += extraSauceCost;
-
-    return { rolls, sauces, totalRolls, usedSaucesCount, freeSauces, extraSauces, extraSauceCost, total };
-  }
-
-  function updateSummary(){
-    const s = computeSummaryObject();
-    let text = `הזמנה חדשה:\n\n`;
-    if(s.rolls.length){
-      s.rolls.forEach(r => text += `${r.name} x${r.qty} — ${r.lineTotal}₪\n`);
-      text += '\n';
-    } else text += '(לא נבחרו רולים)\n\n';
-
-    text += 'רטבים:\n';
-    if(s.sauces.length) s.sauces.forEach(su => text += `${su.name} x${su.qty}\n`);
-    else text += '(לא נבחרו רטבים)\n';
-
-    if(s.extraSauces > 0) text += `\nעלות רטבים נוספים: ${s.extraSauces} × 3₪ = ${s.extraSauceCost}₪\n`;
-
-    text += `\nכמות צ'ופסטיקס: ${chopsticksCount}\n`;
-    const notes = $id('notes') ? $id('notes').value.trim() : '';
-    if(notes) text += `\nהערות: ${notes}\n`;
-    const pickup = $id('pickup-time') ? $id('pickup-time').value : '';
-    text += `\nשעת איסוף: ${pickup || '(לא נבחרה)'}\n`;
-    if(currentUser) text += `\nלקוח: ${currentUser.name} (${currentUser.email||currentUser.phone||'אורח'})\n`;
-    text += `\nסה"כ לתשלום: ${s.total}₪\n`;
-
-    if($id('order-summary')) $id('order-summary').textContent = text;
-    if($id('send-order')) $id('send-order').disabled = !(s.totalRolls > 0 && !!pickup);
-  }
-
-  /* ================== UI EVENTS ================== */
-  function setupTabsAndInputs(){
-    renderCategoryTabs();
-    // show first category by default
-    categories.forEach((c, idx)=>{
-      const el = $id(c.id);
-      if(!el) return;
-      el.style.display = idx===0 ? 'flex' : 'none';
-      el.style.flexDirection = 'column';
-    });
-
-    $id('chopsticks-plus').addEventListener('click', ()=>{ chopsticksCount++; $id('chopsticks-qty').value = chopsticksCount; updateSummary(); });
-    $id('chopsticks-minus').addEventListener('click', ()=>{ if(chopsticksCount>1) chopsticksCount--; $id('chopsticks-qty').value = chopsticksCount; updateSummary(); });
-    if($id('pickup-time')) $id('pickup-time').addEventListener('change', updateSummary);
-    if($id('notes')) $id('notes').addEventListener('input', updateSummary);
-  }
-
-  /* ================== AUTH & PROFILE ================== */
-  function openModal(id){ const m = $id(id); if(m){ m.style.display='flex'; m.setAttribute('aria-hidden','false'); } }
-  function closeModal(id){ const m = $id(id); if(m){ m.style.display='none'; m.setAttribute('aria-hidden','true'); } }
-
-  $id('profile-btn')?.addEventListener('click', ()=>{
-    if(!currentUser){
-      if(GOOGLE_CLIENT_ID){
-        google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, ux_mode:'popup' });
-        google.accounts.id.prompt();
-      } else {
-        showMessage('אין Google Client ID – התחבר כאורח או הוסף Google ID בקובץ.', true);
-      }
-      return;
-    }
-    openModal('profile-modal');
-    $id('user-name').value = currentUser.name || '';
-    $id('user-email').value = currentUser.email || '';
-    $id('user-phone').value = currentUser.phone || '';
+function initMenu(){
+  [insideOutRollsData, makiRollsData, onigiriData, pokeData, oshizushiData].forEach((arr,i)=>{
+    const ids=['insideout-rolls','maki-rolls','onigiri-rolls','poke-rolls','oshizushi-rolls'];
+    arr.forEach(r=>createRollCard(r,ids[i]));
   });
+  saucesData.forEach(s=>createSauceCard(s));
+}
 
-  $id('close-profile')?.addEventListener('click', ()=> closeModal('profile-modal'));
+function updateSummary(){
+  let total=0,totalRolls=0,rollsLines=[];
+  const all=[...insideOutRollsData,...makiRollsData,...onigiriData,...pokeData,...oshizushiData];
+  for(const id in selectedRolls){const qty=selectedRolls[id]||0;if(qty>0){const item=all.find(x=>x.id===id); rollsLines.push(`${item.name} x${qty} — ${item.price*qty}₪`); total+=item.price*qty; totalRolls+=qty;}}
+  let sauceLines=[],usedSaucesCount=0;
+  for(const id in selectedSauces){const qty=selectedSauces[id]||0;if(qty>0){const s=saucesData.find(x=>x.id===id); sauceLines.push(`${s.name} x${qty}`); usedSaucesCount+=qty;}}
+  const extra=Math.max(0,usedSaucesCount-(totalRolls*2)); const extraSauceCost=extra*3; total+=extraSauceCost;
+  let text=`הזמנה חדשה:\n\n`; text+=rollsLines.length?rollsLines.join('\n')+'\n\n':'(לא נבחרו רולים)\n\n';
+  text+='רטבים:\n'+(sauceLines.length?sauceLines.join('\n')+'\n':'(לא נבחרו רטבים)\n'); if(extra>0) text+=`\nעלות רטבים נוספים: ${extra} × 3₪ = ${extraSauceCost}₪\n`;
+  text+=`\nכמות צ'ופסטיקס: ${chopsticksCount}\n`; const notes=$id('notes').value.trim(); if(notes) text+=`\nהערות: ${notes}\n`; text+=`\nסה"כ לתשלום: ${total}₪\n`;
+  $id('order-summary').textContent=text;
+}
 
-  $id('auth-btn')?.addEventListener('click', ()=>{
-    if(currentUser){
-      // logout
-      currentUser = null;
-      localStorage.removeItem('currentUser');
-      updateAuthUI();
-      showMessage('התנתקת', false);
-      return;
-    }
-    if(GOOGLE_CLIENT_ID){
-      google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, ux_mode:'popup' });
-      google.accounts.id.prompt();
-    } else {
-      // offer guest modal if no Google configured
-      openModal('send-choice-modal');
-    }
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active');
+    ['insideout-rolls','maki-rolls','onigiri-rolls','poke-rolls','oshizushi-rolls'].forEach(id=>{$id(id).style.display='none';});
+    $id(tab.dataset.target).style.display='flex';
   });
+});
 
-  window.handleCredentialResponse = function(response){
-    try{
-      const decoded = jwt_decode(response.credential);
-      currentUser = { name: decoded.name || decoded.given_name || '', email: decoded.email || '', phone: '' };
-      localStorage.setItem('currentUser', JSON.stringify(currentUser));
-      updateAuthUI();
-      showMessage(`שלום ${currentUser.name}`, false);
-      openModal('profile-modal');
-      $id('user-name').value = currentUser.name || '';
-      $id('user-email').value = currentUser.email || '';
-    } catch(e){
-      console.error(e);
-      showMessage('שגיאה בהתחברות Google', true);
-    }
-  };
+$id('chopsticks-minus').addEventListener('click',()=>{if(chopsticksCount>1)chopsticksCount--; $id('chopsticks-qty').value=chopsticksCount; updateSummary();});
+$id('chopsticks-plus').addEventListener('click',()=>{chopsticksCount++; $id('chopsticks-qty').value=chopsticksCount; updateSummary();});
+$id('notes').addEventListener('input',updateSummary);
 
-  $id('save-user')?.addEventListener('click', ()=>{
-    if(!currentUser) currentUser = {};
-    currentUser.name = $id('user-name').value.trim();
-    currentUser.phone = $id('user-phone').value.trim();
-    if(currentUser.phone && !/^05\d{8}$/.test(currentUser.phone)){ showMessage('פורמט טלפון אינו תקין (05XXXXXXXX)', true); return; }
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    closeModal('profile-modal');
-    updateAuthUI();
-    showMessage('פרטי משתמש נשמרו', false);
-    updateSummary();
-  });
+$id('send-order').addEventListener('click',()=>{fetch(MAKE_WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:$id('order-summary').textContent})}).then(r=>r.ok?showMessage('נשלח בהצלחה!',false):showMessage('שגיאה בשליחה')).catch(e=>showMessage('שגיאה: '+e.message));});
+$id('guest-btn').addEventListener('click',()=>{fetch(MAKE_WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:$id('order-summary').textContent})}).then(r=>r.ok?showMessage('נשלח בהצלחה!',false):showMessage('שגיאה בשליחה')).catch(e=>showMessage('שגיאה: '+e.message));});
 
-  $id('logout-btn')?.addEventListener('click', ()=>{
-    currentUser = null;
-    localStorage.removeItem('currentUser');
-    updateAuthUI();
-    closeModal('profile-modal');
-    showMessage('התנתקת', false);
-  });
-
-  function updateAuthUI(){
-    const authBtn = $id('auth-btn');
-    if(currentUser){
-      if(authBtn) authBtn.textContent = 'התנתק';
-    } else {
-      if(authBtn) authBtn.textContent = 'התחבר';
-    }
-    updateSummary();
-  }
-
-  /* ================== SEND FLOW ================== */
-  $id('send-order')?.addEventListener('click', ()=>{
-    if(!currentUser){
-      openModal('send-choice-modal');
-      return;
-    }
-    performSend();
-  });
-
-  $id('guest-btn')?.addEventListener('click', ()=> openModal('send-choice-modal'));
-  $id('cancel-send')?.addEventListener('click', ()=> closeModal('send-choice-modal'));
-  $id('continue-login')?.addEventListener('click', ()=> {
-    if(GOOGLE_CLIENT_ID){
-      google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, ux_mode:'popup' });
-      google.accounts.id.prompt();
-    } else showMessage('אין Google Client ID', true);
-  });
-  $id('continue-guest')?.addEventListener('click', ()=> { if($id('guest-phone-row')) $id('guest-phone-row').style.display = 'block'; });
-  $id('guest-send-confirm')?.addEventListener('click', async ()=>{
-    const phone = $id('guest-phone').value.trim();
-    if(!/^05\d{8}$/.test(phone)){ showMessage('אנא הכנס טלפון תקין (05XXXXXXXX)', true); return; }
-    const prevUser = currentUser;
-    currentUser = { name: 'אורח', email:'', phone };
-    await performSend();
-    currentUser = prevUser;
-    closeModal('send-choice-modal');
-  });
-
-  async function performSend(){
-    const s = computeSummaryObject();
-    if(s.totalRolls === 0){ showMessage('יש לבחור לפחות רול אחד', true); return; }
-    const pickup = $id('pickup-time').value;
-    if(!pickup){ showMessage('יש לבחור שעת איסוף', true); return; }
-
-    const today = new Date().toISOString().slice(0,10);
-    const todayCount = dailyRollCount[today] || 0;
-    if(todayCount + s.totalRolls > 15){ showMessage(`לא ניתן להזמין — הושגו כבר ${todayCount} רולים היום (מקסימום 15).`, true); return; }
-
-    if(bookedTimes.includes(pickup)){ showMessage('השעה תפוסה, בחר שעה אחרת', true); initPickupTimes(); return; }
-
-    const orderUUID = generateUUID();
-    const payload = {
-      id: orderUUID,
-      timestamp: new Date().toISOString(),
-      user: currentUser || { name:'אורח', email:'', phone:'' },
-      pickupTime: pickup,
-      chopsticks: chopsticksCount,
-      notes: $id('notes').value.trim(),
-      rolls: s.rolls,
-      sauces: s.sauces,
-      summary: $id('order-summary').textContent,
-      total: s.total
-    };
-
-    try{
-      // send to Make (best-effort)
-      try { await fetch(MAKE_WEBHOOK_URL, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) }); }
-      catch(e){ console.warn('Make webhook error', e); }
-
-      // Supabase insert if configured
-      if(supabase){
-        const { error } = await supabase.from('orders').insert([{
-          id: payload.id,
-          created_at: payload.timestamp,
-          user_name: payload.user.name,
-          user_email: payload.user.email || '',
-          user_phone: payload.user.phone || '',
-          pickup_time: payload.pickupTime,
-          notes: payload.notes,
-          rolls: payload.rolls,
-          sauces: payload.sauces,
-          chopsticks_count: payload.chopsticks,
-          total: payload.total,
-          summary: payload.summary
-        }]);
-        if(error){ console.error('Supabase insert error', error); showMessage('שגיאה בשמירה ל-DB', true); return; }
-      }
-
-      // update local
-      bookedTimes.push(pickup); localStorage.setItem('bookedTimes', JSON.stringify(bookedTimes));
-      dailyRollCount[today] = (dailyRollCount[today] || 0) + s.totalRolls; localStorage.setItem('dailyRollCount', JSON.stringify(dailyRollCount));
-
-      showMessage('ההזמנה נשלחה ונשמרה בהצלחה!', false);
-
-      // reset
-      selectedRolls = {}; selectedSauces = {}; chopsticksCount = 1;
-      if($id('chopsticks-qty')) $id('chopsticks-qty').value = 1;
-      if($id('notes')) $id('notes').value = '';
-      if($id('pickup-time')) $id('pickup-time').value = '';
-
-      initMenu(); initPickupTimes(); updateSummary();
-    } catch(err){
-      console.error(err); showMessage('שגיאה בשליחת ההזמנה', true);
-    }
-  }
-
-  /* ================== HISTORY VIEW ================== */
-  $id('view-orders')?.addEventListener('click', async ()=>{
-    if(!currentUser || (!currentUser.email && !currentUser.phone)){ showMessage('אין פרטי משתמש כדי למצוא היסטוריה', true); return; }
-    openModal('history-modal');
-    $id('orders-list').textContent = 'טוען…';
-    if(!supabase){ $id('orders-list').textContent = 'אין חיבור ל-Supabase (מפתח לא הוזן).'; return; }
-    try{
-      let query = supabase.from('orders').select('*').order('created_at', { ascending:false });
-      if(currentUser.email) query = query.eq('user_email', currentUser.email);
-      else query = query.eq('user_phone', currentUser.phone);
-      const { data, error } = await query;
-      if(error){ console.error(error); $id('orders-list').textContent = 'שגיאה בטעינת ההיסטוריה'; return; }
-      if(!data || data.length === 0){ $id('orders-list').textContent = 'אין הזמנות קודמות'; return; }
-      $id('orders-list').textContent = data.map(o => `${o.created_at}\n${o.summary}`).join('\n\n—–\n\n');
-    } catch(e){
-      console.error(e); $id('orders-list').textContent = 'שגיאה בטעינת ההיסטוריה';
-    }
-  });
-  $id('close-history')?.addEventListener('click', ()=> closeModal('history-modal'));
-
-  /* ================== INIT ================== */
-  window.addEventListener('DOMContentLoaded', ()=>{
-    // daily reset at midnight (local)
-    const today = new Date().toISOString().slice(0,10);
-    if(localStorage.getItem('lastResetDate') !== today){
-      bookedTimes = []; dailyRollCount = {}; localStorage.setItem('bookedTimes', JSON.stringify(bookedTimes)); localStorage.setItem('dailyRollCount', JSON.stringify(dailyRollCount)); localStorage.setItem('lastResetDate', today);
-    } else {
-      bookedTimes = JSON.parse(localStorage.getItem('bookedTimes')||'[]');
-      dailyRollCount = JSON.parse(localStorage.getItem('dailyRollCount')||'{}');
-      currentUser = JSON.parse(localStorage.getItem('currentUser')||'null');
-    }
-
-    renderCategoryTabs();
-    initMenu();
-    initPickupTimes();
-    setupTabsAndInputs();
-    updateSummary();
-    updateAuthUI();
-
-    // default first tab show
-    const firstTab = document.querySelectorAll('.cat-btn')[0];
-    if(firstTab) firstTab.click();
-
-    // close modals on outside click
-    document.querySelectorAll('.modal').forEach(modal=>{
-      modal.addEventListener('click', (e)=>{ if(e.target === modal) modal.style.display = 'none'; });
-    });
-  });
-
-  </script>
+window.addEventListener('DOMContentLoaded',()=>{
+  initMenu();
+  updateSummary();
+  const sel=$id('pickup-time');
+  sel.innerHTML='<option value="">בחר שעה</option>';
+  for(let h=11;h<=21;h++){sel.innerHTML+=`<option value="${h}:00">${h}:00</option>`;sel.innerHTML+=`<option value="${h}:30">${h}:30</option>`;}
+});
+</script>
 </body>
 </html>
