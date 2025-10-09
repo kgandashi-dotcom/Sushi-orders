@@ -494,16 +494,63 @@ const PREP_TIME_PER_ROLL = 10;
     // ========================================
 
     function setupProfileButton() {
-      document.getElementById('profile-btn').addEventListener('click', () => {
-        const panel = document.getElementById('profile-panel');
-        if (panel.style.display === 'none') {
-          showProfile();
-          panel.style.display = 'block';
-        } else {
-          panel.style.display = 'none';
-        }
-      });
+  // הטאב של הפרופיל יטופל אוטומטית ע"י setupTabs
+  
+  // כפתור עריכה
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.id === 'edit-profile-btn') {
+      editProfileDetails();
     }
+  });
+}
+
+function showProfileInTab() {
+  if (!currentUser) return;
+  
+  const displayDiv = document.getElementById('profile-info-display');
+  displayDiv.innerHTML = `
+    <p style="margin:8px 0;"><strong>שם:</strong> ${currentUser.name}</p>
+    <p style="margin:8px 0;"><strong>אימייל:</strong> ${currentUser.email}</p>
+    <p style="margin:8px 0;"><strong>טלפון:</strong> ${currentUser.phone}</p>
+  `;
+  
+  loadOrderHistory();
+}
+
+async function editProfileDetails() {
+  const newName = prompt('שם מלא:', currentUser.name);
+  if (!newName || newName.trim() === '') return;
+  
+  const newPhone = prompt('מספר טלפון:', currentUser.phone);
+  if (!newPhone || newPhone.trim() === '') return;
+  
+  // עדכון מקומי
+  currentUser.name = newName.trim();
+  currentUser.phone = newPhone.trim();
+  localStorage.setItem('sushiUser', JSON.stringify(currentUser));
+  
+  // עדכון ב-Supabase
+  try {
+    if (supabase) {
+      const { error } = await supabase
+        .from('Sushi')
+        .update({ 
+          user_name: currentUser.name,
+          phone: currentUser.phone 
+        })
+        .eq('email', currentUser.email);
+      
+      if (error) throw error;
+      showMessage('✅ הפרטים עודכנו בהצלחה!', 'green');
+    }
+  } catch (err) {
+    console.error('שגיאה בעדכון:', err);
+    showMessage('⚠️ הפרטים נשמרו מקומית, אך לא עודכנו בהזמנות קודמות', 'orange');
+  }
+  
+  // רענון תצוגה
+  showProfileInTab();
+}
 
     async function showProfile() {
       const info = document.getElementById('profile-info');
