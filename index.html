@@ -606,16 +606,27 @@ async function editProfileDetails() {
     // ========================================
 
     function setupLogoutButton() {
-      document.getElementById('logout-btn').addEventListener('click', () => {
-        localStorage.removeItem('sushiUser');
-        currentUser = null;
-        document.getElementById('login-btn').style.display = 'block';
-        document.getElementById('profile-btn').style.display = 'none';
-        document.getElementById('logout-btn').style.display = 'none';
-        document.getElementById('profile-panel').style.display = 'none';
-        showMessage('התנתקת בהצלחה', 'green');
-      });
-    }
+  document.getElementById('logout-btn').addEventListener('click', function() {
+    localStorage.removeItem('sushiUser');
+    currentUser = null;
+    document.getElementById('login-btn').style.display = 'block';
+    document.getElementById('profile-tab-btn').style.display = 'none';
+    document.getElementById('logout-btn').style.display = 'none';
+    
+    // חזרה לטאב ראשון
+    document.querySelectorAll('.tab-btn').forEach(function(t) {
+      t.classList.remove('active');
+    });
+    document.querySelector('.tab-btn[data-target="insideout"]').classList.add('active');
+    
+    document.querySelectorAll('.menu-category').forEach(function(cat) {
+      cat.style.display = 'none';
+    });
+    document.getElementById('insideout').style.display = 'block';
+    
+    showMessage('התנתקת בהצלחה', 'green');
+  });
+}
 
     // ========================================
     // רינדור תפריט
