@@ -410,18 +410,24 @@ const PREP_TIME_PER_ROLL = 10;
     // אתחול
     // ========================================
 
-    document.addEventListener('DOMContentLoaded', () => {
-      initGoogleAuth();
-      checkLocalAuth();
-      renderMenu();
-      setupTabs();
-      setupChopsticks();
-      loadExistingOrders();
-      setupSendOrder();
-      setupProfileButton();
-      setupLogoutButton();
-      updateSummary();
-    });
+    document.addEventListener('DOMContentLoaded', async function() {
+  initGoogleAuth();
+  checkLocalAuth();
+  renderMenu();
+  setupTabs();
+  setupChopsticks();
+  
+  // טעינת זמני הכנה מהטבלה
+  await loadRecipePrepTimes();
+  
+  // טעינת הזמנות קיימות
+  await loadExistingOrders();
+  
+  setupSendOrder();
+  setupProfileButton();
+  setupLogoutButton();
+  updateSummary();
+});
 
     // ========================================
     // Google OAuth
