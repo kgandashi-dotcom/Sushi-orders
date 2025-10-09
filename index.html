@@ -822,7 +822,12 @@ function updateSummary() {
     const item = menuData[category][parseInt(idx)];
     const itemTotal = item.price * qty;
     totalPrice += itemTotal;
-    
+    const estimatedPrepTime = calculateOrderPrepTime(orderItems);
+    if (totalRolls > 0) {
+    lines.push('\n⏱️ זמן הכנה משוער: ' + estimatedPrepTime + ' דקות');
+    }
+
+    lines.push('\n' + '='.repeat(30) + '\nסה"כ לתשלום: ' + totalPrice + '₪');
     lines.push(`${item.name} x${qty} = ${itemTotal}₪`);
   });
 
