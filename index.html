@@ -693,23 +693,71 @@ const PREP_TIME_PER_ROLL = 10;
     // ========================================
 
     async function loadExistingOrders() {
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        const { data, error } = await supabase
-          .from('Sushi')
-          .select('pickup_time, total_rolls')
-          .eq('order_date', today);
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const { data, error } = await supabase
+      .from('Sushi')
+      .select('pickup_time, items')
+      .eq('order_date', today);
 
-        if (error) throw error;
+    if (error) throw error;
 
-        existingOrders = data || [];
-        generatePickupSlots();
-      } catch (err) {
-        console.error('שגיאה בטעינת הזמנות:', err);
-        generatePickupSlots();
-      }
+    existingOrders = data || [];
+    generatePickupSlots();
+  } catch (err) {
+    console.error('שגיאה בטעינת הזמנות:', err);
+    generatePickupSlots();
+  }
+}
+// ========================================
+// טעינת זמני הכנה מטבלת recipes
+// ========================================
+
+let recipePrepTimes = {};
+
+async function loadRecipePrepTimes() {
+  try {
+    if (!supabase) {
+      console.warn('Supabase לא מחובר - משתמש בזמני ברירת מחדל');
+      return;
     }
+    
+    const { data, error } = await supabase
+      .from('recipes')
+      .select('item_key, prep_time_minutes');
+    
+    if (error) throw error;
+    
+    // שמירה במיפוי
+    if (data) {
+      data.forEach(function(recipe) {
+        recipePrepTimes[recipe.item_key] = recipe.prep_time_minutes;
+      });
+    }
+    
+    console.log('✅ זמני הכנה נטענו:', Object.keys(recipePrepTimes).length, 'פריטים');
+  } catch (err) {
+    console.error('❌ שגיאה בטעינת זמני הכנה:', err);
+  }
+}
 
+// פונקציה לקבלת זמן הכנה לפריט
+function getItemPrepTime(itemKey) {
+  return recipePrepTimes[itemKey] || 10; // ברירת מחדל: 10 דקות
+}
+
+// חישוב זמן הכנה כולל להזמנה
+function calculateOrderPrepTime(items) {
+  let totalMinutes = 0;
+  
+  for (let key in items) {
+    const quantity = items[key];
+    const prepTimePerItem = getItemPrepTime(key);
+    totalMinutes += prepTimePerItem * quantity;
+  }
+  
+  return totalMinutes;
+}
     // ========================================
     // יצירת שעות איסוף חכמות
     // ========================================
