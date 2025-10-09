@@ -302,13 +302,21 @@ h1{
 
       <div id="messages" aria-live="polite"></div>
 
-      <section id="profile-panel" class="profile-panel" style="display:none;">
-        <h3>פרופיל</h3>
-        <div id="profile-info"></div>
-        <h4>היסטוריית הזמנות</h4>
-        <div id="order-history"></div>
-      </section>
-
+      <section id="profile-section" class="menu-category" style="display:none;">
+  <div class="category-title">הפרופיל שלי</div>
+  
+  <div style="background:#fff; padding:20px; border-radius:10px; margin-bottom:20px;">
+    <h3 style="margin-top:0; color:var(--accent);">פרטים אישיים</h3>
+    <div id="profile-info-display"></div>
+    
+    <button id="edit-profile-btn" style="margin-top:15px; padding:10px 20px; background:var(--accent); color:#fff; border:none; border-radius:6px; cursor:pointer;">✏️ ערוך פרטים</button>
+  </div>
+  
+  <div style="background:#fff; padding:20px; border-radius:10px;">
+    <h3 style="margin-top:0; color:var(--accent);">היסטוריית הזמנות</h3>
+    <div id="order-history"></div>
+  </div>
+</section>
     </main>
 
   </div>
