@@ -610,20 +610,35 @@ function showProfilePage() {
 }
 
 function hideProfilePage() {
-  // הצגת התפריט
+  // הסתרת הפרופיל
   document.getElementById('profile-page').style.display = 'none';
+  
+  // הצגת כל הסקשנים
   document.getElementById('menu-section').style.display = 'block';
-  document.getElementById('sauces').style.display = 'block';
   document.getElementById('chopsticks').style.display = 'block';
   document.getElementById('notes-section').style.display = 'block';
   document.getElementById('pickup-section').style.display = 'block';
   document.getElementById('summary-section').style.display = 'block';
   
   // חזרה לטאב הראשון
+  document.querySelectorAll('.tab-btn').forEach(function(t) {
+    t.classList.remove('active');
+  });
+  
+  const firstTab = document.querySelector('.tab-btn[data-target="insideout"]');
+  if (firstTab) {
+    firstTab.classList.add('active');
+  }
+  
+  // הצגת insideout
   document.querySelectorAll('.menu-category').forEach(function(cat) {
     cat.style.display = 'none';
   });
-  document.getElementById('insideout').style.display = 'block';
+  
+  const insideoutSection = document.getElementById('insideout');
+  if (insideoutSection) {
+    insideoutSection.style.display = 'block';
+  }
 }
 
 function loadProfileData() {
@@ -767,35 +782,51 @@ function setupTabs() {
   const tabs = document.querySelectorAll('.tab-btn');
   tabs.forEach(function(tab) {
     tab.addEventListener('click', function() {
-      // הסתרת עמוד הפרופיל אם פתוח
-      document.getElementById('profile-page').style.display = 'none';
+      console.log('👆 לחצת על טאב:', tab.getAttribute('data-target'));
       
-      // הצגת כל הסקשנים של התפריט
-      document.getElementById('menu-section').style.display = 'block';
-      document.getElementById('chopsticks').style.display = 'block';
-      document.getElementById('notes-section').style.display = 'block';
-      document.getElementById('pickup-section').style.display = 'block';
-      document.getElementById('summary-section').style.display = 'block';
+      // הסתרת עמוד הפרופיל
+      const profilePage = document.getElementById('profile-page');
+      if (profilePage) {
+        profilePage.style.display = 'none';
+      }
       
+      // הצגת כל הסקשנים של ההזמנה
+      const menuSection = document.getElementById('menu-section');
+      const chopsticksSection = document.getElementById('chopsticks');
+      const notesSection = document.getElementById('notes-section');
+      const pickupSection = document.getElementById('pickup-section');
+      const summarySection = document.getElementById('summary-section');
+      
+      if (menuSection) menuSection.style.display = 'block';
+      if (chopsticksSection) chopsticksSection.style.display = 'block';
+      if (notesSection) notesSection.style.display = 'block';
+      if (pickupSection) pickupSection.style.display = 'block';
+      if (summarySection) summarySection.style.display = 'block';
+      
+      // הסרת active מכל הטאבים
       tabs.forEach(function(t) {
         t.classList.remove('active');
       });
       tab.classList.add('active');
 
+      // הסתרת כל הקטגוריות
       document.querySelectorAll('.menu-category').forEach(function(cat) {
         cat.style.display = 'none';
       });
 
+      // הצגת הקטגוריה הנבחרת
       const target = tab.getAttribute('data-target');
       const targetElement = document.getElementById(target);
       
       if (targetElement) {
         targetElement.style.display = 'block';
+        console.log('✅ הצגת:', target);
+      } else {
+        console.error('❌ לא נמצא:', target);
       }
     });
   });
 }
-
     // ========================================
     // כמויות רולים
     // ========================================
