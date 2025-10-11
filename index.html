@@ -928,41 +928,59 @@ function calculateOrderPrepTime(items) {
     // יצירת שעות איסוף חכמות
     // ========================================
 
-    function generatePickupSlots() {
-      const select = document.getElementById('pickup-time');
-      select.innerHTML = '<option value="">בחר שעה</option>';
+function generatePickupSlots() {
+  const select = document.getElementById('pickup-time');
+  select.innerHTML = '<option value="">בחר שעה</option>';
 
-      const start = 19 * 60; // 19:00
-      const end = 22.5 * 60; // 22:30
-      const blockedTimes = new Set();
+  const start = 19 * 60; // 19:00
+  const end = 22.5 * 60; // 22:30
+  const blockedSlots = new Set();
 
-      // חישוב שעות חסומות על בסיס הזמנות קיימות
-      existingOrders.forEach(order => {
-        const [hours, minutes] = order.pickup_time.split(':').map(Number);
-        const orderTimeInMinutes = hours * 60 + minutes;
-        
-        // כל הזמנה חוסמת את השעה שלה + 10 דקות לפניה
-        blockedTimes.add(orderTimeInMinutes);
-        blockedTimes.add(orderTimeInMinutes - 10);
-        blockedTimes.add(orderTimeInMinutes - 20);
-        blockedTimes.add(orderTimeInMinutes - 30);
-      });
-
-      // יצירת אופציות זמינות
-      for (let minutes = start; minutes <= end; minutes += 30) {
-        if (!blockedTimes.has(minutes)) {
-          const hours = Math.floor(minutes / 60);
-          const mins = minutes % 60;
-          const timeStr = `${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}`;
-          const option = document.createElement('option');
-          option.value = timeStr;
-          option.textContent = timeStr;
-          select.appendChild(option);
+  // חישוב זמני הכנה של הזמנות קיימות
+  existingOrders.forEach(function(order) {
+    try {
+      const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+      const prepTime = calculateOrderPrepTime(items);
+      
+      const timeParts = order.pickup_time.split(':');
+      const hours = parseInt(timeParts[0]);
+      const minutes = parseInt(timeParts[1]);
+      const orderTimeInMinutes = hours * 60 + minutes;
+      
+      // חסימת השעה עצמה
+      blockedSlots.add(orderTimeInMinutes);
+      
+      // חסימת כל 10 הדקות שצריכים לפני זה
+      let slotsToBlock = Math.ceil(prepTime / 10);
+      for (let i = 1; i <= slotsToBlock; i++) {
+        const blockedTime = orderTimeInMinutes - (i * 10);
+        if (blockedTime >= start) {
+          blockedSlots.add(blockedTime);
         }
       }
-
-      select.addEventListener('change', updateSummary);
+      
+      console.log('הזמנה ל-' + order.pickup_time + ' דורשת ' + prepTime + ' דקות, חוסם ' + slotsToBlock + ' משבצות');
+      
+    } catch (e) {
+      console.error('שגיאה בחישוב זמן הכנה:', e);
     }
+  });
+
+  // יצירת אופציות זמינות - כל 10 דקות
+  for (let minutes = start; minutes <= end; minutes += 10) {
+    if (!blockedSlots.has(minutes)) {
+      const hours = Math.floor(minutes / 60);
+      const mins = minutes % 60;
+      const timeStr = hours.toString().padStart(2,'0') + ':' + mins.toString().padStart(2,'0');
+      const option = document.createElement('option');
+      option.value = timeStr;
+      option.textContent = timeStr;
+      select.appendChild(option);
+    } else {
+      console.log('חסום: ' + Math.floor(minutes/60) + ':' + (minutes%60).toString().padStart(2,'0'));
+    }
+  }
+}
 
     // ========================================
     // סיכום הזמנה
