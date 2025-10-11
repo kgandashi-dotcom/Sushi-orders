@@ -533,40 +533,113 @@ const PREP_TIME_PER_ROLL = 10;
     // פרופיל
     // ========================================
 
-    function setupProfileButton() {
-  // הטאב של הפרופיל יטופל אוטומטית ע"י setupTabs
+function setupProfileButton() {
+  document.getElementById('profile-btn').addEventListener('click', function() {
+    showProfilePage();
+  });
   
-  // כפתור עריכה
-  document.addEventListener('click', function(e) {
-    if (e.target && e.target.id === 'edit-profile-btn') {
-      editProfileDetails();
-    }
+  // כפתור מצב עריכה
+  document.getElementById('edit-mode-btn').addEventListener('click', function() {
+    enterEditMode();
+  });
+  
+  // כפתור שמירה
+  document.getElementById('save-profile-btn').addEventListener('click', function() {
+    saveProfileChanges();
+  });
+  
+  // כפתור ביטול
+  document.getElementById('cancel-edit-btn').addEventListener('click', function() {
+    exitEditMode();
+  });
+  
+  // כפתור חזרה לתפריט
+  document.getElementById('back-to-menu-btn').addEventListener('click', function() {
+    hideProfilePage();
+  });
+  
+  // כפתור התנתקות מתוך הפרופיל
+  document.getElementById('logout-btn-profile').addEventListener('click', function() {
+    logoutUser();
   });
 }
 
-function showProfileInTab() {
-  if (!currentUser) return;
+function showProfilePage() {
+  // הסתרת כל התפריט
+  document.getElementById('menu-section').style.display = 'none';
+  document.getElementById('sauces').style.display = 'none';
+  document.getElementById('chopsticks').style.display = 'none';
+  document.getElementById('notes-section').style.display = 'none';
+  document.getElementById('pickup-section').style.display = 'none';
+  document.getElementById('summary-section').style.display = 'none';
   
-  const displayDiv = document.getElementById('profile-info-display');
-  displayDiv.innerHTML = `
-    <p style="margin:8px 0;"><strong>שם:</strong> ${currentUser.name}</p>
-    <p style="margin:8px 0;"><strong>אימייל:</strong> ${currentUser.email}</p>
-    <p style="margin:8px 0;"><strong>טלפון:</strong> ${currentUser.phone}</p>
-  `;
+  // הצגת עמוד הפרופיל
+  document.getElementById('profile-page').style.display = 'block';
   
+  // טעינת נתונים
+  loadProfileData();
   loadOrderHistory();
 }
 
-async function editProfileDetails() {
-  const newName = prompt('שם מלא:', currentUser.name);
-  if (!newName || newName.trim() === '') return;
+function hideProfilePage() {
+  // הצגת התפריט
+  document.getElementById('profile-page').style.display = 'none';
+  document.getElementById('menu-section').style.display = 'block';
+  document.getElementById('sauces').style.display = 'block';
+  document.getElementById('chopsticks').style.display = 'block';
+  document.getElementById('notes-section').style.display = 'block';
+  document.getElementById('pickup-section').style.display = 'block';
+  document.getElementById('summary-section').style.display = 'block';
   
-  const newPhone = prompt('מספר טלפון:', currentUser.phone);
-  if (!newPhone || newPhone.trim() === '') return;
+  // חזרה לטאב הראשון
+  document.querySelectorAll('.menu-category').forEach(function(cat) {
+    cat.style.display = 'none';
+  });
+  document.getElementById('insideout').style.display = 'block';
+}
+
+function loadProfileData() {
+  if (!currentUser) return;
+  
+  document.getElementById('display-name').textContent = currentUser.name;
+  document.getElementById('display-email').textContent = currentUser.email;
+  document.getElementById('display-phone').textContent = currentUser.phone;
+}
+
+function enterEditMode() {
+  document.getElementById('profile-view-mode').style.display = 'none';
+  document.getElementById('profile-edit-mode').style.display = 'block';
+  
+  // מילוי שדות
+  document.getElementById('edit-name').value = currentUser.name;
+  document.getElementById('edit-phone').value = currentUser.phone;
+}
+
+function exitEditMode() {
+  document.getElementById('profile-edit-mode').style.display = 'none';
+  document.getElementById('profile-view-mode').style.display = 'block';
+}
+
+async function saveProfileChanges() {
+  const newName = document.getElementById('edit-name').value.trim();
+  const newPhone = document.getElementById('edit-phone').value.trim();
+  
+  // ולידציה - שם
+  if (!newName || newName.length < 2) {
+    showMessage('❌ נא להזין שם תקין', 'red');
+    return;
+  }
+  
+  // ולידציה - טלפון
+  const phoneRegex = /^0(5[0-9]|[2-4]|[8-9])\d{7}$/;
+  if (!phoneRegex.test(newPhone.replace(/[-\s]/g, ''))) {
+    showMessage('❌ מספר טלפון לא תקין. פורמט נכון: 0501234567', 'red');
+    return;
+  }
   
   // עדכון מקומי
-  currentUser.name = newName.trim();
-  currentUser.phone = newPhone.trim();
+  currentUser.name = newName;
+  currentUser.phone = newPhone.replace(/[-\s]/g, '');
   localStorage.setItem('sushiUser', JSON.stringify(currentUser));
   
   // עדכון ב-Supabase
@@ -581,93 +654,28 @@ async function editProfileDetails() {
         .eq('email', currentUser.email);
       
       if (error) throw error;
-      showMessage('✅ הפרטים עודכנו בהצלחה!', 'green');
     }
+    
+    showMessage('✅ הפרטים עודכנו בהצלחה!', 'green');
+    loadProfileData();
+    exitEditMode();
+    
   } catch (err) {
     console.error('שגיאה בעדכון:', err);
-    showMessage('⚠️ הפרטים נשמרו מקומית, אך לא עודכנו בהזמנות קודמות', 'orange');
+    showMessage('⚠️ הפרטים נשמרו מקומית', 'orange');
+    loadProfileData();
+    exitEditMode();
   }
-  
-  // רענון תצוגה
-  showProfileInTab();
 }
 
-    async function showProfile() {
-      const info = document.getElementById('profile-info');
-      info.innerHTML = `
-        <p><strong>שם:</strong> ${currentUser.name}</p>
-        <p><strong>אימייל:</strong> ${currentUser.email}</p>
-        <p><strong>טלפון:</strong> ${currentUser.phone} 
-          <button onclick="editPhone()">ערוך</button>
-        </p>
-      `;
-      await loadOrderHistory();
-    }
-
-    async function loadOrderHistory() {
-      try {
-        const { data, error } = await supabase
-          .from('Sushi')
-          .select('*')
-          .eq('email', currentUser.email)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        const historyDiv = document.getElementById('order-history');
-        if (!data || data.length === 0) {
-          historyDiv.innerHTML = '<p>אין הזמנות קודמות.</p>';
-          return;
-        }
-
-        historyDiv.innerHTML = data.map(order => `
-          <div class="history-item">
-            <strong>${new Date(order.created_at).toLocaleDateString('he-IL')}</strong><br>
-            שעת איסוף: ${order.pickup_time}<br>
-            סה"כ: ${order.total_price}₪
-          </div>
-        `).join('');
-      } catch (err) {
-        showMessage('שגיאה בטעינת היסטוריה: ' + err.message, 'red');
-      }
-    }
-
-    window.editPhone = function() {
-      const newPhone = prompt('הזן מספר טלפון חדש:', currentUser.phone);
-      if (newPhone) {
-        currentUser.phone = newPhone;
-        localStorage.setItem('sushiUser', JSON.stringify(currentUser));
-        showProfile();
-      }
-    };
-
-    // ========================================
-    // התנתקות
-    // ========================================
-
-    function setupLogoutButton() {
-  document.getElementById('logout-btn').addEventListener('click', function() {
-    localStorage.removeItem('sushiUser');
-    currentUser = null;
-    document.getElementById('login-btn').style.display = 'block';
-    document.getElementById('profile-tab-btn').style.display = 'none';
-    document.getElementById('logout-btn').style.display = 'none';
-    
-    // חזרה לטאב ראשון
-    document.querySelectorAll('.tab-btn').forEach(function(t) {
-      t.classList.remove('active');
-    });
-    document.querySelector('.tab-btn[data-target="insideout"]').classList.add('active');
-    
-    document.querySelectorAll('.menu-category').forEach(function(cat) {
-      cat.style.display = 'none';
-    });
-    document.getElementById('insideout').style.display = 'block';
-    
-    showMessage('התנתקת בהצלחה', 'green');
-  });
+function logoutUser() {
+  localStorage.removeItem('sushiUser');
+  currentUser = null;
+  document.getElementById('login-btn').style.display = 'block';
+  document.getElementById('profile-btn').style.display = 'none';
+  hideProfilePage();
+  showMessage('התנתקת בהצלחה', 'green');
 }
-
     // ========================================
     // רינדור תפריט
     // ========================================
