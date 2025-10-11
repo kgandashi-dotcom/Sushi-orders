@@ -763,10 +763,20 @@ function logoutUser() {
     // לשוניות (Tabs)
     // ========================================
 
-    function setupTabs() {
+function setupTabs() {
   const tabs = document.querySelectorAll('.tab-btn');
   tabs.forEach(function(tab) {
     tab.addEventListener('click', function() {
+      // הסתרת עמוד הפרופיל אם פתוח
+      document.getElementById('profile-page').style.display = 'none';
+      
+      // הצגת כל הסקשנים של התפריט
+      document.getElementById('menu-section').style.display = 'block';
+      document.getElementById('chopsticks').style.display = 'block';
+      document.getElementById('notes-section').style.display = 'block';
+      document.getElementById('pickup-section').style.display = 'block';
+      document.getElementById('summary-section').style.display = 'block';
+      
       tabs.forEach(function(t) {
         t.classList.remove('active');
       });
@@ -781,11 +791,6 @@ function logoutUser() {
       
       if (targetElement) {
         targetElement.style.display = 'block';
-        
-        // אם זה טאב הפרופיל - טען את הנתונים
-        if (target === 'profile-section') {
-          showProfileInTab();
-        }
       }
     });
   });
