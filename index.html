@@ -501,21 +501,49 @@ const PREP_TIME_PER_ROLL = 10;
   );
 }
 
-    async function handleGoogleLogin(response) {
-      try {
-        const decoded = jwt_decode(response.credential);
-        currentUser = {
-          name: decoded.name,
-          email: decoded.email,
-          phone: prompt('נא להזין מספר טלפון:') || ''
-        };
-        localStorage.setItem('sushiUser', JSON.stringify(currentUser));
-        showMessage('התחברת בהצלחה!', 'green');
-        updateUIAfterLogin();
-      } catch (err) {
-        showMessage('שגיאה בהתחברות: ' + err.message, 'red');
+async function handleGoogleLogin(response) {
+  try {
+    const decoded = jwt_decode(response.credential);
+    
+    // בדיקה אם יש טלפון שמור
+    const savedUser = localStorage.getItem('sushiUser');
+    let phone = '';
+    
+    if (savedUser) {
+      const parsed = JSON.parse(savedUser);
+      if (parsed.email === decoded.email && parsed.phone) {
+        phone = parsed.phone;
       }
     }
+    
+    // אם אין טלפון - בקש
+    if (!phone) {
+      phone = prompt('נא להזין מספר טלפון:');
+      if (!phone) {
+        showMessage('חייב להזין מספר טלפון', 'red');
+        return;
+      }
+    }
+    
+    currentUser = {
+      name: decoded.name,
+      email: decoded.email,
+      phone: phone
+    };
+    
+    localStorage.setItem('sushiUser', JSON.stringify(currentUser));
+    showMessage('התחברת בהצלחה!', 'green');
+    updateUIAfterLogin();
+    
+    // הצגת עמוד הפרופיל מיד
+    setTimeout(function() {
+      showProfilePage();
+    }, 500);
+    
+  } catch (err) {
+    showMessage('שגיאה בהתחברות: ' + err.message, 'red');
+  }
+}
 
     function checkLocalAuth() {
       const stored = localStorage.getItem('sushiUser');
