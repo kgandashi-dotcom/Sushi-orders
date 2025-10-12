@@ -593,13 +593,24 @@ function setupProfileButton() {
 }
 
 function showProfilePage() {
-  // הסתרת כל התפריט
-  document.getElementById('menu-section').style.display = 'none';
-  document.getElementById('sauces').style.display = 'none';
+  // הסתרת טאבים
+  document.querySelectorAll('.tab-btn').forEach(function(btn) {
+    btn.classList.remove('active');
+  });
+  
+  // הסתרת כל קטגוריות התפריט
+  document.querySelectorAll('.menu-category').forEach(function(cat) {
+    cat.style.display = 'none';
+  });
+  
+  // הסתרת סקשנים של ההזמנה
   document.getElementById('chopsticks').style.display = 'none';
   document.getElementById('notes-section').style.display = 'none';
   document.getElementById('pickup-section').style.display = 'none';
   document.getElementById('summary-section').style.display = 'none';
+  
+  // הסתרת menu-section
+  document.getElementById('menu-section').style.display = 'none';
   
   // הצגת עמוד הפרופיל
   document.getElementById('profile-page').style.display = 'block';
