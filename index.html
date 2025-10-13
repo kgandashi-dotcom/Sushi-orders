@@ -501,7 +501,39 @@ const PREP_TIME_PER_ROLL = 10;
     { theme: 'outline', size: 'large', text: 'signin_with', locale: 'he' }
   );
 }
+async function loadOrderHistory() {
+  try {
+    if (!currentUser) return;
+    
+    const { data, error } = await supabase
+      .from('Sushi')
+      .select('*')
+      .eq('email', currentUser.email)
+      .order('created_at', { ascending: false });
 
+    if (error) throw error;
+
+    const historyDiv = document.getElementById('order-history');
+    if (!historyDiv) return;
+    
+    if (!data || data.length === 0) {
+      historyDiv.innerHTML = '<p>אין הזמנות קודמות.</p>';
+      return;
+    }
+
+    historyDiv.innerHTML = data.map(function(order) {
+      return `
+        <div class="history-item">
+          <strong>${new Date(order.created_at).toLocaleDateString('he-IL')}</strong><br>
+          שעת איסוף: ${order.pickup_time}<br>
+          סה"כ: ${order.total_price}₪
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error('שגיאה בטעינת היסטוריה:', err);
+    showMessage('שגיאה בטעינת היסטוריה: ' + err.message, 'red');
+  }
 async function handleGoogleLogin(response) {
   try {
     const decoded = jwt_decode(response.credential);
