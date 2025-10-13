@@ -1033,21 +1033,18 @@ function updateSummary() {
   let lines = [];
 
   // רולים
-  Object.keys(orderItems).forEach(key => {
+  Object.keys(orderItems).forEach(function(key) {
     const qty = orderItems[key];
     totalRolls += qty;
     
-    const [category, idx] = key.split('_');
-    const item = menuData[category][parseInt(idx)];
+    const parts = key.split('_');
+    const category = parts[0];
+    const idx = parseInt(parts[1]);
+    const item = menuData[category][idx];
     const itemTotal = item.price * qty;
     totalPrice += itemTotal;
-    const estimatedPrepTime = calculateOrderPrepTime(orderItems);
-    if (totalRolls > 0) {
-    lines.push('\n⏱️ זמן הכנה משוער: ' + estimatedPrepTime + ' דקות');
-    }
-
-    lines.push('\n' + '='.repeat(30) + '\nסה"כ לתשלום: ' + totalPrice + '₪');
-    lines.push(`${item.name} x${qty} = ${itemTotal}₪`);
+    
+    lines.push(item.name + ' x' + qty + ' = ' + itemTotal + '₪');
   });
 
   // רטבים
@@ -1078,43 +1075,83 @@ function updateSummary() {
   }
 
   // צ'ופסטיקס
-  lines.push(`צ'ופסטיקס: ${chopsticksCount}`);
+  lines.push('\nצ\'ופסטיקס: ' + chopsticksCount);
 
   // הערות
-  const notes = document.getElementById('notes').value.trim();
-  if (notes) {
-    lines.push(`\nהערות: ${notes}`);
+  const notesInput = document.getElementById('notes');
+  if (notesInput) {
+    const notes = notesInput.value.trim();
+    if (notes) {
+      lines.push('\nהערות: ' + notes);
+    }
   }
 
   // שעת איסוף
-  const pickupTime = document.getElementById('pickup-time').value;
+  const pickupTimeSelect = document.getElementById('pickup-time');
+  const pickupTime = pickupTimeSelect ? pickupTimeSelect.value : '';
   if (pickupTime) {
-    lines.push(`\nשעת איסוף: ${pickupTime}`);
+    lines.push('\nשעת איסוף: ' + pickupTime);
   }
 
-  lines.push(`\n${'='.repeat(30)}\nסה"כ לתשלום: ${totalPrice}₪`);
+  // זמן הכנה משוער
+  if (totalRolls > 0) {
+    const estimatedPrepTime = calculateOrderPrepTime(orderItems);
+    lines.push('\n⏱️ זמן הכנה משוער: ' + estimatedPrepTime + ' דקות');
+  }
 
-  document.getElementById('order-summary').textContent = 
-    totalRolls > 0 ? lines.join('\n') : 'הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.';
+  // סה"כ
+  lines.push('\n' + '='.repeat(30) + '\nסה"כ לתשלום: ' + totalPrice + '₪');
 
-  // בדיקת מגבלות
+  // עדכון התצוגה
+  const summaryElement = document.getElementById('order-summary');
+  if (summaryElement) {
+    summaryElement.textContent = totalRolls > 0 ? lines.join('\n') : 'הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.';
+  }
+
+  // בדיקת מגבלות והפעלת כפתור
   const sendBtn = document.getElementById('send-order');
+  if (!sendBtn) {
+    console.error('❌ כפתור שליחה לא נמצא');
+    return;
+  }
+
   if (totalRolls === 0 || !pickupTime) {
     sendBtn.disabled = true;
+    sendBtn.style.opacity = '0.5';
+    sendBtn.style.cursor = 'not-allowed';
   } else if (totalRolls > 15) {
     sendBtn.disabled = true;
+    sendBtn.style.opacity = '0.5';
+    sendBtn.style.cursor = 'not-allowed';
     showMessage('לא ניתן להזמין יותר מ־15 רולים ביום', 'red');
   } else {
     sendBtn.disabled = false;
-    document.getElementById('messages').textContent = '';
+    sendBtn.style.opacity = '1';
+    sendBtn.style.cursor = 'pointer';
+    const messagesDiv = document.getElementById('messages');
+    if (messagesDiv) {
+      messagesDiv.textContent = '';
+    }
+    console.log('✅ כפתור מופעל - מוכן לשליחה');
   }
-}
-
+}    
     // ========================================
     // שליחת הזמנה
     // ========================================
 function setupSendOrder() {
-  document.getElementById('send-order').addEventListener('click', async function() {
+  const sendButton = document.getElementById('send-order');
+  
+  if (!sendButton) {
+    console.error('❌ כפתור שלח הזמנה לא נמצא ב-setupSendOrder!');
+    return;
+  }
+  
+  console.log('✅ setupSendOrder - כפתור נמצא');
+  
+  sendButton.addEventListener('click', async function(e) {
+    e.preventDefault(); // מונע שליחת טופס אם יש
+    console.log('🎯 נלחץ על כפתור שליחה');
+    
     let orderUser = currentUser;
     
     if (!currentUser) {
@@ -1176,6 +1213,8 @@ function setupSendOrder() {
     }
 
     try {
+      console.log('📦 מתחיל לשלוח הזמנה...');
+      
       let totalSauces = 0;
       for (let key in sauceSelections) {
         totalSauces += sauceSelections[key];
@@ -1211,6 +1250,8 @@ function setupSendOrder() {
         items_summary: summaryText
       };
 
+      console.log('📋 נתוני הזמנה:', orderData);
+
       if (!supabase) {
         showMessage('Supabase לא מחובר - בדוק את ההגדרות', 'red');
         return;
@@ -1219,12 +1260,16 @@ function setupSendOrder() {
       const result = await supabase.from('Sushi').insert([orderData]);
 
       if (result.error) throw result.error;
+      
+      console.log('✅ נשמר ב-Supabase');
 
       await fetch(MAKE_WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
       });
+      
+      console.log('✅ נשלח ל-Make.com');
 
       showMessage('✅ ההזמנה נשלחה בהצלחה!', 'green');
       
@@ -1232,6 +1277,7 @@ function setupSendOrder() {
       await loadExistingOrders();
 
     } catch (err) {
+      console.error('❌ שגיאה מפורטת:', err);
       showMessage('❌ שגיאה בשליחת ההזמנה: ' + err.message, 'red');
     }
   });
