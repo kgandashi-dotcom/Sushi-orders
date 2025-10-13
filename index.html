@@ -281,14 +281,13 @@ h1{
 
       <section id="notes-section">
         <div class="category-title">הערות אישיות</div>
-        <textarea id="notes" placeholder="הערות למשל: ללא גלוטן, הגעה בשער 3..."></textarea>
+<textarea id="notes" placeholder="הערות למשל: ברול ניוטון, ללא רוטב בוטנים" oninput="updateSummary()"></textarea>
       </section>
 
       <section id="pickup-section">
-        <div class="category-title">בחר שעת איסוף</div>
-        <select id="pickup-time">
-          <option value="">בחר שעה</option>
-        </select>
+        <div class="category-title">בחר שעת איסוף</<select id="pickup-time" onchange="updateSummary()">
+        <option value="">בחר שעה</option>
+      </select>
         <p class="note small" id="pickup-note">השעות הזמינות מתעדכנות בהתאם להזמנות קיימות</p>
       </section>
 
