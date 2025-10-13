@@ -1025,61 +1025,64 @@ function generatePickupSlots() {
 
   const start = 19 * 60; // 19:00
   const end = 22.5 * 60; // 22:30
-  const blockedSlots = new Set();
-
-  // חסימה של כל הזמנה קיימת
-  existingOrders.forEach(function(order) {
-    try {
-      const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
-      const prepTime = calculateOrderPrepTime(items);
-      
-      const timeParts = order.pickup_time.split(':');
-      const hours = parseInt(timeParts[0]);
-      const minutes = parseInt(timeParts[1]);
-      const orderTimeInMinutes = hours * 60 + minutes;
-      
-      // חסימת השעה עצמה
-      blockedSlots.add(orderTimeInMinutes);
-      
-      // חסימה אחורה (זמן הכנה לפני)
-      let slotsBackward = Math.ceil(prepTime / 5);
-      for (let i = 1; i <= slotsBackward; i++) {
-        const blockedTime = orderTimeInMinutes - (i * 5);
-        if (blockedTime >= start) {
-          blockedSlots.add(blockedTime);
-        }
-      }
-      
-      // חסימה קדימה (זמן הכנה אחרי) - חדש!
-      let slotsForward = Math.ceil(prepTime / 5);
-      for (let i = 1; i <= slotsForward; i++) {
-        const blockedTime = orderTimeInMinutes + (i * 5);
-        if (blockedTime <= end) {
-          blockedSlots.add(blockedTime);
-        }
-      }
-      
-      console.log('🔒 הזמנה ל-' + order.pickup_time + ' (' + prepTime + ' דקות) חוסמת ' + (slotsBackward + slotsForward) + ' משבצות');
-      
-    } catch (e) {
-      console.error('שגיאה בחישוב:', e);
-    }
-  });
-
-  // יצירת שעות זמינות
+  
+  // חישוב זמן ההכנה של ההזמנה הנוכחית
+  const currentOrderPrepTime = calculateOrderPrepTime(orderItems);
+  
+  // יצירת כל השעות האפשריות
   for (let minutes = start; minutes <= end; minutes += 5) {
-    if (!blockedSlots.has(minutes)) {
-      const hours = Math.floor(minutes / 60);
-      const mins = minutes % 60;
-      const timeStr = hours.toString().padStart(2,'0') + ':' + mins.toString().padStart(2,'0');
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    const timeStr = hours.toString().padStart(2,'0') + ':' + mins.toString().padStart(2,'0');
+    
+    // בדיקה אם השעה הזו תתנגש עם הזמנות קיימות
+    let hasConflict = false;
+    
+    existingOrders.forEach(function(order) {
+      try {
+        const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+        const existingPrepTime = calculateOrderPrepTime(items);
+        
+        const timeParts = order.pickup_time.split(':');
+        const existingHours = parseInt(timeParts[0]);
+        const existingMinutes = parseInt(timeParts[1]);
+        const existingTime = existingHours * 60 + existingMinutes;
+        
+        // טווח ההכנה של ההזמנה הקיימת
+        const existingStart = existingTime - existingPrepTime;
+        const existingEnd = existingTime;
+        
+        // טווח ההכנה של ההזמנה החדשה (אם בוחרים את השעה הזו)
+        const newStart = minutes - currentOrderPrepTime;
+        const newEnd = minutes;
+        
+        // בדיקת התנגשות
+        // יש התנגשות אם:
+        // 1. ההתחלה של החדש בטווח של הקיים
+        // 2. הסיום של החדש בטווח של הקיים
+        // 3. החדש מכסה את כל הקיים
+        if (
+          (newStart >= existingStart && newStart <= existingEnd) || // התחלה בתוך
+          (newEnd >= existingStart && newEnd <= existingEnd) ||     // סיום בתוך
+          (newStart <= existingStart && newEnd >= existingEnd)      // מכסה לגמרי
+        ) {
+          hasConflict = true;
+          console.log('❌ התנגשות: ' + timeStr + ' מתנגש עם ' + order.pickup_time);
+        }
+        
+      } catch (e) {
+        console.error('שגיאה בבדיקת התנגשות:', e);
+      }
+    });
+    
+    // הוספת האופציה רק אם אין התנגשות
+    if (!hasConflict) {
       const option = document.createElement('option');
       option.value = timeStr;
       option.textContent = timeStr;
       select.appendChild(option);
     }
   }
-  
-  console.log('✅ נחסמו ' + blockedSlots.size + ' משבצות זמן');
 }
     // ========================================
     // סיכום הזמנה
