@@ -1142,12 +1142,6 @@ function updateSummary() {
     lines.push('\nשעת איסוף: ' + pickupTime);
   }
 
-  // זמן הכנה משוער
-  if (totalRolls > 0) {
-    const estimatedPrepTime = calculateOrderPrepTime(orderItems);
-    lines.push('\n⏱️ זמן הכנה משוער: ' + estimatedPrepTime + ' דקות');
-  }
-
   // סה"כ
   lines.push('\n' + '='.repeat(30) + '\nסה"כ לתשלום: ' + totalPrice + '₪');
 
@@ -1164,10 +1158,18 @@ function updateSummary() {
     return;
   }
 
-  if (totalRolls === 0 || !pickupTime) {
+  console.log('🔢 סה"כ רולים:', totalRolls, '| שעה:', pickupTime);
+
+  if (totalRolls === 0) {
     sendBtn.disabled = true;
     sendBtn.style.opacity = '0.5';
     sendBtn.style.cursor = 'not-allowed';
+    console.log('❌ אין רולים');
+  } else if (!pickupTime) {
+    sendBtn.disabled = true;
+    sendBtn.style.opacity = '0.5';
+    sendBtn.style.cursor = 'not-allowed';
+    console.log('❌ אין שעת איסוף');
   } else if (totalRolls > 15) {
     sendBtn.disabled = true;
     sendBtn.style.opacity = '0.5';
