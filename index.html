@@ -18,7 +18,7 @@
 :root{
   --accent:#7a2a2a;
   --accent-dark:#5e1b1b;
-  --muted:#2a2a2a;    /* אפור כהה שמתאים לרקע שחור */
+  --muted:#3a3a3a;    /* אפור עדין יותר */
   --danger:#d9534f;
 }
     *{box-sizing:border-box}
@@ -65,17 +65,20 @@ h1{
       margin-bottom:12px;
       flex-wrap: nowrap;
     }
-    .tab-btn{
-      padding:6px 12px;
-      border:none;
-      background:var(--muted);
-      border-radius:6px;
-      cursor:pointer;
-      white-space:nowrap;
-      flex-shrink: 0;
-    }
-    .tab-btn.active{ background:var(--accent); color:#fff; }
-
+.tab-btn{
+  padding:6px 12px;
+  border:none;
+  background:var(--muted);
+  color:#b0b0b0;        /* 👈 הוספנו צבע טקסט */
+  border-radius:6px;
+  cursor:pointer;
+  white-space:nowrap;
+  flex-shrink: 0;
+}
+.tab-btn.active{ 
+  background:var(--accent); 
+  color:#fff; 
+}
     .category-title{
       font-weight:700;
       color:var(--accent);
@@ -90,17 +93,16 @@ h1{
       gap:10px;
     }
 
-    .roll-card{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      padding:12px;
-      border-radius:10px;
-      background:#fff;
-      box-shadow:0 3px 8px rgba(0,0,0,0.06);
-    }
-
+.roll-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:12px;
+  border-radius:10px;
+  background:#252525;
+  box-shadow:0 3px 8px rgba(0,0,0,0.3);
+}
     .roll-card .info{
       flex:1 1 auto;
     }
