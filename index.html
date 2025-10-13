@@ -534,6 +534,7 @@ async function loadOrderHistory() {
     console.error('שגיאה בטעינת היסטוריה:', err);
     showMessage('שגיאה בטעינת היסטוריה: ' + err.message, 'red');
   }
+}
 async function handleGoogleLogin(response) {
   try {
     const decoded = jwt_decode(response.credential);
@@ -652,7 +653,10 @@ function showProfilePage() {
   loadProfileData();
   loadOrderHistory();
 }
-
+function setupLogoutButton() {
+  // הלוגיקה כבר משולבת ב-setupProfileButton
+  // הפונקציה קיימת רק כדי שה-DOMContentLoaded לא ייתן שגיאה
+}
 function hideProfilePage() {
   // הסתרת הפרופיל
   document.getElementById('profile-page').style.display = 'none';
