@@ -1027,7 +1027,7 @@ function generatePickupSlots() {
   const end = 22.5 * 60; // 22:30
   const blockedSlots = new Set();
 
-  // חישוב זמני הכנה של הזמנות קיימות
+  // חסימה של כל הזמנה קיימת
   existingOrders.forEach(function(order) {
     try {
       const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
@@ -1041,24 +1041,33 @@ function generatePickupSlots() {
       // חסימת השעה עצמה
       blockedSlots.add(orderTimeInMinutes);
       
-      // חסימת כל 10 הדקות שצריכים לפני זה
-      let slotsToBlock = Math.ceil(prepTime / 10);
-      for (let i = 1; i <= slotsToBlock; i++) {
-        const blockedTime = orderTimeInMinutes - (i * 10);
+      // חסימה אחורה (זמן הכנה לפני)
+      let slotsBackward = Math.ceil(prepTime / 5);
+      for (let i = 1; i <= slotsBackward; i++) {
+        const blockedTime = orderTimeInMinutes - (i * 5);
         if (blockedTime >= start) {
           blockedSlots.add(blockedTime);
         }
       }
       
-      console.log('הזמנה ל-' + order.pickup_time + ' דורשת ' + prepTime + ' דקות, חוסם ' + slotsToBlock + ' משבצות');
+      // חסימה קדימה (זמן הכנה אחרי) - חדש!
+      let slotsForward = Math.ceil(prepTime / 5);
+      for (let i = 1; i <= slotsForward; i++) {
+        const blockedTime = orderTimeInMinutes + (i * 5);
+        if (blockedTime <= end) {
+          blockedSlots.add(blockedTime);
+        }
+      }
+      
+      console.log('🔒 הזמנה ל-' + order.pickup_time + ' (' + prepTime + ' דקות) חוסמת ' + (slotsBackward + slotsForward) + ' משבצות');
       
     } catch (e) {
-      console.error('שגיאה בחישוב זמן הכנה:', e);
+      console.error('שגיאה בחישוב:', e);
     }
   });
 
-  // יצירת אופציות זמינות - כל 10 דקות
-  for (let minutes = start; minutes <= end; minutes += 10) {
+  // יצירת שעות זמינות
+  for (let minutes = start; minutes <= end; minutes += 5) {
     if (!blockedSlots.has(minutes)) {
       const hours = Math.floor(minutes / 60);
       const mins = minutes % 60;
@@ -1067,10 +1076,10 @@ function generatePickupSlots() {
       option.value = timeStr;
       option.textContent = timeStr;
       select.appendChild(option);
-    } else {
-      console.log('חסום: ' + Math.floor(minutes/60) + ':' + (minutes%60).toString().padStart(2,'0'));
     }
   }
+  
+  console.log('✅ נחסמו ' + blockedSlots.size + ' משבצות זמן');
 }
     // ========================================
     // סיכום הזמנה
