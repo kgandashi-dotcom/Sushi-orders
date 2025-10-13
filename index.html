@@ -98,14 +98,14 @@ h1{
   background:var(--accent); 
   color:#fff; 
 }
-    .category-title{
-      font-weight:700;
-      color:var(--accent);
-      margin:18px 0 8px 0;
-      padding-bottom:6px;
-      border-bottom:2px solid rgba(122,42,42,0.12);
-    }
-
+.category-title{
+  font-weight: 700;
+  color: var(--accent);
+  margin: 18px 0 8px 0;
+  padding-bottom: 6px;
+  border-bottom: 2px solid rgba(122,42,42,0.12);
+  font-size: 1.3rem;
+}
     .category-container{
       display:flex;
       flex-direction:column;
@@ -125,8 +125,18 @@ h1{
     .roll-card .info{
       flex:1 1 auto;
     }
-    .roll-card h3{ margin:0 0 6px 0; color:var(--accent); font-size:1.05rem;}
-    .roll-card p{ margin:0; color:#999; font-size:0.93rem; }
+    .roll-card h3{ 
+  margin: 0 0 6px 0; 
+  color: var(--accent); 
+  font-size: 1.15rem;
+   }
+    
+    .roll-card p{ 
+  margin: 0; 
+  color: #999; 
+  font-size: 1rem;
+  line-height: 1.4;
+}
 
     .quantity-control{
       display:flex;
@@ -190,18 +200,21 @@ h1{
 }
 
     #send-order{
-      margin-top:12px;
-      padding:12px 18px;
-      background:var(--accent);
-      color:#fff;
-      border:none;
-      border-radius:8px;
-      font-size:1.05rem;
-      cursor:pointer;
-      width:100%;
-    }
-    #send-order:disabled{ background:#bbb; cursor:not-allowed; }
-
+  margin-top: 12px;
+  padding: 14px 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+#send-order:disabled{ 
+  background: #bbb; 
+  cursor: not-allowed; 
+}
     #messages{
       margin-top:12px;
       color:var(--danger);
