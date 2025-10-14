@@ -30,33 +30,16 @@ input, textarea, select {
 :root{
   --accent:#7a2a2a;
   --accent-dark:#5e1b1b;
-  --muted:#3a3a3a;
+  --muted:#3a3a3a;    /* אפור עדין יותר */
   --danger:#d9534f;
 }
-
-* {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-input, textarea, select {
-  -webkit-user-select: text;
-  user-select: text;
-}
-
-*{
-  box-sizing:border-box
-}
-
+    *{box-sizing:border-box}
 body{
-  margin:0;
+  margin: 0;
   font-family: Arial, Helvetica, sans-serif;
   background: linear-gradient(180deg, #1a0505, #000000);
   direction: rtl;
-  color:#f5f5f5;
+  color: #f5f5f5;
   font-size: 16px;
 }
 
@@ -69,88 +52,26 @@ body{
   box-shadow:0 6px 20px rgba(255,255,255,0.1);
   color: #fff;
 }
-
-header {
-  display: flex;
+    
+    header{
+  display:flex;
   flex-direction: column;
-  align-items: center;
-  margin-bottom: 10px;
+  align-items:center;
+  gap:12px;
+  margin-bottom:10px;
   text-align: center;
-  background: transparent;
-  padding: 0;
-  position: static;
 }
-
-#login-btn-compact {
-  display: inline-block;
-  margin: 0;
-  padding: 0;
-}
-
-#login-btn-compact > div {
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-#login-btn-compact iframe {
-  border-radius: 6px !important;
-  height: 40px !important;
-  background: transparent !important;
-}
-
-#login-btn-compact button,
-#login-btn-compact > div > div {
-  padding: 8px 14px !important;
-  background: var(--muted) !important;
-  color: #b0b0b0 !important;
-  border: 1px solid #4a4a4a !important;
-  border-radius: 6px !important;
-  font-size: 0.9rem !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  font-family: Arial, Helvetica, sans-serif !important;
-}
-
-#profile-btn {
-  padding: 8px 14px;
-  background: var(--muted);
-  color: #b0b0b0;
-  border: 1px solid #4a4a4a;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: Arial, Helvetica, sans-serif;
-  white-space: nowrap;
-}
-
-#profile-btn:hover {
-  background: #4a4a4a;
-}
-
-.logo { 
-  width: 180px; 
-  height: auto; 
-  border-radius: 8px;
-  display: block;
-  margin: 0 auto;
-}
-
-h1 { 
-  margin: 10px 0 0 0; 
-  color: var(--accent); 
-  font-size: 1.5rem; 
+.logo{ width:180px; height:auto; border-radius:8px; }
+h1{ 
+  margin:0; 
+  color:var(--accent); 
+  font-size:1.5rem; 
   width: 100%;
   text-align: center;
 }
+    .user-buttons{ display:flex; gap:6px; align-items:center; }
 
-.user-buttons { 
-  display: flex; 
-  gap: 6px; 
-  align-items: center; 
-}
-
-.tabs {
+.tabs{
   display: flex;
   gap: 4px;
   margin-bottom: 12px;
@@ -158,7 +79,7 @@ h1 {
   overflow-x: auto;
 }
 
-.tab-btn {
+.tab-btn{
   padding: 6px 7px;
   border: none;
   background: var(--muted);
@@ -170,21 +91,8 @@ h1 {
   font-size: 0.93rem;
   font-weight: 620;
 }
-
-.tab-btn.active { 
-  background: var(--accent); 
-  color: #fff; 
-}
-
-.tab-btn:hover {
-  background: #4a4a4a;
-}
-
-.tab-btn.active:hover {
-  background: var(--accent-dark);
-}
-
-.category-title {
+    
+.category-title{
   font-weight: 700;
   color: var(--accent);
   margin: 18px 0 8px 0;
@@ -192,84 +100,68 @@ h1 {
   border-bottom: 2px solid rgba(122,42,42,0.12);
   font-size: 1.3rem;
 }
+    .category-container{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
 
-.category-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.roll-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:12px;
+  border-radius:10px;
+  background:#252525;
+  box-shadow:0 3px 8px rgba(0,0,0,0.3);
 }
-
-.roll-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  padding: 12px;
-  border-radius: 10px;
-  background: #252525;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-}
-
-.roll-card .info {
-  flex: 1 1 auto;
-}
-
-.roll-card h3 { 
+    .roll-card .info{
+      flex:1 1 auto;
+    }
+    .roll-card h3{ 
   margin: 0 0 6px 0; 
   color: var(--accent); 
   font-size: 1.25rem;
-}
-
-.roll-card p { 
+   }
+    
+    .roll-card p{ 
   margin: 0; 
   color: #999; 
   font-size: 1rem;
   line-height: 1.4;
 }
 
-.quantity-control {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+    .quantity-control{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
 
-.quantity-control button {
-  width: 38px; 
-  height: 36px;
-  border-radius: 8px;
-  border: none;
-  background: #4a3030;
-  color: #d9a0a0;
-  font-weight: 700;
-  font-size: 1.2rem;
-  cursor: pointer;
+.quantity-control button{
+  width:38px; height:36px;
+  border-radius:8px;
+  border:none;
+  background:#4a3030;
+  color:#d9a0a0;
+  font-weight:700;
+  font-size:1.2rem;
+  cursor:pointer;
 }
+    .quantity-control button:active{ transform:translateY(1px); }
+    .quantity-control input{
+      width:52px;
+      text-align:center;
+      border:1px solid #ddd;
+      border-radius:6px;
+      padding:6px;
+      background:#fff;
+    }
 
-.quantity-control button:active { 
-  transform: translateY(1px); 
-}
+    .note{ color:#6b6b6b; margin:6px 0 0 0; font-size:0.92rem; }
+    .small{ font-size:0.86rem; color:#8a8a8a; }
 
-.quantity-control input {
-  width: 52px;
-  text-align: center;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 6px;
-  background: #fff;
-}
-
-.note { 
-  color: #6b6b6b; 
-  margin: 6px 0 0 0; 
-  font-size: 0.92rem; 
-}
-
-.small { 
-  font-size: 0.86rem; 
-  color: #8a8a8a; 
-}
-
-#notes {
+#notes{
   width: 100%;
   padding: 12px;
   border: 1px solid #444;
@@ -281,8 +173,7 @@ h1 {
   color: #f0f0f0;
   font-size: 1rem;
 }
-
-#pickup-time {
+#pickup-time{
   width: 100%;
   padding: 12px;
   border: 1px solid #444;
@@ -292,9 +183,9 @@ h1 {
   color: #f0f0f0;
 }
 
-#order-summary {
-  background: #1a1a1a;
-  color: #d0d0d0;
+#order-summary{
+  background: #2a2a2a;
+  color: #f0f0f0;
   padding: 16px;
   border-radius: 8px;
   min-height: 110px;
@@ -306,7 +197,7 @@ h1 {
   line-height: 1.5;
 }
 
-#send-order {
+    #send-order{
   margin-top: 12px;
   padding: 14px 20px;
   background: var(--accent);
@@ -318,76 +209,58 @@ h1 {
   cursor: pointer;
   width: 100%;
 }
-
-#send-order:disabled { 
+#send-order:disabled{ 
   background: #bbb; 
-  cursor: not-allowed;
-  opacity: 0.5;
+  cursor: not-allowed; 
 }
+    #messages{
+      margin-top:12px;
+      color:var(--danger);
+      font-weight:700;
+    }
 
-#messages {
-  margin-top: 12px;
-  color: var(--danger);
-  font-weight: 700;
-}
+    .profile-panel{
+      background:#fff;
+      border-radius:8px;
+      padding:12px;
+      margin-top:12px;
+      box-shadow:0 3px 8px rgba(0,0,0,0.06);
+    }
+    #order-history .history-item{
+      border-top:1px dashed #ddd;
+      padding:8px 0;
+    }
 
-.profile-panel {
-  background: #fff;
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 12px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.06);
-}
+    .user-buttons button{
+      padding:8px 14px;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      background:var(--accent);
+      color:#fff;
+      font-weight:600;
+    }
 
-#order-history .history-item {
-  border-top: 1px dashed #ddd;
-  padding: 8px 0;
-}
-
-.user-buttons button {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 600;
-}
-
-@media (max-width:720px) {
-  header { 
-    flex-direction: column; 
-    align-items: flex-start; 
-  }
-  .roll-card { 
-    flex-direction: column; 
-    align-items: flex-start; 
-  }
-  .quantity-control { 
-    margin-top: 8px; 
-  }
-  .container { 
-    padding: 12px; 
-  }
-}
+    @media (max-width:720px){
+      header{ flex-direction:column; align-items:flex-start; }
+      .roll-card{ flex-direction:column; align-items:flex-start; }
+      .quantity-control{ margin-top:8px; }
+      .container{ padding:12px; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
 
 <header>
-  <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; max-width: 1020px; margin: 0 auto 10px auto;">
-    <div style="width: 120px;"></div>
-    <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-      <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
-      <h1 style="margin: 10px 0 0 0;">תפריט — Sushi Shifu</h1>
-    </div>
-    <div style="width: 120px; display: flex; justify-content: flex-end;">
-      <div id="login-btn-compact"></div>
-      <button id="profile-btn" style="display:none; padding: 7px 12px; background: var(--muted); color: #b0b0b0; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; white-space: nowrap;">פרופיל</button>
-    </div>
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 10px;">
+    <div id="login-btn-compact"></div>
+    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
+    <button id="profile-btn" style="display:none; padding: 7px 12px; background: var(--muted); color: #b0b0b0; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer;">פרופיל</button>
   </div>
+  <h1>תפריט — Sushi Shifu</h1>
 </header>
+
 
     <nav class="tabs">
       <button class="tab-btn active" data-target="insideout">Inside-out</button>
@@ -672,7 +545,7 @@ const PREP_TIME_PER_ROLL = 10;
     // Google OAuth
     // ========================================
 
-function initGoogleAuth() {
+  function initGoogleAuth() {
   if (!window.google?.accounts?.id) {
     console.log('Google OAuth לא נטען עדיין');
     setTimeout(initGoogleAuth, 500);
@@ -683,14 +556,8 @@ function initGoogleAuth() {
     callback: handleGoogleLogin
   });
   window.google.accounts.id.renderButton(
-    document.getElementById('login-btn-compact'),
-    { 
-      theme: 'filled_black',
-      size: 'medium',
-      text: 'continue_with',
-      shape: 'rectangular',
-      locale: 'he'
-    }
+    document.getElementById('login-btn'),
+    { theme: 'outline', size: 'large', text: 'signin_with', locale: 'he' }
   );
 }
 async function loadOrderHistory() {
