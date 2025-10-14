@@ -556,8 +556,14 @@ const PREP_TIME_PER_ROLL = 10;
     callback: handleGoogleLogin
   });
   window.google.accounts.id.renderButton(
-    document.getElementById('login-btn'),
-    { theme: 'outline', size: 'large', text: 'signin_with', locale: 'he' }
+    document.getElementById('login-btn-compact'),
+    { 
+      theme: 'outline', 
+      size: 'medium', 
+      text: 'signin', 
+      locale: 'he',
+      width: 120
+    }
   );
 }
 async function loadOrderHistory() {
