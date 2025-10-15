@@ -706,9 +706,21 @@ async function handleGoogleLogin(response) {
       }
     }
 
-   function updateUIAfterLogin() {
-  document.getElementById('login-btn').style.display = 'none';
-  document.getElementById('profile-btn').style.display = 'inline-block';
+ function updateUIAfterLogin() {
+  const loginBtn = document.getElementById('login-btn');
+  const profileBtn = document.getElementById('profile-btn');
+
+  loginBtn.style.display = 'none';
+  profileBtn.style.display = 'inline-block';
+
+  // אם יש תמונה מהמשתמש, נחליף את התוכן של הכפתור
+  if (currentUser && currentUser.picture) {
+    profileBtn.innerHTML = `<img src="${currentUser.picture}" 
+                                 alt="תמונת פרופיל" 
+                                 style="width:32px;height:32px;border-radius:50%;vertical-align:middle;">`;
+  } else {
+    profileBtn.textContent = '👤 הפרופיל שלי';
+  }
 }
     // ========================================
     // פרופיל
