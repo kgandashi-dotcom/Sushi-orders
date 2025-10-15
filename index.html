@@ -680,7 +680,8 @@ async function handleGoogleLogin(response) {
     currentUser = {
       name: decoded.name,
       email: decoded.email,
-      phone: phone
+      phone: phone,
+      picture: decoded.picture
     };
     
     localStorage.setItem('sushiUser', JSON.stringify(currentUser));
