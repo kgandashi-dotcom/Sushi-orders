@@ -274,13 +274,26 @@ h1{
 <body>
   <div class="container">
 
-    <header>
-  <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo" style="margin: 0 auto;">
-  <h1>תפריט — Sushi Shifu</h1>
-<div class="user-buttons">
-  <div id="login-btn"></div>
-  <button id="profile-btn" style="display:none;">👤 הפרופיל שלי</button>
-</div>
+<header style="
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  position: relative;
+">
+  <!-- צד ימין -->
+  <div class="user-buttons" style="position: absolute; right: 20px;">
+    <div id="login-btn"></div>
+    <button id="profile-btn" style="display:none;">👤 הפרופיל שלי</button>
+  </div>
+
+  <!-- אמצע -->
+  <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo" style="height: 60px; margin: 0 auto; display: block;">
+  
+  <!-- כותרת מתחת או במרכז -->
+  <h1 style="position: absolute; left: 50%; transform: translateX(-50%); top: 80px;">
+    תפריט — Sushi Shifu
+  </h1>
 </header>
 
 
@@ -581,7 +594,7 @@ const PREP_TIME_PER_ROLL = 10;
   });
   window.google.accounts.id.renderButton(
     document.getElementById('login-btn'),
-    { theme: 'filled_black', size: 'large', text: 'signin', locale: 'he' }
+    { theme: 'filled_black', size: 'medium', text: 'signin', locale: 'he' }
   );
 }
 async function loadOrderHistory() {
