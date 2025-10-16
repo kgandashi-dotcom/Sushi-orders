@@ -1523,6 +1523,133 @@ function setupSendOrder() {
     }
 
   </script>
+<!-- POPUP HTML -->
+<div id="order-popup" class="order-popup" aria-hidden="true" role="dialog" aria-labelledby="order-popup-title" style="display:none">
+  <div class="order-popup__backdrop"></div>
+  <div class="order-popup__box" role="document">
+    <button class="order-popup__close" id="order-popup-close" aria-label="סגור">✕</button>
+    <h2 id="order-popup-title">הודעת מערכת</h2>
+    <p id="order-popup-message"></p>
 
+    <label style="display:flex; align-items:center; gap:8px; margin-top:12px; font-size:0.95rem;">
+      <input type="checkbox" id="order-popup-dontshow" />
+      אל תראה שוב היום
+    </label>
+
+    <div style="margin-top:16px; text-align:right;">
+      <button id="order-popup-ok" class="order-popup__ok">אישור</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP CSS -->
+<style>
+.order-popup { position: fixed; inset: 0; z-index: 1200; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+.order-popup__backdrop { position:absolute; inset:0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); }
+.order-popup__box {
+  position: relative;
+  max-width: 520px;
+  margin: 10vh auto;
+  background: #fff;
+  color: #111;
+  border-radius: 10px;
+  padding: 18px 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+}
+.order-popup__close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+}
+.order-popup__ok {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+@media (prefers-color-scheme: dark) {
+  .order-popup__box { background:#222; color:#eee; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+  .order-popup__ok { background: #1e90ff; }
+}
+</style>
+
+<!-- POPUP JS -->
+<script>
+(function() {
+  const popup = document.getElementById('order-popup');
+  const messageEl = document.getElementById('order-popup-message');
+  const closeBtn = document.getElementById('order-popup-close');
+  const okBtn = document.getElementById('order-popup-ok');
+  const dontShowChk = document.getElementById('order-popup-dontshow');
+
+  // מתגורר לפי תאריך (כדי שה"אל תראה שוב היום" יחזיק רק ליום אחד)
+  const todayKey = 'order-popup-hidden-' + new Date().toISOString().slice(0,10);
+
+  function shouldSkip() {
+    return localStorage.getItem(todayKey) === '1';
+  }
+
+  function showPopup(text) {
+    messageEl.textContent = text;
+    popup.style.display = 'block';
+    popup.setAttribute('aria-hidden', 'false');
+    // לאפשר סגירה עם Escape
+    document.addEventListener('keydown', onKeyDown);
+  }
+
+  function hidePopup(saveDontShow) {
+    popup.style.display = 'none';
+    popup.setAttribute('aria-hidden', 'true');
+    document.removeEventListener('keydown', onKeyDown);
+    if (saveDontShow && dontShowChk.checked) {
+      localStorage.setItem(todayKey, '1');
+    }
+  }
+
+  function onKeyDown(e) {
+    if (e.key === 'Escape') hidePopup(false);
+  }
+
+  closeBtn.addEventListener('click', () => hidePopup(true));
+  okBtn.addEventListener('click', () => hidePopup(true));
+
+  // הגיון זמן/יום
+  function checkAndShow() {
+    if (shouldSkip()) return;
+
+    const now = new Date();
+    const day = now.getDay(); // 0=שבת? actually JS: 0=Sunday, 1=Monday, ..., 3=Wednesday
+    // בשימוש בעברית: יום רביעי = 3
+    const isWednesday = (day === 3);
+
+    if (isWednesday) {
+      const hour = now.getHours();
+      const minute = now.getMinutes();
+      // ניתן לשנות את המסגרת לפי הצורך; כאן "עד השעה 15:00" כולל עד 14:59:59
+      if (hour < 15) {
+        showPopup('היום יום רביעי — ניתן לבצע הזמנות עד השעה 15:00. אנא הגישו את הזמנתכם לפני מועד זה.');
+      } else {
+        showPopup('היום יום רביעי, אך כבר חלפה השעה 15:00 — ההזמנות היום נסגרו.');
+      }
+    } else {
+      showPopup('שימו לב: הזמנות מתקבלות רק בימי רביעי.');
+    }
+  }
+
+  // הפעל לאחר טעינת ה־DOM
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkAndShow);
+  } else {
+    checkAndShow();
+  }
+
+})();
+</script>
 </body>
 </html>
