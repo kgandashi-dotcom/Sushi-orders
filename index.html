@@ -1551,6 +1551,7 @@ function setupSendOrder() {
   #order-popup-message{
     margin-top: 5px;
     font-size: 18px;
+    text-align: center;
 }
 .order-popup { position: fixed; inset: 0; z-index: 1200; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
 .order-popup__backdrop { position:absolute; inset:0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); }
@@ -1563,6 +1564,7 @@ function setupSendOrder() {
   border-radius: 10px;
   padding: 18px 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  text-align:center;
 }
 .order-popup__close {
   position: absolute;
@@ -1584,7 +1586,7 @@ function setupSendOrder() {
 }
 @media (prefers-color-scheme: dark) {
   .order-popup__box { background:#222; color:#eee; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-  .order-popup__ok { background: #1e90ff; }
+  .order-popup__ok { background: #cb7e3d; , font-size: 16px;}
 }
 </style>
 
@@ -1647,7 +1649,7 @@ function setupSendOrder() {
         showPopup('היום יום רביעי, אך כבר חלפה השעה 15:00 — ההזמנות היום נסגרו.');
       }
     } else {
-      showPopup('הזמנות מתקבלות רק בימי רביעי');
+      showPopup('ההזמנות מתקבלות רק בימי רביעי');
     }
   }
 
