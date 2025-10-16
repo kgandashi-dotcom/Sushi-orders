@@ -1528,7 +1528,7 @@ function setupSendOrder() {
   <div class="order-popup__backdrop"></div>
   <div class="order-popup__box" role="document">
     <button class="order-popup__close" id="order-popup-close" aria-label="סגור">✕</button>
-    <h2 id="order-popup-title">הודעת מערכת</h2>
+    <h2 id="order-popup-title">שימו לב!</h2>
     <p id="order-popup-message"></p>
 
     <label style="display:flex; align-items:center; gap:8px; margin-top:12px; font-size:0.95rem;">
@@ -1544,11 +1544,19 @@ function setupSendOrder() {
 
 <!-- POPUP CSS -->
 <style>
+  #order-popup-title{
+    margin: 20px 0 0;
+}
+  
+  #order-popup-message{
+    margin-top: 5px;
+    font-size: 18px;
+}
 .order-popup { position: fixed; inset: 0; z-index: 1200; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
 .order-popup__backdrop { position:absolute; inset:0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); }
 .order-popup__box {
   position: relative;
-  max-width: 520px;
+  max-width: 80vw;
   margin: 10vh auto;
   background: #fff;
   color: #111;
@@ -1566,12 +1574,13 @@ function setupSendOrder() {
   cursor: pointer;
 }
 .order-popup__ok {
-  background: #007bff;
+  background: #cb7e3d;
   color: #fff;
   border: none;
   padding: 8px 14px;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 16px;
 }
 @media (prefers-color-scheme: dark) {
   .order-popup__box { background:#222; color:#eee; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
