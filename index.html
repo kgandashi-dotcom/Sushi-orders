@@ -34,6 +34,20 @@ input, textarea, select {
   --danger:#d9534f;
 }
     *{box-sizing:border-box}
+   #phone-modal {
+  display: none;
+}
+
+#phone-modal.show {
+  display: flex !important;
+}
+
+#phone-input:focus {
+  outline: none;
+  border-color: #7a2a2a;
+  box-shadow: 0 0 0 2px rgba(122, 42, 42, 0.2);
+} 
+    
 body{
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
@@ -300,7 +314,26 @@ h1 {
 </head>
 <body>
   <div class="container">
+<div id="phone-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+  <div style="background:#1a1a1a; padding:30px; border-radius:12px; max-width:400px; width:90%; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+    <h3 style="color:#7a2a2a; margin:0 0 10px 0; font-size:1.3rem;">הודעה מ-Shifu</h3>
+    <p style="color:#b0b0b0; margin:0 0 20px 0; font-size:1rem;">נא להזין מספר טלפון בפורמט: 05X-XXXXXXX</p>
+    <input type="tel" id="phone-input" placeholder="050-1234567" style="width:100%; padding:12px; border:1px solid #444; border-radius:6px; background:#2a2a2a; color:#f0f0f0; font-size:1.1rem; text-align:center; direction:ltr;">
+    <div style="margin-top:20px; display:flex; gap:10px;">
+      <button onclick="submitPhone()" style="flex:1; padding:12px; background:#7a2a2a; color:#fff; border:none; border-radius:6px; font-size:1rem; font-weight:600; cursor:pointer;">אישור</button>
+      <button onclick="cancelPhone()" style="flex:1; padding:12px; background:#3a3a3a; color:#b0b0b0; border:none; border-radius:6px; font-size:1rem; font-weight:600; cursor:pointer;">ביטול</button>
+    </div>
+    <p id="phone-error" style="color:#d9534f; margin:15px 0 0 0; font-size:0.9rem; display:none;"></p>
+  </div>
+</div>
 
+<header style="
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  position: relative;
+">
 <header style="
   display: flex;
   align-items: center;
@@ -658,36 +691,55 @@ async function loadOrderHistory() {
     showMessage('שגיאה בטעינת היסטוריה: ' + err.message, 'red');
   }
 }
-    async function getValidPhone() {
-  let validPhone = false;
-  let phone = '';
-  
-  while (!validPhone) {
-    phone = prompt('נא להזין מספר טלפון בפורמט: 05X-XXXXXXX');
-  
-    // בדיקה אם המשתמש לחץ ביטול
-    if (phone === null) {
-      return null;
-    }
+async function getValidPhone() {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('phone-modal');
+    const input = document.getElementById('phone-input');
+    const errorMsg = document.getElementById('phone-error');
     
-    // הסרת רווחים ומקפים
-    let cleanPhone = phone.replace(/[\s-]/g, '');
+    // הצגת המודאל
+    modal.classList.add('show');
+    input.value = '';
+    errorMsg.style.display = 'none';
+    input.focus();
     
-    // ולידציה: חייב להיות 10 ספרות שמתחילות ב-05
-    const phoneRegex = /^05[0-9]\d{7}$/;
+    // פונקציה לסגירת המודאל
+    window.cancelPhone = function() {
+      modal.classList.remove('show');
+      resolve(null);
+    };
     
-    if (phoneRegex.test(cleanPhone)) {
-      validPhone = true;
-      // תיקון לפורמט הרצוי: 05X-XXXXXXX
-      phone = cleanPhone.slice(0, 3) + '-' + cleanPhone.slice(3);
-    } else {
-      alert('❌ מספר טלפון לא תקין!\n\nדרישות:\n• 10 ספרות\n• מתחיל ב-05 (נייד בלבד)\n\nדוגמאות תקינות:\n✅ 0501234567\n✅ 050-1234567\n✅ 050 1234567\n✅ 052-9876543\n\nדוגמאות שגויות:\n❌ 03-1234567 (קווי - לא נייד)\n❌ 050-123456 (9 ספרות)\n❌ 123456789 (לא מתחיל ב-05)');
-    }
-  }
-  
-  return phone;
-}
+    // פונקציה לאישור
+    window.submitPhone = function() {
+      let phone = input.value.trim();
+      
+      // הסרת רווחים ומקפים
+      let cleanPhone = phone.replace(/[\s-]/g, '');
+      
+      // ולידציה: חייב להיות 10 ספרות שמתחילות ב-05
+      const phoneRegex = /^05[0-9]\d{7}$/;
+      
+      if (phoneRegex.test(cleanPhone)) {
+        // תיקון לפורמט הרצוי: 05X-XXXXXXX
+        phone = cleanPhone.slice(0, 3) + '-' + cleanPhone.slice(3);
+        modal.classList.remove('show');
+        resolve(phone);
+      } else {
+        // הצגת שגיאה
+        errorMsg.textContent = '❌ מספר לא תקין! נדרש: 05X-XXXXXXX';
+        errorMsg.style.display = 'block';
+        input.focus();
+      }
+    };
     
+    // אפשרות ללחוץ Enter לאישור
+    input.onkeypress = function(e) {
+      if (e.key === 'Enter') {
+        submitPhone();
+      }
+    };
+  });
+}    
 async function handleGoogleLogin(response) {
   try {
     const decoded = jwt_decode(response.credential);
