@@ -786,11 +786,6 @@ async function handleGoogleLogin(response) {
     showMessage('התחברת בהצלחה!', 'green');
     updateUIAfterLogin();
     
-    // הצגת עמוד הפרופיל מיד
-    setTimeout(function() {
-      showProfilePage();
-    }, 500);
-    
   } catch (err) {
     console.error('שגיאה בהתחברות:', err);
     showMessage('שגיאה בהתחברות: ' + err.message, 'red');
