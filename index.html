@@ -663,7 +663,7 @@ async function loadOrderHistory() {
   let phone = '';
   
   while (!validPhone) {
-    phone = prompt('נא להזין מספר טלפון (10 ספרות, מתחיל ב-05/02/03/04/08/09):');
+    phone = prompt('נא להזין מספר טלפון (10 ספרות, במבנה הבא *******-*05):');
     
     // בדיקה אם המשתמש לחץ ביטול
     if (phone === null) {
@@ -830,13 +830,20 @@ async function handleGoogleLogin(response) {
   }
 }
 
- function updateUIAfterLogin() {
-  const loginBtn = document.getElementById('login-btn-compact'); // 👈 או 'login-btn' - תלוי מה יש לך
+function updateUIAfterLogin() {
+  const loginBtnContainer = document.getElementById('login-btn');
   const profileBtn = document.getElementById('profile-btn');
 
-  if (loginBtn) loginBtn.style.display = 'none';
+  // הסתרת כל ה-container של כפתור הכניסה
+  if (loginBtnContainer) {
+    loginBtnContainer.style.display = 'none';
+    loginBtnContainer.innerHTML = ''; // ניקוי התוכן
+    console.log('הסתרתי את כפתור הכניסה');
+  }
+
   if (profileBtn) {
     profileBtn.style.display = 'inline-block';
+    console.log('הצגתי את כפתור הפרופיל');
     
     // אם יש תמונה מהמשתמש, נחליף את התוכן של הכפתור
     if (currentUser && currentUser.picture) {
