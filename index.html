@@ -658,38 +658,131 @@ async function loadOrderHistory() {
     showMessage('שגיאה בטעינת היסטוריה: ' + err.message, 'red');
   }
 }
+    async function getValidPhone() {
+  let validPhone = false;
+  let phone = '';
+  
+  while (!validPhone) {
+    phone = prompt('נא להזין מספר טלפון (10 ספרות, מתחיל ב-05/02/03/04/08/09):');
+    
+    // בדיקה אם המשתמש לחץ ביטול
+    if (phone === null) {
+      return null;
+    }
+    
+    // הסרת רווחים ומקפים
+    phone = phone.replace(/[\s-]/g, '');
+    
+    // ולידציה של מספר הטלפון
+    const phoneRegex = /^0(5[0-9]|[2-4]|[8-9])\d{7}$/;
+    
+    if (phoneRegex.test(phone)) {
+      validPhone = true;
+    } else {
+      alert('❌ מספר טלפון לא תקין!\n\nפורמט נכון:\n• 10 ספרות\n• מתחיל ב: 05/02/03/04/08/09\n\nדוגמאות:\n0501234567\n0521234567\n0391234567');
+    }
+  }
+  
+  return phone;
+}
+    
 async function handleGoogleLogin(response) {
   try {
     const decoded = jwt_decode(response.credential);
     const profilePicture = decoded.picture || null;
-    // בדיקה אם יש טלפון שמור
-    const savedUser = localStorage.getItem('sushiUser');
-    let phone = '';
     
-    if (savedUser) {
-      const parsed = JSON.parse(savedUser);
-      if (parsed.email === decoded.email && parsed.phone) {
-        phone = parsed.phone;
-      }
+    // בדיקה אם המשתמש כבר קיים ב-DB
+    const { data: existingUser, error: fetchError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', decoded.email)
+      .single();
+    
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      console.error('שגיאה בטעינת משתמש:', fetchError);
     }
     
-    // אם אין טלפון - בקש
-    if (!phone) {
-      phone = prompt('נא להזין מספר טלפון:');
+    let userData;
+    
+    if (existingUser) {
+      // משתמש קיים - עדכון last_login ותמונת פרופיל
+      const { data: updated, error: updateError } = await supabase
+        .from('users')
+        .update({ 
+          last_login: new Date().toISOString(),
+          profile_picture: profilePicture
+        })
+        .eq('email', decoded.email)
+        .select()
+        .single();
+      
+      if (updateError) {
+        console.error('שגיאה בעדכון התחברות:', updateError);
+      }
+      
+      userData = existingUser;
+      
+      // אם אין טלפון - בקש ועדכן ב-DB
+      if (!userData.phone) {
+        const phone = await getValidPhone();
+        if (!phone) {
+          showMessage('התחברות בוטלה - נדרש מספר טלפון', 'red');
+          return;
+        }
+        
+        // עדכון טלפון ב-DB
+        const { error: phoneUpdateError } = await supabase
+          .from('users')
+          .update({ phone: phone })
+          .eq('email', decoded.email);
+        
+        if (phoneUpdateError) {
+          console.error('שגיאה בעדכון טלפון:', phoneUpdateError);
+          showMessage('שגיאה בעדכון טלפון', 'red');
+        }
+        
+        userData.phone = phone;
+      }
+      
+    } else {
+      // משתמש חדש - בקש טלפון ויצירה ב-DB
+      const phone = await getValidPhone();
       if (!phone) {
-        showMessage('חייב להזין מספר טלפון', 'red');
+        showMessage('התחברות בוטלה - נדרש מספר טלפון', 'red');
         return;
       }
+      
+      const { data: newUser, error: insertError } = await supabase
+        .from('users')
+        .insert([{
+          email: decoded.email,
+          name: decoded.name,
+          phone: phone,
+          profile_picture: profilePicture,
+          last_login: new Date().toISOString()
+        }])
+        .select()
+        .single();
+      
+      if (insertError) {
+        console.error('שגיאה ביצירת משתמש:', insertError);
+        showMessage('שגיאה ביצירת משתמש: ' + insertError.message, 'red');
+        return;
+      }
+      
+      userData = newUser;
     }
     
     currentUser = {
-      name: decoded.name,
-      email: decoded.email,
-      phone: phone,
-      picture: decoded.picture
+      name: userData.name,
+      email: userData.email,
+      phone: userData.phone,
+      picture: userData.profile_picture
     };
     
+    // שמירה גם ב-localStorage לגישה מהירה
     localStorage.setItem('sushiUser', JSON.stringify(currentUser));
+    
     showMessage('התחברת בהצלחה!', 'green');
     updateUIAfterLogin();
     
@@ -699,32 +792,62 @@ async function handleGoogleLogin(response) {
     }, 500);
     
   } catch (err) {
+    console.error('שגיאה בהתחברות:', err);
     showMessage('שגיאה בהתחברות: ' + err.message, 'red');
   }
 }
 
-    function checkLocalAuth() {
-      const stored = localStorage.getItem('sushiUser');
-      if (stored) {
-        currentUser = JSON.parse(stored);
-        updateUIAfterLogin();
-      }
+    async function checkLocalAuth() {
+  const stored = localStorage.getItem('sushiUser');
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    
+    // בדיקה אם המשתמש עדיין קיים ב-DB ועדכון הנתונים
+    const { data: dbUser, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', parsed.email)
+      .single();
+    
+    if (dbUser) {
+      currentUser = {
+        name: dbUser.name,
+        email: dbUser.email,
+        phone: dbUser.phone,
+        picture: dbUser.profile_picture
+      };
+      
+      // עדכון localStorage עם נתונים עדכניים מה-DB
+      localStorage.setItem('sushiUser', JSON.stringify(currentUser));
+      
+      updateUIAfterLogin();
+    } else if (error && error.code !== 'PGRST116') {
+      console.error('שגיאה בטעינת משתמש:', error);
+      // אם יש שגיאה אבל יש נתונים מקומיים, נשתמש בהם
+      currentUser = parsed;
+      updateUIAfterLogin();
     }
+  }
+}
 
  function updateUIAfterLogin() {
-  const loginBtn = document.getElementById('login-btn');
+  const loginBtn = document.getElementById('login-btn-compact'); // 👈 או 'login-btn' - תלוי מה יש לך
   const profileBtn = document.getElementById('profile-btn');
 
-  loginBtn.style.display = 'none';
-  profileBtn.style.display = 'inline-block';
-
-  // אם יש תמונה מהמשתמש, נחליף את התוכן של הכפתור
-  if (currentUser && currentUser.picture) {
-    profileBtn.innerHTML = `<img src="${currentUser.picture}" 
-                                 alt="תמונת פרופיל" 
-                                 style="width:32px;height:32px;border-radius:50%;vertical-align:middle;">`;
-  } else {
-    profileBtn.textContent = '👤 הפרופיל שלי';
+  if (loginBtn) loginBtn.style.display = 'none';
+  if (profileBtn) {
+    profileBtn.style.display = 'inline-block';
+    
+    // אם יש תמונה מהמשתמש, נחליף את התוכן של הכפתור
+    if (currentUser && currentUser.picture) {
+      profileBtn.innerHTML = `<img src="${currentUser.picture}" 
+                                   alt="תמונת פרופיל" 
+                                   style="width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;">`;
+      profileBtn.style.padding = '4px';
+    } else {
+      profileBtn.textContent = '👤 הפרופיל שלי';
+      profileBtn.style.padding = '8px 14px';
+    }
   }
 }
     // ========================================
