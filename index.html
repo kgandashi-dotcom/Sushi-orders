@@ -663,8 +663,8 @@ async function loadOrderHistory() {
   let phone = '';
   
   while (!validPhone) {
-    phone = prompt('נא להזין מספר טלפון נייד:\n(לדוגמה: 0501234567 או 050-1234567)');
-    
+    phone = prompt('נא להזין מספר טלפון בפורמט: 05X-XXXXXXX');
+  
     // בדיקה אם המשתמש לחץ ביטול
     if (phone === null) {
       return null;
