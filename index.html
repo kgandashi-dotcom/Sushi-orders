@@ -661,7 +661,7 @@ async function loadOrderHistory() {
 async function handleGoogleLogin(response) {
   try {
     const decoded = jwt_decode(response.credential);
-    
+    const profilePicture = decoded.picture || null;
     // בדיקה אם יש טלפון שמור
     const savedUser = localStorage.getItem('sushiUser');
     let phone = '';
