@@ -207,8 +207,22 @@ h1 {
 #profile-btn img:hover {
   transform: scale(1.05);
 }
-   #phone-modal {
+
+
+#phone-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
   display: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 #phone-modal.show {
@@ -217,9 +231,16 @@ h1 {
 
 #phone-input:focus {
   outline: none;
-  border-color: #cdb754;
+  border-color: #7a2a2a;
   box-shadow: 0 0 0 2px rgba(122, 42, 42, 0.2);
-} 
+}
+
+/* מניעת גלילה כש-modal פתוח */
+body.modal-open {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
    
 #notes{
   width: 100%;
@@ -315,7 +336,7 @@ h1 {
 <body>
   <div class="container">
 <div id="phone-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
-  <div style="background:#1a1a1a; padding:30px; border-radius:12px; max-width:400px; width:98%; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+  <div style="background:#1a1a1a; padding:30px; border-radius:12px; max-width:400px; width:90%; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,0.5);">
     <h3 style="color:#7a2a2a; margin:0 0 10px 0; font-size:1.3rem;">הודעה מ-Shifu</h3>
     <p style="color:#b0b0b0; margin:0 0 20px 0; font-size:1rem;">נא להזין מספר טלפון בפורמט: 05X-XXXXXXX</p>
     <input type="tel" id="phone-input" placeholder="050-1234567" style="width:100%; padding:12px; border:1px solid #444; border-radius:6px; background:#2a2a2a; color:#f0f0f0; font-size:1.1rem; text-align:center; direction:ltr;">
