@@ -1184,13 +1184,13 @@ function renderCategory(category, containerId) {
     
     return `
       <div class="roll-card">
-        <div class="roll-card-content">
-          <div class="info">
+        <div class="roll-card-content" style="display: flex; gap: 10px; flex: 1; flex-direction: row-reverse;">
+          ${imageHTML}
+          <div class="info" style="flex: 1;">
             <h3>${item.name}</h3>
             <p>${item.desc}</p>
             <p><strong>${item.price}₪</strong></p>
           </div>
-          ${imageHTML}
         </div>
         <div class="quantity-control">
           <button onclick="changeQty('${key}', -1)">−</button>
