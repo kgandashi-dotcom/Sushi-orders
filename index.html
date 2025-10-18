@@ -1183,9 +1183,9 @@ function renderCategory(category, containerId) {
     
     return `
       <div class="roll-card">
-        <div class="roll-card-content" style="display: flex; gap: 10px; flex: 1; flex-direction: row-reverse;">
+        <div class="roll-card-content">
           ${imageHTML}
-          <div class="info" style="flex: 1;">
+          <div class="info">
             <h3>${item.name}</h3>
             <p>${item.desc}</p>
             <p><strong>${item.price}₪</strong></p>
@@ -1200,25 +1200,6 @@ function renderCategory(category, containerId) {
     `;
   }).join('');
 }
-
-    function renderSauces() {
-      const container = document.getElementById('sauces-container');
-      container.innerHTML = menuData.sauces.map((sauce, idx) => {
-        const key = `sauce_${idx}`;
-        return `
-          <div class="roll-card">
-            <div class="info">
-              <h3>${sauce.name}</h3>
-            </div>
-            <div class="quantity-control">
-              <button onclick="changeSauce('${key}', -1)">−</button>
-              <input type="number" id="${key}" value="0" readonly>
-              <button onclick="changeSauce('${key}', 1)">+</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
 
     // ========================================
     // לשוניות (Tabs)
