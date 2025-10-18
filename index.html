@@ -331,6 +331,44 @@ body.modal-open {
       .quantity-control{ margin-top:8px; }
       .container{ padding:12px; }
     }
+
+    #image-modal {
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.roll-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+}
+
+.roll-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(203, 126, 61, 0.4);
+}
+
+.roll-image-placeholder {
+  width: 80px;
+  height: 80px;
+  background: #2a2a2a;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 2rem;
+  flex-shrink: 0;
+}
   </style>
 </head>
 <body>
@@ -346,6 +384,13 @@ body.modal-open {
     </div>
     <p id="phone-error" style="color:#d9534f; margin:15px 0 0 0; font-size:0.9rem; display:none;"></p>
   </div>
+</div>
+<div id="image-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.95); z-index:10000; align-items:center; justify-content:center; cursor:pointer;" onclick="closeImageModal()">
+  <div style="position:relative; max-width:90%; max-height:90%; display:flex; align-items:center; justify-content:center;">
+    <button onclick="closeImageModal(); event.stopPropagation();" style="position:absolute; top:-50px; right:0; background:#cb7e3d; color:#fff; border:none; border-radius:50%; width:40px; height:40px; font-size:1.5rem; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.5);">×</button>
+    <img id="modal-image" src="" alt="תמונה מוגדלת" style="max-width:100%; max-height:90vh; border-radius:10px; box-shadow:0 10px 50px rgba(0,0,0,0.8);" onclick="event.stopPropagation()">
+  </div>
+  <p style="position:absolute; bottom:20px; color:#fff; font-size:1.2rem; text-align:center;" id="modal-image-title"></p>
 </div>
 
 <div class="container">
@@ -1124,27 +1169,32 @@ function setupLogoutButton() {
     }
 
     function renderCategory(category, containerId) {
-      const container = document.getElementById(containerId);
-      const items = menuData[category];
-      
-      container.innerHTML = items.map((item, idx) => {
-        const key = `${category}_${idx}`;
-        return `
-          <div class="roll-card">
-            <div class="info">
-              <h3>${item.name}</h3>
-              <p>${item.desc}</p>
-              <p><strong>${item.price}₪</strong></p>
-            </div>
-            <div class="quantity-control">
-              <button onclick="changeQty('${key}', -1)">−</button>
-              <input type="number" id="${key}" value="0" readonly>
-              <button onclick="changeQty('${key}', 1)">+</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
+  const container = document.getElementById(containerId);
+  const items = menuData[category];
+  
+  container.innerHTML = items.map((item, idx) => {
+    const key = `${category}_${idx}`;
+    const imageHTML = item.image_url 
+      ? `<img src="${item.image_url}" alt="${item.name}" class="roll-image" onclick="openImageModal('${item.image_url}', '${item.name}')">`
+      : `<div class="roll-image-placeholder">🍣</div>`;
+    
+    return `
+      <div class="roll-card">
+        ${imageHTML}
+        <div class="info">
+          <h3>${item.name}</h3>
+          <p>${item.desc}</p>
+          <p><strong>${item.price}₪</strong></p>
+        </div>
+        <div class="quantity-control">
+          <button onclick="changeQty('${key}', -1)">−</button>
+          <input type="number" id="${key}" value="0" readonly>
+          <button onclick="changeQty('${key}', 1)">+</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
 
     function renderSauces() {
       const container = document.getElementById('sauces-container');
@@ -1716,7 +1766,33 @@ function setupSendOrder() {
         msgDiv.textContent = '';
       }, 5000);
     }
+// ========================================
+// מודאל תמונה
+// ========================================
 
+function openImageModal(imageUrl, title) {
+  const modal = document.getElementById('image-modal');
+  const modalImage = document.getElementById('modal-image');
+  const modalTitle = document.getElementById('modal-image-title');
+  
+  modalImage.src = imageUrl;
+  modalTitle.textContent = title;
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+  const modal = document.getElementById('image-modal');
+  modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// סגירה עם ESC
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeImageModal();
+  }
+});
   </script>
 <!-- POPUP HTML -->
 <div id="order-popup" class="order-popup" aria-hidden="true" role="dialog" aria-labelledby="order-popup-title" style="display:none">
