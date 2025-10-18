@@ -1183,9 +1183,9 @@ function renderCategory(category, containerId) {
     
     return `
       <div class="roll-card">
-        <div class="roll-card-content">
+        <div class="roll-card-content" style="display: flex; gap: 10px; flex: 1; flex-direction: row-reverse;">
           ${imageHTML}
-          <div class="info">
+          <div class="info" style="flex: 1;">
             <h3>${item.name}</h3>
             <p>${item.desc}</p>
             <p><strong>${item.price}₪</strong></p>
