@@ -133,7 +133,7 @@ h1 {
   border-bottom: 2px solid rgba(122,42,42,0.12);
   font-size: 1.3rem;
 }
-.category-container {
+    .category-container {
   display: grid;
   grid-template-columns: 1fr 80px; /* טקסט + עמודת תמונה */
   gap: 10px 15px;
@@ -141,7 +141,7 @@ h1 {
 }
 
 .roll-card {
-  display: contents; /* מאפשר לכל רול להיות חלק מהרשת הכללית */
+  display: contents; /* מאפשר ל-grid לשלוט בפריסה */
 }
 
 .roll-card .info {
@@ -149,6 +149,9 @@ h1 {
   padding: 12px;
   border-radius: 10px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .roll-card h3 { 
@@ -174,36 +177,50 @@ h1 {
   justify-self: start;
 }
 
-    .quantity-control{
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-
-.quantity-control button{
-  width:30px; height:30px;
-  border-radius:8px;
-  border:none;
-  background:#ddd;
-  color:#000;
-  font-weight:400;
-  font-size:1.2rem;
-  cursor:pointer;
+/* כפתורי כמות */
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
 }
-    .quantity-control button:active{ transform:translateY(1px); }
-    .quantity-control input{
-      width:40px;
-      text-align:center;
-      border:1px solid #ddd;
-      border-radius:6px;
-      padding:6px;
-      background:#fff;
-    }
 
-    .note{ color:#6b6b6b; margin:6px 0 0 0; font-size:0.92rem; }
-    .small{ font-size:0.86rem; color:#8a8a8a; }
+.quantity-control button {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: #ddd;
+  color: #000;
+  font-weight: 400;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
 
-#profile-btn {
+.quantity-control button:active {
+  transform: translateY(1px);
+}
+
+.quantity-control input {
+  width: 40px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px;
+  background: #fff;
+}
+
+.note {
+  color: #6b6b6b;
+  margin: 6px 0 0 0;
+  font-size: 0.92rem;
+}
+
+.small {
+  font-size: 0.86rem;
+  color: #8a8a8a;
+}#profile-btn {
   background: none;
   border: none;
   padding: 0;
