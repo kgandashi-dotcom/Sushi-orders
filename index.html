@@ -1947,7 +1947,50 @@ document.addEventListener('keydown', function(e) {
   } else {
     checkAndShow();
   }
+// הפונקציה שלך הקיימת (מחזירה לתפריט)
+function showMenuPage() {
+  document.getElementById('menu-section').style.display = 'block';
+  document.getElementById('chopsticks').style.display = 'block';
+  document.getElementById('notes-section').style.display = 'block';
+  document.getElementById('pickup-section').style.display = 'block';
+  document.getElementById('summary-section').style.display = 'block';
+  
+  // חזרה לטאב הראשון
+  document.querySelectorAll('.tab-btn').forEach(function(t) {
+    t.classList.remove('active');
+  });
+  
+  const firstTab = document.querySelector('.tab-btn[data-target="insideout"]');
+  if (firstTab) {
+    firstTab.classList.add('active');
+  }
+  
+  // הצגת insideout
+  document.querySelectorAll('.menu-category').forEach(function(cat) {
+    cat.style.display = 'none';
+  });
+  
+  const insideoutSection = document.getElementById('insideout');
+  if (insideoutSection) {
+    insideoutSection.style.display = 'block';
+  }
+}
 
+// --- החלפת טאבים ---
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    // ביטול מצב פעיל מכל הכפתורים
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // הסתרת כל הקטגוריות
+    document.querySelectorAll('.menu-category').forEach(section => section.style.display = 'none');
+
+    // הצגת הקטגוריה שנבחרה
+    const target = btn.getAttribute('data-target');
+    document.getElementById(target).style.display = 'block';
+  });
+});
 })();
 </script>
 </body>
