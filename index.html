@@ -1168,7 +1168,7 @@ function setupLogoutButton() {
       renderSauces();
     }
 
- function renderCategory(category, containerId) {
+function renderCategory(category, containerId) {
   const container = document.getElementById(containerId);
   const items = menuData[category];
   
@@ -1180,12 +1180,14 @@ function setupLogoutButton() {
     
     return `
       <div class="roll-card">
-        <div class="info">
-          <h3>${item.name}</h3>
-          <p>${item.desc}</p>
-          <p><strong>${item.price}₪</strong></p>
+        <div class="roll-card-content">
+          <div class="info">
+            <h3>${item.name}</h3>
+            <p>${item.desc}</p>
+            <p><strong>${item.price}₪</strong></p>
+          </div>
+          ${imageHTML}
         </div>
-        ${imageHTML}
         <div class="quantity-control">
           <button onclick="changeQty('${key}', -1)">−</button>
           <input type="number" id="${key}" value="0" readonly>
