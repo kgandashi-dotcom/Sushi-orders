@@ -142,22 +142,31 @@ h1 {
 
 .roll-card {
   display: flex;
-  justify-content: space-between;
-  align-items: stretch;
   gap: 15px;
   background: #252525;
   padding: 12px;
   border-radius: 10px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  flex-direction: row-reverse; /* רול ו/או תמונה מימין */
+  align-items: center;          /* מרכז אנכית */
+  width: 100%;                  /* כרטיס תופס רוחב מלא */
+  box-sizing: border-box;       /* padding בתוך הרוחב */
+}
+
+.roll-card .roll-image,
+.roll-card .roll-image-placeholder {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;   /* לא יתכווץ */
 }
 
 .roll-card .info {
-  flex: 1;
+  flex: 1;            /* תופס את כל השטח שנותר */
+  min-width: 0;       /* מאפשר לטקסט להתכווץ בתוך flex */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
-
 .roll-card h3 { 
   margin: 0 0 6px 0; 
   color: #adb745; 
