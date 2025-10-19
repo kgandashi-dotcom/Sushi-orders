@@ -147,10 +147,10 @@ h1 {
   padding: 12px;
   border-radius: 10px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-  flex-direction: row-reverse; /* רול ו/או תמונה מימין */
-  align-items: center;          /* מרכז אנכית */
-  width: 100%;                  /* כרטיס תופס רוחב מלא */
-  box-sizing: border-box;       /* padding בתוך הרוחב */
+  flex-direction: row-reverse;
+  align-items: center;
+  width: 100%;         /* או fixed px אם רוצים אחידות מוחלטת */
+  box-sizing: border-box;
 }
 
 .roll-card .roll-image,
@@ -173,12 +173,12 @@ h1 {
   font-size: 1.25rem;
 }
 
-.roll-card p { 
+.roll-card .info p { 
   margin: 0 0 10px 0;
   color: #f5f5f5; 
   font-size: 1rem;
   line-height: 1.4;
-  flex-grow: 1; /* שומר שהטקסט ימלא מקום וידחוף את הכפתורים למטה */
+  flex-grow: 0; /* אין יותר דחיפה של התמונה */
 }
 
 /* כפתורי הכמות */
