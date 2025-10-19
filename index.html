@@ -1259,7 +1259,7 @@ function setupLogoutButton() {
       renderSauces();
     }
     
-   function renderSauces() {
+function renderSauces() {
   const container = document.getElementById('sauces-container');
   if (!container) return;
 
@@ -1267,10 +1267,12 @@ function setupLogoutButton() {
     const key = `sauce_${idx}`;
     return `
       <div class="roll-card">
-        <div class="roll-card-content" style="display: flex; flex-direction: row-reverse; gap: 10px;">
-          <div class="info" style="flex: 1;">
-            <h3>${sauce.name}</h3>
-            ${sauce.price > 0 ? `<p><strong>${sauce.price}₪</strong></p>` : ''}
+        <div class="roll-card-content" style="display:flex; flex-direction:row-reverse; gap:12px; flex:1;">
+          <div class="info" style="display:flex; flex-direction:column; justify-content:space-between; flex:1;">
+            <div>
+              <h3>${sauce.name}</h3>
+              ${sauce.price > 0 ? `<p><strong>${sauce.price}₪</strong></p>` : ''}
+            </div>
           </div>
         </div>
         <div class="quantity-control">
