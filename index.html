@@ -1318,9 +1318,9 @@ function renderCategory(category, containerId) {
           </div>
         </div>
         <div class="quantity-control">
-          <button onclick="changeSauce('${key}', -1)">−</button>
+          <button onclick="changeSauceQty('${key}', -1)">−</button>
           <input type="number" id="${key}" value="0" readonly>
-          <button onclick="changeSauce('${key}', 1)">+</button>
+          <button onclick="changeSauceQty('${key}', 1)">+</button>
         </div>
       </div>
     `;
@@ -1409,7 +1409,7 @@ window.changeQty = function(key, delta) {
     // רטבים
     // ========================================
 
-    window.changeSauce = function(key, delta) {
+    window.changeSauceQty = function(key, delta) {
       const input = document.getElementById(key);
       let val = parseInt(input.value) || 0;
       val = Math.max(0, val + delta);
