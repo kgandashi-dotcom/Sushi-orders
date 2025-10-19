@@ -1087,10 +1087,7 @@ function showProfilePage() {
   loadProfileData();
   loadOrderHistory();
 }
-function setupLogoutButton() {
-  // הלוגיקה כבר משולבת ב-setupProfileButton
-  // הפונקציה קיימת רק כדי שה-DOMContentLoaded לא ייתן שגיאה
-}
+
 function hideProfilePage() {
   // הסתרת הפרופיל
   document.getElementById('profile-page').style.display = 'none';
@@ -1185,7 +1182,8 @@ async function saveProfileChanges() {
     loadProfileData();
     exitEditMode();
     
-  } catch (err) {
+  } 
+  catch (err) {
     console.error('שגיאה בעדכון:', err);
     showMessage('⚠️ הפרטים נשמרו מקומית', 'orange');
     loadProfileData();
@@ -1200,6 +1198,8 @@ function logoutUser() {
   document.getElementById('profile-btn').style.display = 'none';
   hideProfilePage();
   showMessage('התנתקת בהצלחה', 'green');
+}
+    
 async function loadOrderHistory() {
   try {
     if (!currentUser) return;
@@ -1235,44 +1235,11 @@ async function loadOrderHistory() {
   }
 }
 
-function setupProfileButton() {
-  document.getElementById('profile-btn').addEventListener('click', function() {
-    showProfilePage();
-  });
-  
-  // כפתור מצב עריכה
-  document.getElementById('edit-mode-btn').addEventListener('click', function() {
-    enterEditMode();
-  });
-  
-  // כפתור שמירה
-  document.getElementById('save-profile-btn').addEventListener('click', function() {
-    saveProfileChanges();
-  });
-  
-  // כפתור ביטול
-  document.getElementById('cancel-edit-btn').addEventListener('click', function() {
-    exitEditMode();
-  });
-  
-  // כפתור חזרה לתפריט
-  document.getElementById('back-to-menu-btn').addEventListener('click', function() {
-    hideProfilePage();
-  });
-  
-  // כפתור התנתקות מתוך הפרופיל
-  document.getElementById('logout-btn-profile').addEventListener('click', function() {
-    logoutUser();
-  });
-}
-
 function setupLogoutButton() {
   // הלוגיקה כבר משולבת ב-setupProfileButton
   // הפונקציה קיימת רק כדי שה-DOMContentLoaded לא ייתן שגיאה
 }
   
-
-}
     // ========================================
     // רינדור תפריט
     // ========================================
