@@ -1254,24 +1254,29 @@ function setupLogoutButton() {
       renderSauces();
     }
     
-   function renderSauces() {
+ function renderSauces() {
   const container = document.getElementById('sauces-container');
   if (!container) return;
 
   container.innerHTML = menuData.sauces.map((sauce, idx) => {
     const key = `sauce_${idx}`;
+    const imageHTML = sauce.image_url
+      ? `<img src="${sauce.image_url}" alt="${sauce.name}" class="roll-image">`
+      : `<div class="roll-image-placeholder">🥣</div>`;
+
     return `
       <div class="roll-card">
-        <div class="roll-card-content" style="display: flex; flex-direction: row-reverse; gap: 10px;">
+        <div class="roll-card-content" style="display: flex; flex-direction: row-reverse; gap: 10px; flex: 1;">
+          ${imageHTML}
           <div class="info" style="flex: 1;">
             <h3>${sauce.name}</h3>
-            ${sauce.price > 0 ? `<p><strong>${sauce.price}₪</strong></p>` : ''}
+            ${sauce.price > 0 ? `<p><strong>${sauce.price}₪</strong></p>` : '<p>ללא עלות</p>'}
+            <div class="quantity-control">
+              <button onclick="changeSauce('${key}', -1)">−</button>
+              <input type="number" id="${key}" value="0" readonly>
+              <button onclick="changeSauce('${key}', 1)">+</button>
+            </div>
           </div>
-        </div>
-        <div class="quantity-control">
-          <button onclick="changeSauce('${key}', -1)">−</button>
-          <input type="number" id="${key}" value="0" readonly>
-          <button onclick="changeSauce('${key}', 1)">+</button>
         </div>
       </div>
     `;
