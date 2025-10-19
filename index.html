@@ -143,9 +143,8 @@ h1 {
 /* כל כרטיס */
 .roll-card {
   display: flex;
-  flex-direction: row-reverse; /* תמונה מימין */
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: row-reverse; /* תמונה בצד ימין */
+  align-items: flex-start; /* מיישר את כל התמונות באותו קו עליון */
   gap: 15px;
   background: #252525;
   padding: 12px;
@@ -155,48 +154,48 @@ h1 {
   box-sizing: border-box;
 }
 
-/* ✅ תמונה — יישור מושלם */
+/* תמונה — תמיד באותו גודל ובקו אחד */
 .roll-card .roll-image,
 .roll-card .roll-image-placeholder {
-  width: 80px;          /* רוחב אחיד */
-  height: 80px;         /* גובה אחיד */
+  width: 90px;
+  height: 90px;
   border-radius: 8px;
   object-fit: cover;
   background: #1a1a1a;
   flex-shrink: 0;
-  align-self: flex-start; /* זה מה שמחזיק את כל התמונות באותו קו אנכי */
 }
 
-/* טקסט */
+/* אזור הטקסט והכפתורים */
 .roll-card .info {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  flex: 1;
   text-align: right;
   min-width: 0;
 }
 
+/* כותרת */
 .roll-card h3 {
-  margin: 0 0 4px 0;
+  margin: 0;
   color: #adb745;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
 }
 
+/* תיאור */
 .roll-card p {
-  margin: 0;
+  margin: 4px 0 10px 0;
   color: #f5f5f5;
   font-size: 1rem;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
-/* כפתורי כמות */
+/* אזור כפתורי הכמות */
 .quantity-control {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 6px;
-  flex-shrink: 0;
 }
 
 .quantity-control button {
