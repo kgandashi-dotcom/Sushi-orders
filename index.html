@@ -1253,18 +1253,25 @@ function setupLogoutButton() {
       renderSauces();
     }
     
-    function renderSauces() {
+   function renderSauces() {
   const container = document.getElementById('sauces-container');
   if (!container) return;
 
   container.innerHTML = menuData.sauces.map((sauce, idx) => {
     const key = `sauce_${idx}`;
     return `
-      <div class="sauce-item">
-        <label>
-          <input type="checkbox" id="${key}" value="${sauce.name}">
-          ${sauce.name} ${sauce.price > 0 ? `(+${sauce.price}₪)` : ''}
-        </label>
+      <div class="roll-card">
+        <div class="roll-card-content" style="display: flex; flex-direction: row-reverse; gap: 10px;">
+          <div class="info" style="flex: 1;">
+            <h3>${sauce.name}</h3>
+            ${sauce.price > 0 ? `<p><strong>${sauce.price}₪</strong></p>` : ''}
+          </div>
+        </div>
+        <div class="quantity-control">
+          <button onclick="changeSauceQty('${key}', -1)">−</button>
+          <input type="number" id="${key}" value="0" readonly>
+          <button onclick="changeSauceQty('${key}', 1)">+</button>
+        </div>
       </div>
     `;
   }).join('');
