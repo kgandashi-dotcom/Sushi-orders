@@ -141,32 +141,34 @@ h1 {
 }
 
 .roll-card {
-  display: flex;
-  gap: 15px;
+  display: grid;
+  grid-template-columns: 80px 1fr 100px; /* תמונה | טקסט | כפתורים */
+  gap: 10px;
+  align-items: center;
   background: #252525;
   padding: 12px;
   border-radius: 10px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-  flex-direction: row-reverse;
-  align-items: center;
-  width: 100%;         /* או fixed px אם רוצים אחידות מוחלטת */
+  width: 100%;
   box-sizing: border-box;
 }
-
+    
 .roll-card .roll-image,
 .roll-card .roll-image-placeholder {
   width: 70px;
   height: 70px;
-  flex-shrink: 0;   /* לא יתכווץ */
+  border-radius: 8px;
+  justify-self: center;
+  align-self: center;
 }
 
 .roll-card .info {
-  flex: 1;            /* תופס את כל השטח שנותר */
-  min-width: 0;       /* מאפשר לטקסט להתכווץ בתוך flex */
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  min-width: 0;
 }
+
 .roll-card h3 { 
   margin: 0 0 6px 0; 
   color: #adb745; 
@@ -184,9 +186,9 @@ h1 {
 /* כפתורי הכמות */
 .quantity-control {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  margin-top: auto; /* מצמיד לתחתית התיבה */
+  gap: 5px;
 }
 
 .quantity-control button {
