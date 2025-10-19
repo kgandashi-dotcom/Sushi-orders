@@ -1252,6 +1252,23 @@ function setupLogoutButton() {
       renderCategory('poke', 'poke-rolls');
       renderSauces();
     }
+    
+    function renderSauces() {
+  const container = document.getElementById('sauces-container');
+  if (!container) return;
+
+  container.innerHTML = menuData.sauces.map((sauce, idx) => {
+    const key = `sauce_${idx}`;
+    return `
+      <div class="sauce-item">
+        <label>
+          <input type="checkbox" id="${key}" value="${sauce.name}">
+          ${sauce.name} ${sauce.price > 0 ? `(+${sauce.price}₪)` : ''}
+        </label>
+      </div>
+    `;
+  }).join('');
+}
 
 function renderCategory(category, containerId) {
   const container = document.getElementById(containerId);
