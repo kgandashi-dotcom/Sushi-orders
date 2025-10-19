@@ -133,69 +133,110 @@ h1 {
   border-bottom: 2px solid rgba(122,42,42,0.12);
   font-size: 1.3rem;
 }
-  
-  .category-container{
-    display:flex;
-    flex-direction:column;
-    gap:5px;
-    }
-
-.roll-card{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  padding:12px;
-  border-radius:10px;
-  background:#252525;
-  box-shadow:0 3px 8px rgba(0,0,0,0.3);
+.category-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  direction: rtl;
 }
-    .roll-card .info{
-      flex:1 1 auto;
-    }
-    .roll-card h3{ 
+
+.roll-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 15px;
+  background: #252525;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+
+.roll-card .info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.roll-card h3 { 
   margin: 0 0 6px 0; 
   color: #adb745; 
   font-size: 1.25rem;
-   }
-    
-    .roll-card p{ 
-  margin: 0; 
+}
+
+.roll-card p { 
+  margin: 0 0 10px 0;
   color: #f5f5f5; 
   font-size: 1rem;
   line-height: 1.4;
+  flex-grow: 1; /* שומר שהטקסט ימלא מקום וידחוף את הכפתורים למטה */
 }
 
-    .quantity-control{
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-
-.quantity-control button{
-  width:30px; height:30px;
-  border-radius:8px;
-  border:none;
-  background:#ddd;
-  color:#000;
-  font-weight:400;
-  font-size:1.2rem;
-  cursor:pointer;
+/* כפתורי הכמות */
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto; /* מצמיד לתחתית התיבה */
 }
-    .quantity-control button:active{ transform:translateY(1px); }
-    .quantity-control input{
-      width:40px;
-      text-align:center;
-      border:1px solid #ddd;
-      border-radius:6px;
-      padding:6px;
-      background:#fff;
-    }
 
-    .note{ color:#6b6b6b; margin:6px 0 0 0; font-size:0.92rem; }
-    .small{ font-size:0.86rem; color:#8a8a8a; }
+.quantity-control button {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: #ddd;
+  color: #000;
+  font-weight: 400;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
 
-#profile-btn {
+.quantity-control button:active {
+  transform: translateY(1px);
+}
+
+.quantity-control input {
+  width: 40px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px;
+  background: #fff;
+}
+
+/* תמונה */
+.roll-image,
+.roll-image-placeholder {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  object-fit: cover;
+  align-self: center;
+  justify-self: start;
+}
+
+.note {
+  color: #6b6b6b;
+  margin: 6px 0 0 0;
+  font-size: 0.92rem;
+}
+
+.small {
+  font-size: 0.86rem;
+  color: #8a8a8a;
+}
+.note {
+  color: #6b6b6b;
+  margin: 6px 0 0 0;
+  font-size: 0.92rem;
+}
+
+.small {
+  font-size: 0.86rem;
+  color: #8a8a8a;
+}#profile-btn {
   background: none;
   border: none;
   padding: 0;
@@ -1046,10 +1087,7 @@ function showProfilePage() {
   loadProfileData();
   loadOrderHistory();
 }
-function setupLogoutButton() {
-  // הלוגיקה כבר משולבת ב-setupProfileButton
-  // הפונקציה קיימת רק כדי שה-DOMContentLoaded לא ייתן שגיאה
-}
+
 function hideProfilePage() {
   // הסתרת הפרופיל
   document.getElementById('profile-page').style.display = 'none';
@@ -1144,7 +1182,8 @@ async function saveProfileChanges() {
     loadProfileData();
     exitEditMode();
     
-  } catch (err) {
+  } 
+  catch (err) {
     console.error('שגיאה בעדכון:', err);
     showMessage('⚠️ הפרטים נשמרו מקומית', 'orange');
     loadProfileData();
@@ -1159,19 +1198,48 @@ function logoutUser() {
   document.getElementById('profile-btn').style.display = 'none';
   hideProfilePage();
   showMessage('התנתקת בהצלחה', 'green');
-  async function loadOrderHistory() {
-  // ... הקוד מלמעלה
 }
+    
+async function loadOrderHistory() {
+  try {
+    if (!currentUser) return;
+    
+    const { data, error } = await supabase
+      .from('Sushi')
+      .select('*')
+      .eq('email', currentUser.email)
+      .order('created_at', { ascending: false });
 
-function setupProfileButton() {
-  // ... הקוד מלמעלה
+    if (error) throw error;
+
+    const historyDiv = document.getElementById('order-history');
+    if (!historyDiv) return;
+    
+    if (!data || data.length === 0) {
+      historyDiv.innerHTML = '<p>אין הזמנות קודמות.</p>';
+      return;
+    }
+
+    historyDiv.innerHTML = data.map(function(order) {
+      return `
+        <div class="history-item">
+          <strong>${new Date(order.created_at).toLocaleDateString('he-IL')}</strong><br>
+          שעת איסוף: ${order.pickup_time}<br>
+          סה"כ: ${order.total_price}₪
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error('שגיאה בטעינת היסטוריה:', err);
+    showMessage('שגיאה בטעינת היסטוריה: ' + err.message, 'red');
+  }
 }
 
 function setupLogoutButton() {
-  // ... הקוד מלמעלה
+  // הלוגיקה כבר משולבת ב-setupProfileButton
+  // הפונקציה קיימת רק כדי שה-DOMContentLoaded לא ייתן שגיאה
 }
-
-}
+  
     // ========================================
     // רינדור תפריט
     // ========================================
@@ -1184,6 +1252,23 @@ function setupLogoutButton() {
       renderCategory('poke', 'poke-rolls');
       renderSauces();
     }
+    
+    function renderSauces() {
+  const container = document.getElementById('sauces-container');
+  if (!container) return;
+
+  container.innerHTML = menuData.sauces.map((sauce, idx) => {
+    const key = `sauce_${idx}`;
+    return `
+      <div class="sauce-item">
+        <label>
+          <input type="checkbox" id="${key}" value="${sauce.name}">
+          ${sauce.name} ${sauce.price > 0 ? `(+${sauce.price}₪)` : ''}
+        </label>
+      </div>
+    `;
+  }).join('');
+}
 
 function renderCategory(category, containerId) {
   const container = document.getElementById(containerId);
