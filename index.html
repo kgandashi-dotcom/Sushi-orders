@@ -142,51 +142,51 @@ h1 {
 
 .roll-card {
   display: flex;
-  flex-direction: row-reverse; /* תמונה מימין */
-  align-items: center;          /* יישור אנכי */
-  gap: 12px;                    /* רווח בין תמונה, טקסט וכפתורים */
+  gap: 15px;
   background: #252525;
   padding: 12px;
   border-radius: 10px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-  width: 100%;
+  flex-direction: row-reverse;
+  align-items: center;
+  width: 100%;         /* או fixed px אם רוצים אחידות מוחלטת */
   box-sizing: border-box;
 }
-    
+
 .roll-card .roll-image,
 .roll-card .roll-image-placeholder {
-  width: 70px;   /* רוחב קבוע */
-  height: 70px;  /* גובה קבוע */
-  border-radius: 8px;
-  flex-shrink: 0; /* לא יתכווץ */
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;   /* לא יתכווץ */
 }
 
 .roll-card .info {
+  flex: 1;            /* תופס את כל השטח שנותר */
+  min-width: 0;       /* מאפשר לטקסט להתכווץ בתוך flex */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-width: 0;
 }
-
-.roll-card h3 {
-  margin: 0 0 6px 0;
-  color: #adb745;
+.roll-card h3 { 
+  margin: 0 0 6px 0; 
+  color: #adb745; 
   font-size: 1.25rem;
 }
 
-.roll-card .info p {
-  margin: 0 0 6px 0;
-  color: #f5f5f5;
+.roll-card .info p { 
+  margin: 0 0 10px 0;
+  color: #f5f5f5; 
   font-size: 1rem;
   line-height: 1.4;
+  flex-grow: 0; /* אין יותר דחיפה של התמונה */
 }
 
+/* כפתורי הכמות */
 .quantity-control {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 5px;
-  flex-shrink: 0; /* תמיד בצד */
+  gap: 8px;
+  margin-top: auto; /* מצמיד לתחתית התיבה */
 }
 
 .quantity-control button {
@@ -196,8 +196,14 @@ h1 {
   border: none;
   background: #ddd;
   color: #000;
+  font-weight: 400;
   font-size: 1.2rem;
   cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.quantity-control button:active {
+  transform: translateY(1px);
 }
 
 .quantity-control input {
@@ -205,11 +211,8 @@ h1 {
   text-align: center;
   border: 1px solid #ddd;
   border-radius: 6px;
+  padding: 6px;
   background: #fff;
-}
-
-.quantity-control button:active {
-  transform: translateY(1px);
 }
 
 /* תמונה */
@@ -1259,7 +1262,7 @@ function setupLogoutButton() {
       renderSauces();
     }
     
-function renderSauces() {
+   function renderSauces() {
   const container = document.getElementById('sauces-container');
   if (!container) return;
 
@@ -1267,12 +1270,10 @@ function renderSauces() {
     const key = `sauce_${idx}`;
     return `
       <div class="roll-card">
-        <div class="roll-card-content" style="display:flex; flex-direction:row-reverse; gap:12px; flex:1;">
-          <div class="info" style="display:flex; flex-direction:column; justify-content:space-between; flex:1;">
-            <div>
-              <h3>${sauce.name}</h3>
-              ${sauce.price > 0 ? `<p><strong>${sauce.price}₪</strong></p>` : ''}
-            </div>
+        <div class="roll-card-content" style="display: flex; flex-direction: row-reverse; gap: 10px;">
+          <div class="info" style="flex: 1;">
+            <h3>${sauce.name}</h3>
+            ${sauce.price > 0 ? `<p><strong>${sauce.price}₪</strong></p>` : ''}
           </div>
         </div>
         <div class="quantity-control">
@@ -1296,23 +1297,21 @@ function renderCategory(category, containerId) {
       : `<div class="roll-image-placeholder">🍣</div>`;
     
     return `
-   <div class="roll-card">
-  <div class="roll-card-content" style="display: flex; gap: 10px; flex: 1; flex-direction: row-reverse;">
-    ${imageHTML}
-    <div class="info" style="flex: 1; display:flex; flex-direction:column; justify-content:space-between;">
-      <div>
-        <h3>${item.name}</h3>
-        <p>${item.desc}</p>
-        <p><strong>${item.price}₪</strong></p>
+      <div class="roll-card">
+        <div class="roll-card-content" style="display: flex; gap: 10px; flex: 1; flex-direction: row-reverse;">
+          ${imageHTML}
+          <div class="info" style="flex: 1;">
+            <h3>${item.name}</h3>
+            <p>${item.desc}</p>
+            <p><strong>${item.price}₪</strong></p>
+          </div>
+        </div>
+        <div class="quantity-control">
+          <button onclick="changeQty('${key}', -1)">−</button>
+          <input type="number" id="${key}" value="0" readonly>
+          <button onclick="changeQty('${key}', 1)">+</button>
+        </div>
       </div>
-      <div class="quantity-control">
-        <button onclick="changeQty('${key}', -1)">−</button>
-        <input type="number" id="${key}" value="0" readonly>
-        <button onclick="changeQty('${key}', 1)">+</button>
-      </div>
-    </div>
-  </div>
-</div>
     `;
   }).join('');
 }
