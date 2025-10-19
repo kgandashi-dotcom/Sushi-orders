@@ -1200,17 +1200,77 @@ function logoutUser() {
   document.getElementById('profile-btn').style.display = 'none';
   hideProfilePage();
   showMessage('התנתקת בהצלחה', 'green');
-  async function loadOrderHistory() {
-  // ... הקוד מלמעלה
+async function loadOrderHistory() {
+  try {
+    if (!currentUser) return;
+    
+    const { data, error } = await supabase
+      .from('Sushi')
+      .select('*')
+      .eq('email', currentUser.email)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const historyDiv = document.getElementById('order-history');
+    if (!historyDiv) return;
+    
+    if (!data || data.length === 0) {
+      historyDiv.innerHTML = '<p>אין הזמנות קודמות.</p>';
+      return;
+    }
+
+    historyDiv.innerHTML = data.map(function(order) {
+      return `
+        <div class="history-item">
+          <strong>${new Date(order.created_at).toLocaleDateString('he-IL')}</strong><br>
+          שעת איסוף: ${order.pickup_time}<br>
+          סה"כ: ${order.total_price}₪
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error('שגיאה בטעינת היסטוריה:', err);
+    showMessage('שגיאה בטעינת היסטוריה: ' + err.message, 'red');
+  }
 }
 
 function setupProfileButton() {
-  // ... הקוד מלמעלה
+  document.getElementById('profile-btn').addEventListener('click', function() {
+    showProfilePage();
+  });
+  
+  // כפתור מצב עריכה
+  document.getElementById('edit-mode-btn').addEventListener('click', function() {
+    enterEditMode();
+  });
+  
+  // כפתור שמירה
+  document.getElementById('save-profile-btn').addEventListener('click', function() {
+    saveProfileChanges();
+  });
+  
+  // כפתור ביטול
+  document.getElementById('cancel-edit-btn').addEventListener('click', function() {
+    exitEditMode();
+  });
+  
+  // כפתור חזרה לתפריט
+  document.getElementById('back-to-menu-btn').addEventListener('click', function() {
+    hideProfilePage();
+  });
+  
+  // כפתור התנתקות מתוך הפרופיל
+  document.getElementById('logout-btn-profile').addEventListener('click', function() {
+    logoutUser();
+  });
 }
 
 function setupLogoutButton() {
-  // ... הקוד מלמעלה
+  // הלוגיקה כבר משולבת ב-setupProfileButton
+  // הפונקציה קיימת רק כדי שה-DOMContentLoaded לא ייתן שגיאה
 }
+  
 
 }
     // ========================================
