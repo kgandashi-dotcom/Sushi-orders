@@ -1262,6 +1262,17 @@ function setupLogoutButton() {
       renderSauces();
     }
     
+    function changeSauceQty(key, delta) {
+  const input = document.getElementById(key);
+  if (!input) return;
+
+  let value = parseInt(input.value) || 0;
+  value += delta;
+  if (value < 0) value = 0;
+
+  input.value = value;
+}
+    
    function renderSauces() {
   const container = document.getElementById('sauces-container');
   if (!container) return;
