@@ -102,7 +102,7 @@ h1 {
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  font-size: 0.83rem;
+  font-size: 0.85rem;
   font-weight: 400;
   transition: all 0.3s ease;
 }
@@ -133,119 +133,69 @@ h1 {
   border-bottom: 2px solid rgba(122,42,42,0.12);
   font-size: 1.3rem;
 }
-.category-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  direction: rtl;
-}
+  
+  .category-container{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    }
 
-.roll-card {
-  display: flex;
-  gap: 15px;
-  background: #252525;
-  padding: 12px;
-  border-radius: 10px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-  flex-direction: row-reverse;
-  align-items: center;
-  width: 100%;         /* או fixed px אם רוצים אחידות מוחלטת */
-  box-sizing: border-box;
+.roll-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:12px;
+  border-radius:10px;
+  background:#252525;
+  box-shadow:0 3px 8px rgba(0,0,0,0.3);
 }
-
-.roll-card .roll-image,
-.roll-card .roll-image-placeholder {
-  width: 70px;
-  height: 70px;
-  flex-shrink: 0;   /* לא יתכווץ */
-}
-
-.roll-card .info {
-  flex: 1;            /* תופס את כל השטח שנותר */
-  min-width: 0;       /* מאפשר לטקסט להתכווץ בתוך flex */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.roll-card h3 { 
+    .roll-card .info{
+      flex:1 1 auto;
+    }
+    .roll-card h3{ 
   margin: 0 0 6px 0; 
   color: #adb745; 
   font-size: 1.25rem;
-}
-
-.roll-card .info p { 
-  margin: 0 0 10px 0;
+   }
+    
+    .roll-card p{ 
+  margin: 0; 
   color: #f5f5f5; 
   font-size: 1rem;
   line-height: 1.4;
-  flex-grow: 0; /* אין יותר דחיפה של התמונה */
 }
 
-/* כפתורי הכמות */
-.quantity-control {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: auto; /* מצמיד לתחתית התיבה */
-}
+    .quantity-control{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
 
-.quantity-control button {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  border: none;
-  background: #ddd;
-  color: #000;
-  font-weight: 400;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: transform 0.1s;
+.quantity-control button{
+  width:30px; height:30px;
+  border-radius:8px;
+  border:none;
+  background:#ddd;
+  color:#000;
+  font-weight:400;
+  font-size:1.2rem;
+  cursor:pointer;
 }
+    .quantity-control button:active{ transform:translateY(1px); }
+    .quantity-control input{
+      width:40px;
+      text-align:center;
+      border:1px solid #ddd;
+      border-radius:6px;
+      padding:6px;
+      background:#fff;
+    }
 
-.quantity-control button:active {
-  transform: translateY(1px);
-}
+    .note{ color:#6b6b6b; margin:6px 0 0 0; font-size:0.92rem; }
+    .small{ font-size:0.86rem; color:#8a8a8a; }
 
-.quantity-control input {
-  width: 40px;
-  text-align: center;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 6px;
-  background: #fff;
-}
-
-/* תמונה */
-.roll-image,
-.roll-image-placeholder {
-  width: 70px;
-  height: 70px;
-  border-radius: 8px;
-  object-fit: cover;
-  align-self: center;
-  justify-self: start;
-}
-
-.note {
-  color: #6b6b6b;
-  margin: 6px 0 0 0;
-  font-size: 0.92rem;
-}
-
-.small {
-  font-size: 0.86rem;
-  color: #8a8a8a;
-}
-.note {
-  color: #6b6b6b;
-  margin: 6px 0 0 0;
-  font-size: 0.92rem;
-}
-
-.small {
-  font-size: 0.86rem;
-  color: #8a8a8a;
-}#profile-btn {
+#profile-btn {
   background: none;
   border: none;
   padding: 0;
@@ -707,9 +657,9 @@ const PREP_TIME_PER_ROLL = 10;
       ],
       
       onigiri: [
-        {name: 'אוניגירי רוקי', desc: 'טרטר טונה אדומה עם ספייסי מיונז ובצל ירוק', price: 35, image_url:'https://i.imgur.com/VW9Iexm.jpeg'},
-        {name: 'אוניגירי ג\'וני', desc: 'טרטר סלמון עם ספייסי מיונז ובצל ירוק', price: 30, image_url:'https://i.imgur.com/VW9Iexm.jpeg'},
-        {name: 'אוניגירי ג\'יזל 🌱', desc: 'אבוקדו ובטטה', price: 25 , image_url:'https://i.imgur.com/VW9Iexm.jpeg'}
+        {name: 'אוניגירי רוקי', desc: 'טרטר טונה אדומה עם ספייסי מיונז ובצל ירוק', price: 35, image_url:'https://i.imgur.com/AdT2Ync.jpeg'},
+        {name: 'אוניגירי ג\'וני', desc: 'טרטר סלמון עם ספייסי מיונז ובצל ירוק', price: 30, image_url:'https://i.imgur.com/AdT2Ync.jpeg'},
+        {name: 'אוניגירי ג\'יזל 🌱', desc: 'אבוקדו ובטטה', price: 25 , image_url:'https://i.imgur.com/AdT2Ync.jpeg'}
       ],
       
       oshizushi: [
@@ -1096,7 +1046,10 @@ function showProfilePage() {
   loadProfileData();
   loadOrderHistory();
 }
-
+function setupLogoutButton() {
+  // הלוגיקה כבר משולבת ב-setupProfileButton
+  // הפונקציה קיימת רק כדי שה-DOMContentLoaded לא ייתן שגיאה
+}
 function hideProfilePage() {
   // הסתרת הפרופיל
   document.getElementById('profile-page').style.display = 'none';
@@ -1191,8 +1144,7 @@ async function saveProfileChanges() {
     loadProfileData();
     exitEditMode();
     
-  } 
-  catch (err) {
+  } catch (err) {
     console.error('שגיאה בעדכון:', err);
     showMessage('⚠️ הפרטים נשמרו מקומית', 'orange');
     loadProfileData();
@@ -1207,48 +1159,19 @@ function logoutUser() {
   document.getElementById('profile-btn').style.display = 'none';
   hideProfilePage();
   showMessage('התנתקת בהצלחה', 'green');
+  async function loadOrderHistory() {
+  // ... הקוד מלמעלה
 }
-    
-async function loadOrderHistory() {
-  try {
-    if (!currentUser) return;
-    
-    const { data, error } = await supabase
-      .from('Sushi')
-      .select('*')
-      .eq('email', currentUser.email)
-      .order('created_at', { ascending: false });
 
-    if (error) throw error;
-
-    const historyDiv = document.getElementById('order-history');
-    if (!historyDiv) return;
-    
-    if (!data || data.length === 0) {
-      historyDiv.innerHTML = '<p>אין הזמנות קודמות.</p>';
-      return;
-    }
-
-    historyDiv.innerHTML = data.map(function(order) {
-      return `
-        <div class="history-item">
-          <strong>${new Date(order.created_at).toLocaleDateString('he-IL')}</strong><br>
-          שעת איסוף: ${order.pickup_time}<br>
-          סה"כ: ${order.total_price}₪
-        </div>
-      `;
-    }).join('');
-  } catch (err) {
-    console.error('שגיאה בטעינת היסטוריה:', err);
-    showMessage('שגיאה בטעינת היסטוריה: ' + err.message, 'red');
-  }
+function setupProfileButton() {
+  // ... הקוד מלמעלה
 }
 
 function setupLogoutButton() {
-  // הלוגיקה כבר משולבת ב-setupProfileButton
-  // הפונקציה קיימת רק כדי שה-DOMContentLoaded לא ייתן שגיאה
+  // ... הקוד מלמעלה
 }
-  
+
+}
     // ========================================
     // רינדור תפריט
     // ========================================
@@ -1261,41 +1184,6 @@ function setupLogoutButton() {
       renderCategory('poke', 'poke-rolls');
       renderSauces();
     }
-    
-    function changeSauceQty(key, delta) {
-  const input = document.getElementById(key);
-  if (!input) return;
-
-  let value = parseInt(input.value) || 0;
-  value += delta;
-  if (value < 0) value = 0;
-
-  input.value = value;
-}
-    
-   function renderSauces() {
-  const container = document.getElementById('sauces-container');
-  if (!container) return;
-
-  container.innerHTML = menuData.sauces.map((sauce, idx) => {
-    const key = `sauce_${idx}`;
-    return `
-      <div class="roll-card">
-        <div class="roll-card-content" style="display: flex; flex-direction: row-reverse; gap: 10px;">
-          <div class="info" style="flex: 1;">
-            <h3>${sauce.name}</h3>
-            ${sauce.price > 0 ? `<p><strong>${sauce.price}₪</strong></p>` : ''}
-          </div>
-        </div>
-        <div class="quantity-control">
-          <button onclick="changeSauceQty('${key}', -1)">−</button>
-          <input type="number" id="${key}" value="0" readonly>
-          <button onclick="changeSauceQty('${key}', 1)">+</button>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
 
 function renderCategory(category, containerId) {
   const container = document.getElementById(containerId);
@@ -1318,9 +1206,9 @@ function renderCategory(category, containerId) {
           </div>
         </div>
         <div class="quantity-control">
-          <button onclick="changeSauceQty('${key}', -1)">−</button>
+          <button onclick="changeQty('${key}', -1)">−</button>
           <input type="number" id="${key}" value="0" readonly>
-          <button onclick="changeSauceQty('${key}', 1)">+</button>
+          <button onclick="changeQty('${key}', 1)">+</button>
         </div>
       </div>
     `;
@@ -1409,7 +1297,7 @@ window.changeQty = function(key, delta) {
     // רטבים
     // ========================================
 
-    window.changeSauceQty = function(key, delta) {
+    window.changeSauce = function(key, delta) {
       const input = document.getElementById(key);
       let val = parseInt(input.value) || 0;
       val = Math.max(0, val + delta);
