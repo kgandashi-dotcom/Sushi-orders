@@ -102,7 +102,7 @@ h1 {
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  font-size: 0.85rem;
+  font-size: 0.83rem;
   font-weight: 400;
   transition: all 0.3s ease;
 }
@@ -142,22 +142,31 @@ h1 {
 
 .roll-card {
   display: flex;
-  justify-content: space-between;
-  align-items: stretch;
   gap: 15px;
   background: #252525;
   padding: 12px;
   border-radius: 10px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  flex-direction: row-reverse; /* רול ו/או תמונה מימין */
+  align-items: center;          /* מרכז אנכית */
+  width: 100%;                  /* כרטיס תופס רוחב מלא */
+  box-sizing: border-box;       /* padding בתוך הרוחב */
+}
+
+.roll-card .roll-image,
+.roll-card .roll-image-placeholder {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;   /* לא יתכווץ */
 }
 
 .roll-card .info {
-  flex: 1;
+  flex: 1;            /* תופס את כל השטח שנותר */
+  min-width: 0;       /* מאפשר לטקסט להתכווץ בתוך flex */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
-
 .roll-card h3 { 
   margin: 0 0 6px 0; 
   color: #adb745; 
@@ -698,9 +707,9 @@ const PREP_TIME_PER_ROLL = 10;
       ],
       
       onigiri: [
-        {name: 'אוניגירי רוקי', desc: 'טרטר טונה אדומה עם ספייסי מיונז ובצל ירוק', price: 35, image_url:'https://i.imgur.com/AdT2Ync.jpeg'},
-        {name: 'אוניגירי ג\'וני', desc: 'טרטר סלמון עם ספייסי מיונז ובצל ירוק', price: 30, image_url:'https://i.imgur.com/AdT2Ync.jpeg'},
-        {name: 'אוניגירי ג\'יזל 🌱', desc: 'אבוקדו ובטטה', price: 25 , image_url:'https://i.imgur.com/AdT2Ync.jpeg'}
+        {name: 'אוניגירי רוקי', desc: 'טרטר טונה אדומה עם ספייסי מיונז ובצל ירוק', price: 35, image_url:'https://i.imgur.com/VW9Iexm.jpeg'},
+        {name: 'אוניגירי ג\'וני', desc: 'טרטר סלמון עם ספייסי מיונז ובצל ירוק', price: 30, image_url:'https://i.imgur.com/VW9Iexm.jpeg'},
+        {name: 'אוניגירי ג\'יזל 🌱', desc: 'אבוקדו ובטטה', price: 25 , image_url:'https://i.imgur.com/VW9Iexm.jpeg'}
       ],
       
       oshizushi: [
@@ -1253,18 +1262,25 @@ function setupLogoutButton() {
       renderSauces();
     }
     
-    function renderSauces() {
+   function renderSauces() {
   const container = document.getElementById('sauces-container');
   if (!container) return;
 
   container.innerHTML = menuData.sauces.map((sauce, idx) => {
     const key = `sauce_${idx}`;
     return `
-      <div class="sauce-item">
-        <label>
-          <input type="checkbox" id="${key}" value="${sauce.name}">
-          ${sauce.name} ${sauce.price > 0 ? `(+${sauce.price}₪)` : ''}
-        </label>
+      <div class="roll-card">
+        <div class="roll-card-content" style="display: flex; flex-direction: row-reverse; gap: 10px;">
+          <div class="info" style="flex: 1;">
+            <h3>${sauce.name}</h3>
+            ${sauce.price > 0 ? `<p><strong>${sauce.price}₪</strong></p>` : ''}
+          </div>
+        </div>
+        <div class="quantity-control">
+          <button onclick="changeSauceQty('${key}', -1)">−</button>
+          <input type="number" id="${key}" value="0" readonly>
+          <button onclick="changeSauceQty('${key}', 1)">+</button>
+        </div>
       </div>
     `;
   }).join('');
