@@ -133,18 +133,19 @@ h1 {
   border-bottom: 2px solid rgba(122,42,42,0.12);
   font-size: 1.3rem;
 }
+    
 .category-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  direction: rtl; /* עברית */
+  direction: rtl;
 }
 
 /* כל כרטיס */
 .roll-card {
   display: flex;
-  flex-direction: row; /* תמונה משמאל, טקסט מימין */
-  align-items: stretch; /* גובה אחיד */
+  flex-direction: row; /* תמונה בצד שמאל */
+  align-items: center; /* ✅ התמונה במרכז אנכי */
   gap: 15px;
   background: #252525;
   padding: 12px;
@@ -154,7 +155,7 @@ h1 {
   box-sizing: border-box;
 }
 
-/* תמונה — תמיד באותו גודל ובאותו קו אנכי */
+/* תמונה — מיושרת למרכז אנכי */
 .roll-card .roll-image,
 .roll-card .roll-image-placeholder {
   width: 90px;
@@ -163,15 +164,15 @@ h1 {
   object-fit: cover;
   background: #1a1a1a;
   flex-shrink: 0;
-  align-self: center;
+  align-self: center; /* ✅ במרכז אנכי */
 }
 
-/* טקסט */
+/* מידע */
 .roll-card .info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   text-align: right;
 }
 
@@ -182,7 +183,7 @@ h1 {
   font-size: 1.2rem;
 }
 
-/* תיאור ומחיר */
+/* תיאור */
 .roll-card p {
   margin: 0 0 8px 0;
   color: #f5f5f5;
@@ -190,13 +191,12 @@ h1 {
   line-height: 1.4;
 }
 
-/* כפתורי כמות — מתחת לטקסט בצד ימין */
+/* כפתורי כמות — מיושרים מתחת לתיאור */
 .quantity-control {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
-  margin-top: auto;
 }
 
 .quantity-control button {
