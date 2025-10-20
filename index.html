@@ -136,16 +136,15 @@ h1 {
 .category-container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  direction: rtl;
+  gap: 10px;
+  direction: rtl; /* עברית */
 }
 
 /* כל כרטיס */
 .roll-card {
   display: flex;
-  flex-direction: row-reverse; /* תמונה מימין */
-  align-items: stretch;         /* כל האלמנטים באותו גובה */
-  justify-content: space-between;
+  flex-direction: row; /* תמונה משמאל, טקסט מימין */
+  align-items: stretch; /* גובה אחיד */
   gap: 15px;
   background: #252525;
   padding: 12px;
@@ -155,7 +154,7 @@ h1 {
   box-sizing: border-box;
 }
 
-/* התמונה */
+/* תמונה — תמיד באותו גודל ובאותו קו אנכי */
 .roll-card .roll-image,
 .roll-card .roll-image-placeholder {
   width: 90px;
@@ -164,16 +163,7 @@ h1 {
   object-fit: cover;
   background: #1a1a1a;
   flex-shrink: 0;
-  align-self: center; /* מיישר את כולן לאותו קו */
-}
-
-/* אזור התוכן */
-.roll-card-content {
-  display: flex;
-  flex: 1;
-  flex-direction: row-reverse;
-  align-items: center;
-  gap: 15px;
+  align-self: center;
 }
 
 /* טקסט */
@@ -181,31 +171,32 @@ h1 {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: space-between;
   text-align: right;
 }
 
+/* כותרת */
 .roll-card h3 {
-  margin: 0;
+  margin: 0 0 6px 0;
   color: #adb745;
   font-size: 1.2rem;
 }
 
+/* תיאור ומחיר */
 .roll-card p {
-  margin: 3px 0;
+  margin: 0 0 8px 0;
   color: #f5f5f5;
   font-size: 1rem;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
-/* כפתורי כמות */
+/* כפתורי כמות — מתחת לטקסט בצד ימין */
 .quantity-control {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 6px;
-  flex-shrink: 0;
-  align-self: center; /* יישור קבוע לגובה אחיד */
+  margin-top: auto;
 }
 
 .quantity-control button {
