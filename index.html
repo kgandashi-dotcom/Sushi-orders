@@ -141,15 +141,16 @@ h1 {
 }
 
 /* כרטיס בודד של רול */
-.roll-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start; /* מאפשר טקסט רב-שורה בלי להזיז את התמונה */
+    .roll-card {
+  display: grid;
+  grid-template-columns: 90px 1fr; /* תמונה + טקסט */
   gap: 12px;
   background: #252525;
   padding: 12px;
   border-radius: 10px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  min-height: 120px; /* גובה אחיד לכל הכרטיסים */
+  align-items: center;
 }
 
 /* אזור הטקסט והכפתורים */
