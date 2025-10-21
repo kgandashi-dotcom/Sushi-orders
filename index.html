@@ -124,15 +124,7 @@ h1 {
   background: #cb7e3d;
   box-shadow: 0 0 5px rgba(122, 42, 42, 0.9), 0 0 2px rgba(122, 42, 42, 0.5);
 }
-    .category-title {
-  font-weight: 700;
-  color: #cb7e3d;
-  margin: 18px 0 8px 0;
-  padding-bottom: 6px;
-  border-bottom: 2px solid rgba(122, 42, 42, 0.12);
-  font-size: 1.3rem;
-}
-
+    
 .category-container {
   display: grid;
   grid-template-columns: 90px 1fr; /* תמונה + טקסט */
@@ -140,8 +132,8 @@ h1 {
   direction: rtl;
 }
 
-/* כרטיס בודד של רול */
-    .roll-card {
+/* כל כרטיס רול */
+.roll-card {
   display: grid;
   grid-template-columns: 90px 1fr; /* תמונה + טקסט */
   gap: 12px;
@@ -153,62 +145,50 @@ h1 {
   align-items: center;
 }
 
-/* אזור הטקסט והכפתורים */
-.roll-card .info {
-  flex: 1;
-}
-
-/* שם הרול */
-.roll-card h3 { 
-  margin: 0 0 6px 0; 
-  color: #adb745; 
-  font-size: 1.25rem;
-}
-
-/* תיאור */
-.roll-card p { 
-  margin: 0; 
-  color: #f5f5f5; 
-  font-size: 1rem;
-  line-height: 1.4;
-}
-
 /* תמונה */
-.roll-image,
-.roll-image-placeholder {
-  width: 70px;
-  height: 70px;
+.roll-card .roll-image,
+.roll-card .roll-image-placeholder {
+  width: 90px;
+  height: 90px;
   border-radius: 8px;
   object-fit: cover;
-  flex-shrink: 0;
-  align-self: flex-start; /* מיישר למעלה במקום למרכז אנכי */
+  justify-self: start;
+}
+
+/* אזור טקסט + כפתורים */
+.roll-card .info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+/* כותרת ותיאור */
+.roll-card h3 {
+  margin: 0;
+  color: #adb745;
+  font-size: 1.25rem;
+}
+.roll-card p {
+  margin: 0;
+  color: #f5f5f5;
+  font-size: 1rem;
+  line-height: 1.4;
 }
 
 /* כפתורי כמות */
 .quantity-control {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 6px;
 }
-
 .quantity-control button {
   width: 30px;
   height: 30px;
   border-radius: 8px;
   border: none;
   background: #ddd;
-  color: #000;
-  font-weight: 400;
-  font-size: 1.2rem;
   cursor: pointer;
-  transition: transform 0.1s;
 }
-
-.quantity-control button:active {
-  transform: translateY(1px);
-}
-
 .quantity-control input {
   width: 40px;
   text-align: center;
@@ -218,6 +198,17 @@ h1 {
   background: #fff;
 }
 
+/* רספונסיביות למובייל */
+@media (max-width: 600px) {
+  .category-container, .roll-card {
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+  }
+  .roll-card .roll-image {
+    margin-bottom: 8px;
+  }
+}
     
 .note {
   color: #6b6b6b;
@@ -238,6 +229,7 @@ h1 {
 .small {
   font-size: 0.86rem;
   color: #8a8a8a;
+  
 }#profile-btn {
   background: none;
   border: none;
