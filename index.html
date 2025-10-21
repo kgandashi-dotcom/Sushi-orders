@@ -133,29 +133,28 @@ h1 {
   border-bottom: 2px solid rgba(122,42,42,0.12);
   font-size: 1.3rem;
 }
-    
 .category-container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   direction: rtl;
 }
 
 /* כל כרטיס */
 .roll-card {
   display: flex;
-  flex-direction: row-reverse; /* כיוון ימין לשמאל */
-  align-items: stretch; /* חשוב – כל הכרטיסים באותו גובה */
+  flex-direction: row-reverse; /* תמונה בצד ימין */
+  align-items: flex-start; /* מיישר את כל התמונות באותו קו עליון */
   gap: 15px;
   background: #252525;
-  padding: 14px;
+  padding: 12px;
   border-radius: 10px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.3);
   width: 100%;
   box-sizing: border-box;
 }
 
-/* ✅ תמונה בצד שמאל, גודל קבוע */
+/* תמונה — תמיד באותו גודל ובקו אחד */
 .roll-card .roll-image,
 .roll-card .roll-image-placeholder {
   width: 90px;
@@ -163,16 +162,15 @@ h1 {
   border-radius: 8px;
   object-fit: cover;
   background: #1a1a1a;
-  flex-shrink: 0; /* אל תאפשר לתמונה להתכווץ */
-  align-self: center; /* תמיד במרכז אנכי */
+  flex-shrink: 0;
 }
 
-/* צד ימין — טקסט וכפתורים */
+/* אזור הטקסט והכפתורים */
 .roll-card .info {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* רווח בין הטקסט לכפתורים */
+  justify-content: flex-start;
+  flex: 1;
   text-align: right;
   min-width: 0;
 }
@@ -181,24 +179,23 @@ h1 {
 .roll-card h3 {
   margin: 0;
   color: #adb745;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
 }
 
-/* תיאור ומחיר */
+/* תיאור */
 .roll-card p {
-  margin: 4px 0;
+  margin: 4px 0 10px 0;
   color: #f5f5f5;
   font-size: 1rem;
   line-height: 1.4;
 }
 
-/* כפתורי כמות — מתחת לטקסט */
+/* אזור כפתורי הכמות */
 .quantity-control {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 6px;
-  margin-top: 8px;
 }
 
 .quantity-control button {
@@ -682,7 +679,7 @@ const PREP_TIME_PER_ROLL = 10;
         {name: 'רול ריי', desc: 'טרטר ספייסי טונה נא על רול מלפפון, עירית ואושינקו', price: 55},
         {name: 'רול קרייזי ברונו', desc: 'דג לבן, טונה, סלמון בציפוי שומשום קלוי', price: 60, image_url: 'https://i.imgur.com/rA4q1ND.jpeg'},
         {name: 'רול האפי ברונו', desc: 'סלמון בציפוי שקדים קלויים ורוטב טריאקי', price: 60, image_url: 'https://i.imgur.com/E3Uk19o.jpeg'},
-        {name: 'רול מילה', desc: 'בטטה, עירית ואבוקדו בעיטוף סלמון צרוב', price: 50, image_url: 'https://i.imgur.com/rK5ltLO.jpeg'},
+        {name: 'רול מילה', desc: 'בטטה, עירית ואבוקדו בעיטוף סלמון צרוב', price: 50},
         {name: 'רול ניוטון', desc: 'טונה אדומה, אבוקדו, בטטה בציפוי פנקו ורוטב בוטנים', price: 55, image_url: 'https://i.imgur.com/1fklsx4.jpeg'},
         {name: 'רול אולי', desc: 'דג לבן, מלפפון, אבוקדו בציפוי שומשום', price: 50},
         {name: 'רול מילי', desc: 'מקל סורימי, דג לבן אפוי, אושינקו בציפוי פנקו', price: 50},
@@ -1257,7 +1254,7 @@ function setupLogoutButton() {
       renderSauces();
     }
     
-function renderSauces() {
+   function renderSauces() {
   const container = document.getElementById('sauces-container');
   if (!container) return;
 
