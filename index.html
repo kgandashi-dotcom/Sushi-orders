@@ -10,7 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 
   <style>
-    /* === איפוס === */
+    /* === איפוס ועיצוב בסיסי === */
     * {
       box-sizing: border-box;
       touch-action: manipulation;
@@ -36,6 +36,7 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
 
+    /* === כותרת === */
     header {
       display: flex;
       flex-direction: column;
@@ -66,52 +67,67 @@
       color: #f5f5f5;
     }
 
-    /* === טאבים - פרוסים ברוחב הדף === */
+    /* === טאבים - שורה אחת נגללת === */
     .tabs {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: #1a1a1a;
+      background: #1a1a1a; /* רקע כדי שלא יהיה שקוף */
       
-      /* הגדרות לפריסה יפה */
+      /* הגדרות קריטיות לשורה אחת */
       display: flex;
-      flex-wrap: wrap;        /* מאפשר להם להסתדר בשורות אם צריך */
-      justify-content: center; /* ממורכז */
-      gap: 8px;               /* רווח בין כפתורים */
+      flex-wrap: nowrap;       /* מונע שבירת שורה */
+      overflow-x: auto;        /* מאפשר גלילה הצידה */
+      white-space: nowrap;     /* מונע טקסט שבור */
+      -webkit-overflow-scrolling: touch; /* גלילה חלקה באייפון */
       
-      padding: 10px;
+      gap: 10px;
+      padding: 15px;
       border-bottom: 1px solid #333;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+      
+      /* הסתרת פס גלילה */
+      scrollbar-width: none; 
+      -ms-overflow-style: none;
     }
+    
+    .tabs::-webkit-scrollbar { display: none; }
 
     .tab-btn {
-      padding: 10px 15px;
+      padding: 10px 18px;
       border: none;
-      background: #3a3a3a;
-      color: #b0b0b0;
-      border-radius: 8px;
+      background: #333;
+      color: #bbb;
+      border-radius: 25px;
       cursor: pointer;
       font-size: 1rem;
-      flex: 1 0 auto; /* גדלים כדי למלא את השורה */
-      text-align: center;
-      transition: all 0.2s;
-      min-width: 80px; /* רוחב מינימלי כדי שלא ימעכו */
+      flex-shrink: 0; /* מונע כיווץ */
+      transition: all 0.2s ease;
+      font-weight: 500;
     }
 
+    /* עיצוב הטאב הפעיל */
     .tab-btn.active {
       background: #cb7e3d;
       color: #fff;
       font-weight: 700;
-      box-shadow: 0 0 8px rgba(203, 126, 61, 0.4);
+      box-shadow: 0 4px 15px rgba(203, 126, 61, 0.4);
+      transform: scale(1.05);
     }
 
     /* === תפריט === */
     .menu-category {
-      display: none; /* מוסתר כברירת מחדל, JS יפתח */
-      animation: fadeIn 0.3s ease;
+      display: none; /* מוסתר כברירת מחדל */
+      animation: fadeIn 0.4s ease;
       padding: 0 10px;
     }
     
+    /* אנימציית הופעה חלקה */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
     .category-title {
       color: #cb7e3d;
       font-size: 1.4rem;
@@ -127,6 +143,7 @@
       gap: 15px;
     }
 
+    /* === כרטיס רול === */
     .roll-card {
       display: flex;
       flex-direction: row;
@@ -212,6 +229,7 @@
       .quantity-control { align-self: flex-end; margin-top: 5px; }
     }
 
+    /* === טפסים === */
     #notes, #pickup-time {
       width: 100%;
       padding: 14px;
@@ -253,7 +271,7 @@
     /* === פופ-אפ === */
     .order-popup {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.9); z-index: 99999;
+      background: rgba(0,0,0,0.95); z-index: 99999;
       display: flex; align-items: center; justify-content: center;
     }
     .order-popup__box {
@@ -266,7 +284,6 @@
     #profile-btn { border: 1px solid #cb7e3d; color: #cb7e3d; background:none; padding: 5px 10px; border-radius: 15px; }
     
     #image-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; align-items: center; justify-content: center; }
-    @keyframes fadeIn { from {opacity:0} to {opacity:1} }
   </style>
 </head>
 <body>
@@ -282,19 +299,19 @@
     <h1>תפריט — Sushi Shifu</h1>
   </header>
 
-  <nav class="tabs" id="main-tabs">
-    <button class="tab-btn" data-target="insideout">Inside-out</button>
-    <button class="tab-btn" data-target="maki">Maki</button>
-    <button class="tab-btn" data-target="onigiri">Onigiri</button>
-    <button class="tab-btn" data-target="oshizushi">Oshizushi</button>
-    <button class="tab-btn" data-target="poke">Poke</button>
-    <button class="tab-btn" data-target="sauces">רטבים</button>
+  <nav class="tabs">
+    <button class="tab-btn active" onclick="showCategory('insideout', this)">Inside-out</button>
+    <button class="tab-btn" onclick="showCategory('maki', this)">Maki</button>
+    <button class="tab-btn" onclick="showCategory('onigiri', this)">Onigiri</button>
+    <button class="tab-btn" onclick="showCategory('oshizushi', this)">Oshizushi</button>
+    <button class="tab-btn" onclick="showCategory('poke', this)">Poke</button>
+    <button class="tab-btn" onclick="showCategory('sauces', this)">רטבים</button>
   </nav>
 
   <main id="main-content">
     
     <section id="menu-section">
-      <div id="insideout" class="menu-category">
+      <div id="insideout" class="menu-category" style="display:block;">
         <div class="category-title">Inside-out Rolls</div>
         <div id="insideout-rolls" class="category-container"></div>
       </div>
@@ -453,53 +470,54 @@ const menuData = {
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof window.supabase !== 'undefined') supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // 1. פופ-אפ ראשון
+  checkDay();
+
+  // 2. ציור תפריט
   renderMenu();
-  initGoogleAuth();
-  generatePickupSlots();
   setupChopsticks();
   setupSendOrder();
+  initGoogleAuth();
+  generatePickupSlots();
   
-  // טאבים - לוגיקה חזקה יותר
-  const tabs = document.querySelectorAll('.tab-btn');
-  tabs.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          // הסרת פעיל מכולם
-          tabs.forEach(t => t.classList.remove('active'));
-          // הוספה לנוכחי
-          btn.classList.add('active');
-          
-          // הסתרת כל התכנים
-          document.querySelectorAll('.menu-category').forEach(c => c.style.display = 'none');
-          // הצגת התוכן הרלוונטי
-          const target = btn.dataset.target;
-          const section = document.getElementById(target);
-          if(section) section.style.display = 'block';
-          
-          // אם היינו בפרופיל, נחזור
-          document.getElementById('profile-page').style.display = 'none';
-          document.getElementById('main-content').style.display = 'block';
-          
-          window.scrollTo({top:0, behavior:'smooth'});
-      });
-  });
-  
-  // לחיצה אוטומטית על הראשון
-  if(tabs.length > 0) tabs[0].click();
-
-  // משתמש מקומי
+  // 3. משתמש מקומי
   const stored = localStorage.getItem('sushiUser');
   if(stored) { currentUser = JSON.parse(stored); updateUI(); }
   
   loadExistingOrders();
-
-  // בדיקת יום (פופ-אפ)
-  const isWednesday = new Date().getDay() === 3;
-  if(!isWednesday) {
-    document.getElementById('order-popup-msg').innerHTML = "ההזמנות פתוחות בימי רביעי בלבד.<br>ניתן לצפות בתפריט אך לא לשלוח הזמנה.";
-    document.getElementById('order-popup').style.display = 'flex';
-  }
 });
+
+// פונקציית בדיקת יום (פופ-אפ)
+function checkDay() {
+    const isWednesday = new Date().getDay() === 3; // 3 = רביעי
+    if(!isWednesday) {
+        const popup = document.getElementById('order-popup');
+        const msg = document.getElementById('order-popup-msg');
+        msg.innerHTML = "ההזמנות פתוחות בימי רביעי בלבד.<br>ניתן לצפות בתפריט אך לא לשלוח הזמנה.";
+        popup.style.display = 'flex';
+    }
+}
+
+// --- פונקציית טאבים (פשוטה וישירה) ---
+window.showCategory = function(catId, btn) {
+    // 1. הסתרת כל הקטגוריות
+    document.querySelectorAll('.menu-category').forEach(el => el.style.display = 'none');
+    
+    // 2. הצגת הקטגוריה שנבחרה
+    const target = document.getElementById(catId);
+    if(target) target.style.display = 'block';
+    
+    // 3. עדכון עיצוב כפתורים
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    // 4. חזרה למסך ראשי אם היינו בפרופיל
+    document.getElementById('profile-page').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+    
+    // 5. גלילה למעלה
+    window.scrollTo({top:0, behavior:'smooth'});
+}
 
 // --- רינדור תפריט ---
 function renderMenu() {
