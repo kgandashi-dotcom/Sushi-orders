@@ -12,81 +12,93 @@
   <style>
     /* === איפוס === */
     * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; font-family: Arial, sans-serif; background: #121212; direction: rtl; color: #cb7e3d; font-size: 16px; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #121212; direction: rtl; color: #cb7e3d; font-size: 16px; padding-bottom: 100px; }
 
-    .container {
-      max-width: 1020px; margin: 0 auto; padding: 0; background: #1a1a1a;
-      min-height: 100vh; padding-bottom: 120px; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    .container { max-width: 800px; margin: 0 auto; background: #1a1a1a; min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+
+    /* === כותרת === */
+    header { text-align: center; padding: 20px; }
+    .logo { height: 100px; width: auto; border-radius: 8px; display: block; margin: 0 auto 10px; }
+    .user-btn { position: absolute; top: 15px; left: 15px; background: none; border: 1px solid #cb7e3d; color: #cb7e3d; padding: 5px 10px; border-radius: 15px; cursor: pointer; font-size: 0.9rem; }
+    h1 { margin: 0; font-size: 1.5rem; color: #f5f5f5; }
+
+    /* === טאבים (סידור רשת - הכי יציב) === */
+    .tabs-container {
+        padding: 10px;
+        background: #222;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
-
-    header { display: flex; flex-direction: column; align-items: center; padding: 10px; position: relative; }
-    .logo { height: 120px; width: auto; border-radius: 8px; margin-bottom: 10px; }
-    .user-buttons { position: absolute; top: 15px; left: 15px; z-index: 50; }
-    h1 { margin: 5px 0 15px 0; font-size: 1.6rem; text-align: center; color: #f5f5f5; }
-
-    /* === טאבים - שורה אחת === */
+    
     .tabs {
-      position: sticky; top: 0; z-index: 100; background: #1a1a1a;
-      display: flex; flex-wrap: nowrap; overflow-x: auto; white-space: nowrap;
-      gap: 10px; padding: 10px 15px; border-bottom: 1px solid #333; margin-bottom: 20px;
-      -webkit-overflow-scrolling: touch;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 בשורה בדיוק */
+        gap: 8px;
     }
-    .tabs::-webkit-scrollbar { display: none; } /* הסתרת פס גלילה */
 
     .tab-btn {
-      padding: 8px 16px; border: none; background: #3a3a3a; color: #b0b0b0;
-      border-radius: 20px; cursor: pointer; font-size: 1rem; flex-shrink: 0; transition: all 0.2s;
+        background: #3a3a3a;
+        color: #bbb;
+        border: none;
+        padding: 10px 5px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.2s;
     }
-    .tab-btn.active { background: #cb7e3d; color: #fff; font-weight: 700; box-shadow: 0 0 10px rgba(203, 126, 61, 0.4); }
+
+    .tab-btn.active {
+        background: #cb7e3d;
+        color: #fff;
+        font-weight: bold;
+        box-shadow: 0 0 5px rgba(203, 126, 61, 0.5);
+    }
 
     /* === תפריט === */
-    .menu-category { display: none; animation: fadeIn 0.3s ease; padding: 0 10px; }
-    /* הראשון מוצג ידנית ב-HTML */
-    
-    .category-title {
-      color: #cb7e3d; font-size: 1.4rem; margin: 10px 5px 15px 0; font-weight: bold;
-      border-right: 4px solid #cb7e3d; padding-right: 10px;
-    }
-    .category-container { display: flex; flex-direction: column; gap: 15px; }
+    .menu-section { padding: 10px; }
+    .category-group { display: none; } /* מוסתר ברירת מחדל */
+    .category-group.active { display: block; animation: fadeIn 0.3s; }
 
-    .roll-card {
-      display: flex; flex-direction: row; justify-content: space-between; align-items: center;
-      background: #252525; padding: 12px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); gap: 12px;
-    }
-    .roll-card-content { display: flex; flex: 1; align-items: center; gap: 12px; }
-    .roll-card img, .roll-image-placeholder { width: 75px; height: 75px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
-    .roll-image-placeholder { background: #333; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
-    
-    .roll-card .info { display: flex; flex-direction: column; }
-    .roll-card h3 { margin: 0; color: #adb745; font-size: 1.1rem; }
-    .roll-card p { margin: 2px 0; color: #ccc; font-size: 0.85rem; line-height: 1.3; }
+    .category-title { color: #cb7e3d; font-size: 1.4rem; margin: 15px 0; border-right: 4px solid #cb7e3d; padding-right: 10px; font-weight: bold; }
 
-    .quantity-control { display: flex; align-items: center; gap: 5px; background: #333; padding: 4px; border-radius: 8px; }
-    .quantity-control button { width: 30px; height: 30px; border-radius: 6px; border: none; background: #555; color: white; font-size: 1.2rem; cursor: pointer; }
-    .quantity-control input { width: 30px; text-align: center; border: none; background: transparent; color: white; font-size: 1.1rem; padding: 0; }
-
-    @media (max-width: 600px) {
-      .roll-card { flex-direction: column; align-items: stretch; }
-      .quantity-control { align-self: flex-end; margin-top: 5px; }
+    .item-card {
+        display: flex;
+        background: #252525;
+        margin-bottom: 12px;
+        padding: 10px;
+        border-radius: 8px;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
-    #notes, #pickup-time { width: 100%; padding: 14px; border: 1px solid #444; border-radius: 8px; background: #2a2a2a; color: #adb754; font-size: 1rem; margin-top: 10px; }
-    #order-summary { background: #222; color: #f0f0f0; padding: 15px; border-radius: 8px; white-space: pre-wrap; font-family: monospace; margin-top: 15px; border: 1px dashed #444; }
-    
-    #send-order {
-      margin-top: 20px; padding: 16px; background: #cb7e3d; color: #fff; border: none;
-      border-radius: 10px; font-size: 1.3rem; font-weight: 700; cursor: pointer; width: 100%;
-    }
-    #send-order:disabled { background: #555; opacity: 0.6; }
-    #messages { margin-top: 15px; text-align: center; font-weight: bold; }
+    .item-img { width: 70px; height: 70px; border-radius: 6px; object-fit: cover; background: #333; flex-shrink: 0; }
+    .item-info { flex: 1; }
+    .item-name { margin: 0; color: #adb745; font-size: 1.1rem; }
+    .item-desc { margin: 4px 0; color: #ccc; font-size: 0.85rem; line-height: 1.2; }
+    .item-price { font-weight: bold; color: #fff; }
 
-    /* פופ-אפ */
-    .order-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 99999; display: flex; align-items: center; justify-content: center; }
-    .order-popup__box { background: #fff; color: #000; padding: 30px; border-radius: 12px; text-align: center; max-width: 350px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .qty-ctrl { display: flex; align-items: center; background: #333; border-radius: 6px; }
+    .qty-btn { width: 30px; height: 30px; background: #555; color: white; border: none; border-radius: 4px; font-size: 1.2rem; cursor: pointer; }
+    .qty-val { width: 30px; text-align: center; color: white; border: none; background: transparent; }
+
+    /* === טפסים === */
+    .form-section { padding: 0 15px; margin-top: 20px; }
+    input, select, textarea { width: 100%; padding: 12px; background: #333; border: 1px solid #555; color: #fff; border-radius: 6px; margin-top: 5px; font-size: 1rem; }
     
-    #profile-btn { border: 1px solid #cb7e3d; color: #cb7e3d; background:none; padding: 5px 10px; border-radius: 15px; }
-    #image-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; align-items: center; justify-content: center; }
-    @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+    #order-summary { background: #222; padding: 15px; border-radius: 8px; color: #eee; margin-top: 15px; white-space: pre-wrap; border: 1px dashed #444; }
+    
+    #send-btn { width: 100%; padding: 15px; background: #cb7e3d; color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; margin-top: 20px; cursor: pointer; }
+    #send-btn:disabled { background: #555; opacity: 0.7; cursor: not-allowed; }
+
+    /* === מודאלים === */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; }
+    .modal-box { background: #fff; color: #000; padding: 25px; border-radius: 10px; width: 90%; max-width: 350px; text-align: center; position: relative; }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
 <body>
@@ -94,149 +106,110 @@
 <div class="container">
   
   <header>
-    <div class="user-buttons">
-      <div id="login-btn"></div>
-      <button id="profile-btn" style="display:none;">👤 הפרופיל שלי</button>
-    </div>
-    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="לוגו" class="logo">
-    <h1>תפריט — Sushi Shifu</h1>
+    <div id="login-area" class="user-btn">התחבר</div>
+    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="Logo" class="logo">
+    <h1>Sushi Shifu</h1>
   </header>
 
-  <nav class="tabs">
-    <button class="tab-btn active" onclick="switchTab('insideout', this)">Inside-out</button>
-    <button class="tab-btn" onclick="switchTab('maki', this)">Maki</button>
-    <button class="tab-btn" onclick="switchTab('onigiri', this)">Onigiri</button>
-    <button class="tab-btn" onclick="switchTab('oshizushi', this)">Oshizushi</button>
-    <button class="tab-btn" onclick="switchTab('poke', this)">Poke</button>
-    <button class="tab-btn" onclick="switchTab('sauces', this)">רטבים</button>
-  </nav>
+  <div class="tabs-container">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="setTab('insideout')">Inside-out</button>
+      <button class="tab-btn" onclick="setTab('maki')">Maki</button>
+      <button class="tab-btn" onclick="setTab('onigiri')">Onigiri</button>
+      <button class="tab-btn" onclick="setTab('oshizushi')">Oshizushi</button>
+      <button class="tab-btn" onclick="setTab('poke')">Poke</button>
+      <button class="tab-btn" onclick="setTab('sauces')">רטבים</button>
+    </div>
+  </div>
 
-  <main id="main-content">
-    
-    <section id="menu-section">
-      <div id="insideout" class="menu-category" style="display:block;">
+  <div class="menu-section">
+    <div id="cat-insideout" class="category-group active">
         <div class="category-title">Inside-out Rolls</div>
-        <div id="insideout-rolls" class="category-container">טוען תפריט...</div>
-      </div>
-
-      <div id="maki" class="menu-category">
+        <div id="list-insideout"></div>
+    </div>
+    <div id="cat-maki" class="category-group">
         <div class="category-title">Maki Rolls</div>
-        <div id="maki-rolls" class="category-container"></div>
-      </div>
-
-      <div id="onigiri" class="menu-category">
+        <div id="list-maki"></div>
+    </div>
+    <div id="cat-onigiri" class="category-group">
         <div class="category-title">Onigiri</div>
-        <div id="onigiri-rolls" class="category-container"></div>
-      </div>
-
-      <div id="oshizushi" class="menu-category">
+        <div id="list-onigiri"></div>
+    </div>
+    <div id="cat-oshizushi" class="category-group">
         <div class="category-title">Oshizushi</div>
-        <div id="oshizushi-rolls" class="category-container"></div>
-      </div>
-
-      <div id="poke" class="menu-category">
+        <div id="list-oshizushi"></div>
+    </div>
+    <div id="cat-poke" class="category-group">
         <div class="category-title">Poke</div>
-        <div id="poke-rolls" class="category-container"></div>
-      </div>
-
-      <div id="sauces" class="menu-category">
+        <div id="list-poke"></div>
+    </div>
+    <div id="cat-sauces" class="category-group">
         <div class="category-title">רטבים</div>
-        <div id="sauces-container" class="category-container"></div>
-        <p class="note" style="padding:0 10px;">כל רול מקבל 2 רטבים חינם.</p>
-      </div>
-    </section>
+        <div id="list-sauces"></div>
+        <p style="color:#888; font-size:0.9rem;">2 רטבים חינם לכל רול. נוסף: 3₪.</p>
+    </div>
+  </div>
 
-    <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-
-    <div style="padding:0 10px;">
-      <h3 style="color:#cb7e3d; margin-bottom:10px;">🥢 צ'ופסטיקס</h3>
-      <div class="quantity-control" style="background:none;">
-        <button id="chopsticks-minus">−</button>
-        <input id="chopsticks-qty" type="number" readonly value="1" style="border:1px solid #444; color:#cb7e3d;">
-        <button id="chopsticks-plus">+</button>
-      </div>
-
-      <h3 style="color:#cb7e3d; margin-top:20px; margin-bottom:10px;">📝 הערות אישיות</h3>
-      <textarea id="notes" placeholder="למשל: ברול ניוטון, ללא רוטב בוטנים..." oninput="updateSummary()"></textarea>
-
-      <h3 style="color:#cb7e3d; margin-top:20px; margin-bottom:10px;">⏰ שעת איסוף</h3>
-      <select id="pickup-time" onchange="updateSummary()">
-        <option value="">בחר שעה</option>
-      </select>
-
-      <h3 style="color:#cb7e3d; margin-top:20px; margin-bottom:10px;">🛒 סיכום הזמנה</h3>
-      <pre id="order-summary">הזמנה ריקה...</pre>
-      <button id="send-order" disabled>שלח הזמנה</button>
-      <div id="messages"></div>
+  <div class="form-section">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3 style="color:#cb7e3d; margin:0;">🥢 צ'ופסטיקס</h3>
+        <div class="qty-ctrl">
+            <button class="qty-btn" onclick="updateChopsticks(-1)">-</button>
+            <input id="chopsticks-qty" class="qty-val" value="1" readonly>
+            <button class="qty-btn" onclick="updateChopsticks(1)">+</button>
+        </div>
     </div>
 
-  </main>
+    <label style="color:#cb7e3d; font-weight:bold;">📝 הערות אישיות</label>
+    <textarea id="notes" placeholder="למשל: בלי שומשום..." oninput="calcTotal()"></textarea>
 
-  <div id="profile-page" style="display:none; padding:15px;">
-    <h2 style="color:#cb7e3d;">👤 הפרופיל שלי</h2>
-    <div style="background:#252525; padding:20px; border-radius:10px; color:white;">
-       <p><strong>שם:</strong> <span id="p-name"></span></p>
-       <p><strong>טלפון:</strong> <span id="p-phone"></span></p>
-    </div>
-    <div style="margin-top:20px; text-align:center;">
-       <button onclick="document.getElementById('profile-page').style.display='none'; document.getElementById('main-content').style.display='block';" style="padding:10px; background:#cb7e3d; border:none; color:white; border-radius:5px;">חזור לתפריט</button>
-    </div>
+    <label style="color:#cb7e3d; font-weight:bold; display:block; margin-top:15px;">⏰ שעת איסוף</label>
+    <select id="pickup-time" onchange="calcTotal()">
+        <option value="">בחר שעה...</option>
+    </select>
+
+    <div id="order-summary">הזמנה ריקה...</div>
+    <button id="send-btn" disabled onclick="sendOrder()">שלח הזמנה</button>
+    <div id="msg-area" style="text-align:center; margin-top:10px; font-weight:bold;"></div>
   </div>
 
 </div>
 
-<div id="image-modal" onclick="this.style.display='none'">
-    <div style="position:relative;">
-        <img id="modal-img-src" src="" style="max-width:90vw; max-height:80vh; border-radius:10px;">
-        <p id="modal-img-title" style="color:white; text-align:center; font-size:1.2rem; margin-top:10px;"></p>
+<div id="popup-overlay" class="modal-overlay">
+    <div class="modal-box">
+        <img src="https://i.imgur.com/m6KeXAB.jpeg" style="width:80px; margin-bottom:10px;">
+        <h3>שימו לב!</h3>
+        <p id="popup-msg">ההזמנות סגורות כרגע.</p>
+        <button onclick="document.getElementById('popup-overlay').style.display='none'" style="background:#cb7e3d; color:white; border:none; padding:10px 20px; border-radius:5px; margin-top:10px;">אישור</button>
     </div>
 </div>
 
-<div id="phone-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; align-items:center; justify-content:center;">
-    <div style="background:#1a1a1a; padding:30px; border-radius:10px; text-align:center; border:1px solid #444;">
-        <h3 style="color:#cb7e3d;">נא להזין טלפון</h3>
-        <input id="phone-input" type="tel" placeholder="050-1234567" style="padding:10px; width:100%; margin:10px 0;">
-        <div id="phone-error" style="color:red; display:none; margin-bottom:10px;">מספר לא תקין</div>
-        <button onclick="submitPhone()" style="background:#cb7e3d; color:white; border:none; padding:10px 20px; border-radius:5px;">אישור</button>
+<div id="img-modal" class="modal-overlay" onclick="this.style.display='none'">
+    <div style="position:relative; width:100%; display:flex; justify-content:center;">
+        <img id="modal-img" src="" style="max-width:90%; max-height:80vh; border-radius:10px;">
     </div>
-</div>
-
-<div id="order-popup" class="order-popup" style="display:none">
-  <div class="order-popup__box">
-    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="" style="width:100px; margin-bottom:10px;">
-    <h2 style="margin:0 0 10px 0;">שימו לב!</h2>
-    <p id="order-popup-msg" style="margin-bottom:20px; font-size:1.1rem; line-height:1.4;"></p>
-    <button onclick="document.getElementById('order-popup').style.display='none'" style="background:#cb7e3d; color:white; border:none; padding:10px 30px; border-radius:6px; font-size:1rem; cursor:pointer;">אישור</button>
-  </div>
 </div>
 
 <script>
-const SUPABASE_URL = 'https://oxjokdjwdvmmdtcvqvon.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94am9rZGp3ZHZtbWR0Y3Zxdm9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzgwMzMsImV4cCI6MjA3NDY1NDAzM30.DmKp79UiPi9iOU50UutevdqRcPyREMUJ7NT5ZmBHDsg';
-const GOOGLE_CLIENT_ID = "962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com";
-const MAKE_WEBHOOK_URL = "https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r";
-
-let supabase, currentUser;
-let orderItems = {}, sauceSelections = {}, chopsticksCount = 1, existingOrders = [];
-
-const menuData = {
+// --- DATA ---
+const MENU = {
   insideout: [
-    {name: 'רול בינגו', desc: 'סלמון נא, שמנת, אבוקדו בציפוי שומשום קלוי', price: 50, image_url: 'https://i.imgur.com/u5ebtHM.jpeg'},
-    {name: 'רול לונה', desc: 'ספייסי סלמון אפוי על רול בטטה, אבוקדו ושיטאקי', price: 50},
-    {name: 'רול ריי', desc: 'טרטר ספייסי טונה נא על רול מלפפון, עירית ואושינקו', price: 55},
-    {name: 'רול קרייזי ברונו', desc: 'דג לבן, טונה, סלמון בציפוי שומשום קלוי', price: 60, image_url: 'https://i.imgur.com/rA4q1ND.jpeg'},
-    {name: 'רול האפי ברונו', desc: 'סלמון בציפוי שקדים קלויים ורוטב טריאקי', price: 60, image_url: 'https://i.imgur.com/E3Uk19o.jpeg'},
-    {name: 'רול מילה', desc: 'בטטה, עירית ואבוקדו בעיטוף סלמון צרוב', price: 50, image_url: 'https://i.imgur.com/UBhaUta.jpeg' },
-    {name: 'רול ניוטון', desc: 'טונה אדומה, אבוקדו, בטטה בציפוי פנקו ורוטב בוטנים', price: 55, image_url: 'https://i.imgur.com/1fklsx4.jpeg'},
-    {name: 'רול אולי', desc: 'דג לבן, מלפפון, אבוקדו בציפוי שומשום', price: 50},
-    {name: 'רול מילי', desc: 'מקל סורימי, דג לבן אפוי, אושינקו בציפוי פנקו', price: 50},
-    {name: 'רול סקאר', desc: 'ספייסי סלמון אפוי עם אבוקדו, מלפפון ובטטה בעיטור מיונז וצ\'יפס', price: 50},
-    {name: 'רול מגי 🌱', desc: 'מלפפון, בטטה, עירית ואבוקדו בעיטור בטטה ורוטב בוטנים', price: 40},
-    {name: 'רול קיילה', desc: 'סלמון נא, קנפיו, בטטה בעיטוף שבבי פנקו סגול', price: 50},
-    {name: 'רול טייסון', desc: 'רול מטוגן! סלמון, בטטה ומלפפון בציפוי קריספי ורוטב טריאקי', price: 60},
-    {name: 'רול לוסי', desc: 'סלמון נא, פטריות שיטאקי ואושינקו בציפוי טוביקו', price: 55},
-    {name: 'רול בילי', desc: 'דג לבן צרוב, עירית, בטטה מצופה בפנקו', price: 50, image_url: 'https://i.imgur.com/AdT2Ync.jpeg'},
-    {name: 'רול לאקי', desc: 'טרטר ספייסי סלמון עם אבוקדו, מלפפון ועירית', price: 50}
+    {name: 'רול בינגו', desc: 'סלמון נא, שמנת, אבוקדו בציפוי שומשום', price: 50, img: 'https://i.imgur.com/u5ebtHM.jpeg'},
+    {name: 'רול לונה', desc: 'ספייסי סלמון אפוי, בטטה, אבוקדו', price: 50},
+    {name: 'רול ריי', desc: 'טרטר ספייסי טונה, מלפפון, עירית', price: 55},
+    {name: 'רול קרייזי ברונו', desc: 'דג לבן, טונה, סלמון', price: 60, img: 'https://i.imgur.com/rA4q1ND.jpeg'},
+    {name: 'רול האפי ברונו', desc: 'סלמון, שקדים קלויים, טריאקי', price: 60, img: 'https://i.imgur.com/E3Uk19o.jpeg'},
+    {name: 'רול מילה', desc: 'בטטה, עירית, אבוקדו, סלמון צרוב', price: 50, img: 'https://i.imgur.com/UBhaUta.jpeg' },
+    {name: 'רול ניוטון', desc: 'טונה אדומה, אבוקדו, בטטה, פנקו', price: 55, img: 'https://i.imgur.com/1fklsx4.jpeg'},
+    {name: 'רול אולי', desc: 'דג לבן, מלפפון, אבוקדו', price: 50},
+    {name: 'רול מילי', desc: 'סורימי, דג לבן אפוי, אושינקו', price: 50},
+    {name: 'רול סקאר', desc: 'ספייסי סלמון אפוי, אבוקדו, בטטה', price: 50},
+    {name: 'רול מגי 🌱', desc: 'מלפפון, בטטה, עירית, אבוקדו', price: 40},
+    {name: 'רול קיילה', desc: 'סלמון נא, קנפיו, בטטה, פנקו סגול', price: 50},
+    {name: 'רול טייסון', desc: 'רול מטוגן! סלמון, בטטה, מלפפון', price: 60},
+    {name: 'רול לוסי', desc: 'סלמון נא, שיטאקי, אושינקו, טוביקו', price: 55},
+    {name: 'רול בילי', desc: 'דג לבן צרוב, עירית, בטטה', price: 50, img: 'https://i.imgur.com/AdT2Ync.jpeg'},
+    {name: 'רול לאקי', desc: 'טרטר ספייסי סלמון, אבוקדו, מלפפון', price: 50}
   ],
   maki: [
     {name: 'רול אלפי', desc: 'מאקי סלמון', price: 35},
@@ -244,19 +217,19 @@ const menuData = {
     {name: 'רול סנופי 🌱', desc: 'מאקי אושינקו וקנפיו', price: 25}
   ],
   onigiri: [
-    {name: 'אוניגירי רוקי', desc: 'טרטר טונה אדומה עם ספייסי מיונז ובצל ירוק', price: 35, image_url:'https://i.imgur.com/VW9Iexm.jpeg'},
-    {name: 'אוניגירי ג\'וני', desc: 'טרטר סלמון עם ספייסי מיונז ובצל ירוק', price: 30, image_url:'https://i.imgur.com/VW9Iexm.jpeg'},
-    {name: 'אוניגירי ג\'יזל 🌱', desc: 'אבוקדו ובטטה', price: 25 , image_url:'https://i.imgur.com/VW9Iexm.jpeg'}
+    {name: 'אוניגירי רוקי', desc: 'טרטר טונה אדומה', price: 35, img:'https://i.imgur.com/VW9Iexm.jpeg'},
+    {name: 'אוניגירי ג\'וני', desc: 'טרטר סלמון', price: 30, img:'https://i.imgur.com/VW9Iexm.jpeg'},
+    {name: 'אוניגירי ג\'יזל 🌱', desc: 'אבוקדו ובטטה', price: 25 , img:'https://i.imgur.com/VW9Iexm.jpeg'}
   ],
   oshizushi: [
-    {name: 'אושיזושי סלמון קלאסי', desc: '6 יח\' - שכבת סלמון טרי ושכבת אבוקדו לחוצים בין שכבות אורז סושי', price: 50},
-    {name: 'אושיזושי טונה פיקנטי', desc: '6 יח\' - שכבת טונה אדומה ושכבת בטטה לחוצים בין שכבות אורז סושי', price: 55},
-    {name: 'אושיזושי צמחוני 🌱', desc: '6  יח\' - שכבת אבוקדו ושכבת בטטה לחוצים בין שכבות אורז סושי ', price: 40}
+    {name: 'אושיזושי סלמון', desc: 'סלמון ואבוקדו לחוצים', price: 50},
+    {name: 'אושיזושי טונה', desc: 'טונה ובטטה לחוצים', price: 55},
+    {name: 'אושיזושי צמחוני 🌱', desc: 'אבוקדו ובטטה לחוצים', price: 40}
   ],
   poke: [
-    {name: 'בול-דוג', desc: 'אורז סושי, סלמון במרינדה, אדממה, מלפפון, אבוקדו, בצל ירוק. מעל שומשום ורוטב ספייסי מיונז', price: 60, image_url:'https://i.imgur.com/cUf6gYx.jpeg'},
-    {name: 'פיט-בול', desc: 'אורז סושי, טונה במרינדה, אדממה, מנגו, כרוב סגול. מעל בצל שאלוט מטוגן ורוטב צ׳ילי אננס מתוק', price: 70, image_url:'https://i.imgur.com/DhFRUGl.jpeg'},
-    {name: 'בול-טרייר 🌱', desc: 'אורז סושי, אדממה, מלפפון, פטריות שיטאקי, גזר ואבוקדו. מעל שומשום ורוטב בוטנים', price: 45, image_url:'https://i.imgur.com/GvXgFPY.jpeg'}
+    {name: 'בול-דוג', desc: 'סלמון, אדממה, אבוקדו', price: 60, img:'https://i.imgur.com/cUf6gYx.jpeg'},
+    {name: 'פיט-בול', desc: 'טונה, מנגו, כרוב סגול', price: 70, img:'https://i.imgur.com/DhFRUGl.jpeg'},
+    {name: 'בול-טרייר 🌱', desc: 'אדממה, פטריות, גזר', price: 45, img:'https://i.imgur.com/GvXgFPY.jpeg'}
   ],
   sauces: [
     {name: 'ספייסי מיונז', price: 0},
@@ -267,251 +240,201 @@ const menuData = {
   ]
 };
 
-// אתחול
-document.addEventListener('DOMContentLoaded', () => {
-  if (typeof window.supabase !== 'undefined') supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// --- STATE ---
+let order = {};
+let chopsticks = 1;
+const CONFIG = {
+    SUPABASE_URL: 'https://oxjokdjwdvmmdtcvqvon.supabase.co',
+    SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94am9rZGp3ZHZtbWR0Y3Zxdm9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzgwMzMsImV4cCI6MjA3NDY1NDAzM30.DmKp79UiPi9iOU50UutevdqRcPyREMUJ7NT5ZmBHDsg',
+    WEBHOOK: 'https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r'
+};
+let supabase;
 
-  // 1. ציור התפריט
-  renderMenu();
-  
-  // 2. בדיקת יום (פופאפ)
-  const isWednesday = new Date().getDay() === 3;
-  if(!isWednesday) {
-    document.getElementById('order-popup-msg').innerHTML = "ההזמנות פתוחות בימי רביעי בלבד.<br>ניתן לצפות בתפריט אך לא לשלוח הזמנה.";
-    document.getElementById('order-popup').style.display = 'flex';
-  }
-
-  setupChopsticks();
-  setupSendOrder();
-  initGoogleAuth();
-  generatePickupSlots();
-  
-  const stored = localStorage.getItem('sushiUser');
-  if(stored) { currentUser = JSON.parse(stored); updateUI(); }
-  loadExistingOrders();
-});
-
-// החלפת טאבים
-window.switchTab = function(tabId, btn) {
-    document.querySelectorAll('.menu-category').forEach(el => el.style.display = 'none');
-    document.getElementById(tabId).style.display = 'block';
+// --- INIT ---
+window.onload = () => {
+    // 1. אתחול משתנים
+    if (window.supabase) supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
     
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    // 2. בניית התפריט (קריטי!)
+    buildMenu();
     
-    document.getElementById('profile-page').style.display = 'none';
-    document.getElementById('main-content').style.display = 'block';
+    // 3. בדיקת יום (פופ-אפ)
+    checkDay();
     
-    window.scrollTo({top:0, behavior:'smooth'});
+    // 4. זמני איסוף
+    fillTimes();
+    
+    // 5. גוגל
+    if(window.google) {
+        google.accounts.id.initialize({
+            client_id: "962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com",
+            callback: handleLogin
+        });
+        google.accounts.id.renderButton(document.getElementById("login-area"), {theme:"outline", size:"medium"});
+    }
 };
 
-// ציור התפריט
-function renderMenu() {
-    Object.keys(menuData).forEach(cat => {
-        const container = (cat === 'sauces') ? document.getElementById('sauces-container') : document.getElementById(cat + '-rolls');
-        if(!container) return;
-        
-        container.innerHTML = menuData[cat].map((item,i) => {
-            const key = (cat === 'sauces') ? `sauce_${i}` : `${cat}_${i}`;
-            const imgHtml = item.image_url ? 
-                `<img src="${item.image_url}" onclick="showImg('${item.image_url}','${item.name}')">` : 
-                `<div class="roll-image-placeholder">🍣</div>`;
-            const priceHtml = (item.price > 0) ? `<p style="color:#cb7e3d; font-weight:bold;">${item.price}₪</p>` : '';
-
-            return `
-            <div class="roll-card">
-               <div class="roll-card-content">
-                 ${cat !== 'sauces' ? imgHtml : ''}
-                 <div class="info">
-                    <h3>${item.name}</h3>
-                    ${item.desc ? `<p>${item.desc}</p>` : ''}
-                    ${priceHtml}
-                 </div>
-               </div>
-               <div class="quantity-control">
-                 <button onclick="changeItem('${key}', -1)">-</button>
-                 <input id="${key}" value="0" readonly>
-                 <button onclick="changeItem('${key}', 1)">+</button>
-               </div>
-            </div>`;
-        }).join('');
-    });
+// --- LOGIC ---
+function checkDay() {
+    const isWednesday = new Date().getDay() === 3; 
+    if(!isWednesday) {
+        document.getElementById('popup-msg').innerHTML = "ההזמנות נפתחות בימי רביעי בלבד.<br>אפשר להסתכל בתפריט :)";
+        document.getElementById('popup-overlay').style.display = 'flex';
+    }
 }
 
-// לוגיקה נוספת
-window.changeItem = function(id, delta) {
-    const el = document.getElementById(id);
+function buildMenu() {
+    for (const [cat, items] of Object.entries(MENU)) {
+        const container = document.getElementById(`list-${cat}`);
+        if(!container) continue;
+        
+        container.innerHTML = items.map((item, i) => {
+            const id = `${cat}_${i}`;
+            const imgHTML = item.img 
+                ? `<img src="${item.img}" class="item-img" onclick="openImg('${item.img}')">`
+                : `<div class="item-img" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem">🍣</div>`;
+            
+            return `
+            <div class="item-card">
+                ${cat !== 'sauces' ? imgHTML : ''}
+                <div class="item-info">
+                    <h3 class="item-name">${item.name}</h3>
+                    ${item.desc ? `<p class="item-desc">${item.desc}</p>` : ''}
+                    ${item.price > 0 ? `<span class="item-price">${item.price}₪</span>` : ''}
+                </div>
+                <div class="qty-ctrl">
+                    <button class="qty-btn" onclick="updateItem('${id}', -1)">-</button>
+                    <input id="qty-${id}" class="qty-val" value="0" readonly>
+                    <button class="qty-btn" onclick="updateItem('${id}', 1)">+</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+}
+
+function setTab(cat) {
+    // הסתרת הכל
+    document.querySelectorAll('.category-group').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    // הצגת הנבחר
+    document.getElementById(`cat-${cat}`).classList.add('active');
+    
+    // מציאת הכפתור שלחצו עליו (דרך הטקסט או ה-onclick)
+    const btns = document.querySelectorAll('.tab-btn');
+    btns.forEach(b => {
+        if(b.getAttribute('onclick').includes(cat)) b.classList.add('active');
+    });
+    
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateItem(id, delta) {
+    const el = document.getElementById(`qty-${id}`);
     let val = parseInt(el.value) || 0;
     val = Math.max(0, val + delta);
     el.value = val;
     
-    if(id.startsWith('sauce')) {
-        if(val > 0) sauceSelections[id] = val; else delete sauceSelections[id];
-    } else {
-        if(val > 0) orderItems[id] = val; else delete orderItems[id];
-    }
-    generatePickupSlots();
-    updateSummary();
-};
-
-window.showImg = (url, title) => {
-    document.getElementById('modal-img-src').src = url;
-    document.getElementById('modal-img-title').innerText = title;
-    document.getElementById('image-modal').style.display = 'flex';
+    if(val > 0) order[id] = val; else delete order[id];
+    calcTotal();
 }
 
-function setupChopsticks() {
-    document.getElementById('chopsticks-minus').onclick = () => { if(chopsticksCount>0) chopsticksCount--; document.getElementById('chopsticks-qty').value=chopsticksCount; updateSummary(); };
-    document.getElementById('chopsticks-plus').onclick = () => { chopsticksCount++; document.getElementById('chopsticks-qty').value=chopsticksCount; updateSummary(); };
+function updateChopsticks(delta) {
+    chopsticks = Math.max(0, chopsticks + delta);
+    document.getElementById('chopsticks-qty').value = chopsticks;
+    calcTotal();
 }
 
-function updateSummary() {
-    let total = 0, count = 0, txt = "";
+function calcTotal() {
+    let total = 0, count = 0, text = "";
     
-    for(let k in orderItems) {
-        const [cat, idx] = k.split('_');
-        const item = menuData[cat][idx];
-        const qty = orderItems[k];
-        txt += `${item.name} x${qty} = ${item.price*qty}₪\n`;
-        total += item.price*qty;
+    // חישוב רולים
+    for(let key in order) {
+        if(key.includes('sauce')) continue;
+        const [cat, idx] = key.split('_');
+        const item = MENU[cat][idx];
+        const qty = order[key];
+        total += item.price * qty;
         count += qty;
+        text += `${item.name} x${qty}\n`;
     }
     
+    // חישוב רטבים
     let sCount = 0;
-    for(let k in sauceSelections) sCount += sauceSelections[k];
+    for(let key in order) {
+        if(key.includes('sauce')) sCount += order[key];
+    }
     const free = count * 2;
     const extra = Math.max(0, sCount - free);
-    if(sCount > 0) {
-        txt += `\nרטבים: ${sCount} (${free} חינם)\nתוספת: ${extra*3}₪\n`;
-        total += extra*3;
-    }
+    total += extra * 3;
     
-    txt += `\nסה"כ: ${total}₪`;
-    document.getElementById('order-summary').textContent = count ? txt : "הזמנה ריקה...";
+    if(sCount > 0) text += `רטבים: ${sCount} (${free} חינם)\n`;
+    if(extra > 0) text += `תוספת רטבים: ${extra * 3}₪\n`;
     
-    const btn = document.getElementById('send-order');
+    text += `\nסה"כ: ${total}₪`;
+    
+    document.getElementById('order-summary').textContent = count ? text : "הזמנה ריקה...";
+    
+    const btn = document.getElementById('send-btn');
     const time = document.getElementById('pickup-time').value;
-    if(count > 0 && time) { btn.disabled=false; btn.style.opacity=1; } else { btn.disabled=true; btn.style.opacity=0.6; }
+    if(count > 0 && time) {
+        btn.disabled = false;
+        btn.style.opacity = 1;
+    } else {
+        btn.disabled = true;
+        btn.style.opacity = 0.6;
+    }
 }
 
-function generatePickupSlots() {
+function fillTimes() {
     const sel = document.getElementById('pickup-time');
-    const current = sel.value;
-    sel.innerHTML = '<option value="">בחר שעה</option>';
-    
-    const prepTime = Object.values(orderItems).reduce((a,b)=>a+b,0) * 10;
-    
     for(let h=19; h<=22; h++) {
         for(let m=0; m<60; m+=15) {
             if(h===22 && m>30) continue;
-            let t = `${h}:${m<10?'0'+m:m}`;
-            sel.innerHTML += `<option value="${t}">${t}</option>`;
+            let t = `${h}:${m===0?'00':m}`;
+            let opt = document.createElement('option');
+            opt.value = t; opt.innerText = t;
+            sel.appendChild(opt);
         }
     }
-    sel.value = current;
 }
 
-async function loadExistingOrders() {
-    if(!supabase) return;
-    const today = new Date().toISOString().split('T')[0];
-    const { data } = await supabase.from('Sushi').select('*').eq('order_date', today);
-    if(data) existingOrders = data;
-}
-
-// שליחה
-function setupSendOrder() {
-    document.getElementById('send-order').onclick = async () => {
-        if(!currentUser) { alert('אנא התחבר'); initGoogleAuth(); return; }
-        
-        const btn = document.getElementById('send-order');
-        btn.textContent = 'שולח...';
-        btn.disabled = true;
-        
-        const orderData = {
-            user_name: currentUser.name,
-            email: currentUser.email,
-            phone: currentUser.phone,
-            order_date: new Date().toISOString().split('T')[0],
-            pickup_time: document.getElementById('pickup-time').value,
-            items: JSON.stringify(orderItems),
-            sauces: JSON.stringify(sauceSelections),
-            chopsticks: chopsticksCount,
-            notes: document.getElementById('notes').value,
-            total_price: parseInt(document.getElementById('order-summary').textContent.split('סה"כ: ')[1])
-        };
-        
-        try {
-            if(supabase) await supabase.from('Sushi').insert([orderData]);
-            await fetch(MAKE_WEBHOOK_URL, { method: 'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(orderData) });
-            
-            document.getElementById('messages').innerHTML = "<span style='color:green'>ההזמנה נשלחה!</span>";
-            setTimeout(() => location.reload(), 2000);
-        } catch(e) {
-            console.error(e);
-            btn.textContent = 'נסה שוב';
-            btn.disabled = false;
-        }
-    };
-}
-
-// Auth
-function initGoogleAuth() {
-    if(!window.google?.accounts?.id) return setTimeout(initGoogleAuth, 500);
-    window.google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleLogin });
-    window.google.accounts.id.renderButton(document.getElementById('login-btn'), {theme:'filled_black', text:'signin'});
+function openImg(src) {
+    document.getElementById('modal-img').src = src;
+    document.getElementById('img-modal').style.display = 'flex';
 }
 
 function handleLogin(res) {
-    const dec = jwt_decode(res.credential);
-    checkUserInDB(dec);
+    const user = jwt_decode(res.credential);
+    localStorage.setItem('sushiUser', JSON.stringify(user));
+    document.getElementById('login-area').innerText = "שלום " + user.given_name;
 }
 
-async function checkUserInDB(googleUser) {
-    let phone = '';
-    if(supabase) {
-        const { data } = await supabase.from('users').select('phone').eq('email', googleUser.email).single();
-        if(data) phone = data.phone;
-    }
+// שליחה בסיסית
+async function sendOrder() {
+    const user = JSON.parse(localStorage.getItem('sushiUser'));
+    if(!user) { alert('חובה להתחבר!'); return; }
     
-    if(!phone) {
-        document.getElementById('phone-modal').style.display = 'flex';
-        window.tempGoogleUser = googleUser; 
-    } else {
-        finishLogin(googleUser, phone);
-    }
-}
-
-window.submitPhone = async () => {
-    const p = document.getElementById('phone-input').value;
-    if(p.length < 9) { document.getElementById('phone-error').style.display='block'; return; }
+    document.getElementById('send-btn').innerText = "שולח...";
     
-    document.getElementById('phone-modal').style.display='none';
-    
-    if(supabase && window.tempGoogleUser) {
-        await supabase.from('users').upsert({
-            email: window.tempGoogleUser.email,
-            name: window.tempGoogleUser.name,
-            phone: p
-        });
-    }
-    finishLogin(window.tempGoogleUser, p);
-};
-
-function finishLogin(user, phone) {
-    currentUser = { ...user, phone: phone };
-    localStorage.setItem('sushiUser', JSON.stringify(currentUser));
-    updateUI();
-}
-
-function updateUI() {
-    document.getElementById('login-btn').style.display='none';
-    document.getElementById('profile-btn').style.display='inline-block';
-    document.getElementById('p-name').textContent = currentUser.name;
-    document.getElementById('p-phone').textContent = currentUser.phone;
-    document.getElementById('profile-btn').onclick = () => {
-        document.getElementById('main-content').style.display='none';
-        document.getElementById('profile-page').style.display='block';
+    const payload = {
+        user: user.name,
+        email: user.email,
+        order: order,
+        total: document.getElementById('order-summary').innerText,
+        time: document.getElementById('pickup-time').value
     };
+    
+    try {
+        if(supabase) await supabase.from('Sushi').insert([{ ...payload }]);
+        await fetch(CONFIG.WEBHOOK, { method:'POST', body:JSON.stringify(payload), headers:{'Content-Type':'application/json'} });
+        
+        document.getElementById('msg-area').innerHTML = "<span style='color:green'>נשלח בהצלחה!</span>";
+        setTimeout(() => location.reload(), 2000);
+    } catch(e) {
+        alert('שגיאה בשליחה');
+        document.getElementById('send-btn').innerText = "שלח הזמנה";
+    }
 }
 </script>
 </body>
