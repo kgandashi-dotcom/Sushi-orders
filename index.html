@@ -66,35 +66,36 @@
       color: #f5f5f5;
     }
 
-    /* === טאבים - שורה אחת בלבד === */
+    /* === טאבים - פרוסים ברוחב הדף === */
     .tabs {
       position: sticky;
       top: 0;
       z-index: 100;
       background: #1a1a1a;
+      
+      /* הגדרות לפריסה יפה */
       display: flex;
-      flex-wrap: nowrap;       /* קריטי: מונע שבירת שורה */
-      overflow-x: auto;        /* קריטי: מאפשר גלילה */
-      white-space: nowrap;     
-      gap: 10px;
-      padding: 10px 15px;
+      flex-wrap: wrap;        /* מאפשר להם להסתדר בשורות אם צריך */
+      justify-content: center; /* ממורכז */
+      gap: 8px;               /* רווח בין כפתורים */
+      
+      padding: 10px;
       border-bottom: 1px solid #333;
       margin-bottom: 20px;
-      -webkit-overflow-scrolling: touch;
     }
-    
-    .tabs::-webkit-scrollbar { display: none; }
 
     .tab-btn {
-      padding: 8px 16px;
+      padding: 10px 15px;
       border: none;
       background: #3a3a3a;
       color: #b0b0b0;
-      border-radius: 20px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 0.95rem;
-      flex-shrink: 0; /* קריטי: מונע מהכפתור להתכווץ */
+      font-size: 1rem;
+      flex: 1 0 auto; /* גדלים כדי למלא את השורה */
+      text-align: center;
       transition: all 0.2s;
+      min-width: 80px; /* רוחב מינימלי כדי שלא ימעכו */
     }
 
     .tab-btn.active {
@@ -106,14 +107,11 @@
 
     /* === תפריט === */
     .menu-category {
-      display: none; 
+      display: none; /* מוסתר כברירת מחדל, JS יפתח */
       animation: fadeIn 0.3s ease;
       padding: 0 10px;
     }
     
-    /* מציג את הראשון ידנית */
-    #insideout { display: block; } 
-
     .category-title {
       color: #cb7e3d;
       font-size: 1.4rem;
@@ -284,19 +282,19 @@
     <h1>תפריט — Sushi Shifu</h1>
   </header>
 
-  <nav class="tabs">
-    <button class="tab-btn active" onclick="switchTab('insideout', this)">Inside-out</button>
-    <button class="tab-btn" onclick="switchTab('maki', this)">Maki</button>
-    <button class="tab-btn" onclick="switchTab('onigiri', this)">Onigiri</button>
-    <button class="tab-btn" onclick="switchTab('oshizushi', this)">Oshizushi</button>
-    <button class="tab-btn" onclick="switchTab('poke', this)">Poke</button>
-    <button class="tab-btn" onclick="switchTab('sauces', this)">רטבים</button>
+  <nav class="tabs" id="main-tabs">
+    <button class="tab-btn" data-target="insideout">Inside-out</button>
+    <button class="tab-btn" data-target="maki">Maki</button>
+    <button class="tab-btn" data-target="onigiri">Onigiri</button>
+    <button class="tab-btn" data-target="oshizushi">Oshizushi</button>
+    <button class="tab-btn" data-target="poke">Poke</button>
+    <button class="tab-btn" data-target="sauces">רטבים</button>
   </nav>
 
   <main id="main-content">
     
     <section id="menu-section">
-      <div id="insideout" class="menu-category" style="display:block;">
+      <div id="insideout" class="menu-category">
         <div class="category-title">Inside-out Rolls</div>
         <div id="insideout-rolls" class="category-container"></div>
       </div>
@@ -456,48 +454,52 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof window.supabase !== 'undefined') supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   renderMenu();
-  setupChopsticks();
-  setupSendOrder();
   initGoogleAuth();
   generatePickupSlots();
+  setupChopsticks();
+  setupSendOrder();
   
+  // טאבים - לוגיקה חזקה יותר
+  const tabs = document.querySelectorAll('.tab-btn');
+  tabs.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          // הסרת פעיל מכולם
+          tabs.forEach(t => t.classList.remove('active'));
+          // הוספה לנוכחי
+          btn.classList.add('active');
+          
+          // הסתרת כל התכנים
+          document.querySelectorAll('.menu-category').forEach(c => c.style.display = 'none');
+          // הצגת התוכן הרלוונטי
+          const target = btn.dataset.target;
+          const section = document.getElementById(target);
+          if(section) section.style.display = 'block';
+          
+          // אם היינו בפרופיל, נחזור
+          document.getElementById('profile-page').style.display = 'none';
+          document.getElementById('main-content').style.display = 'block';
+          
+          window.scrollTo({top:0, behavior:'smooth'});
+      });
+  });
+  
+  // לחיצה אוטומטית על הראשון
+  if(tabs.length > 0) tabs[0].click();
+
   // משתמש מקומי
   const stored = localStorage.getItem('sushiUser');
   if(stored) { currentUser = JSON.parse(stored); updateUI(); }
   
-  // טעינת הזמנות
   loadExistingOrders();
 
-  // בדיקת יום (פופ-אפ) - מצב פיתוח (אם רוצים לבדוק תמיד, לשנות ל-true)
-  const isWednesday = false; // כרגע: היום יום ראשון, אז זה false ויראה את הפופאפ
+  // בדיקת יום (פופ-אפ)
+  const isWednesday = new Date().getDay() === 3;
   if(!isWednesday) {
     document.getElementById('order-popup-msg').innerHTML = "ההזמנות פתוחות בימי רביעי בלבד.<br>ניתן לצפות בתפריט אך לא לשלוח הזמנה.";
     document.getElementById('order-popup').style.display = 'flex';
   }
 });
-
-// --- פונקציית טאבים (ישירה) ---
-window.switchTab = function(tabId, btn) {
-    // הסתרת כל הקטגוריות
-    document.querySelectorAll('.menu-category').forEach(el => el.style.display = 'none');
-    
-    // הצגת הקטגוריה הנבחרת
-    const target = document.getElementById(tabId);
-    if(target) target.style.display = 'block';
-    
-    // ניקוי סימון מכפתורים
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    
-    // סימון הכפתור הנוכחי
-    btn.classList.add('active');
-    
-    // חזרה לתפריט אם היינו בפרופיל
-    document.getElementById('profile-page').style.display = 'none';
-    document.getElementById('main-content').style.display = 'block';
-    
-    // גלילה למעלה
-    window.scrollTo({top:0, behavior:'smooth'});
-};
 
 // --- רינדור תפריט ---
 function renderMenu() {
