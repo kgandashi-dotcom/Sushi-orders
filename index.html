@@ -10,41 +10,23 @@
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 
   <style>
-    /* =========================================
-       RESET & BASE
-       ========================================= */
+    /* === איפוס ועיצוב בסיסי === */
     * {
+      box-sizing: border-box;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
-      box-sizing: border-box;
     }
-
-    input, textarea, select {
-      -webkit-user-select: text;
-      user-select: text;
-    }
-
-    :root {
-      --accent: #cb7e3d;
-      --accent-dark: #5e1b1b;
-      --muted: #3a3a3a;
-      --bg-dark: #1a1a1a;
-      --bg-card: #252525;
-      --text-main: #f0f0f0;
-    }
-
+    
     body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       background: linear-gradient(180deg, #1f1a1a, #0d0d0d);
       direction: rtl;
-      color: var(--accent);
+      color: #cb7e3d;
       font-size: 16px;
     }
 
+    /* הקונטיינר הראשי */
     .container {
       max-width: 1020px;
       margin: 0 auto;
@@ -54,20 +36,17 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
 
-    /* =========================================
-       HEADER
-       ========================================= */
+    /* === כותרת === */
     header {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       padding: 10px;
       position: relative;
     }
 
     .logo {
-      height: 130px;
+      height: 120px;
       width: auto;
       border-radius: 8px;
       display: block;
@@ -88,62 +67,57 @@
       color: #f5f5f5;
     }
 
-    /* =========================================
-       TABS (FIXED: SINGLE LINE SCROLLABLE)
-       ========================================= */
+    /* === טאבים (שורה אחת נגללת) === */
     .tabs {
       position: sticky;
       top: 0;
       z-index: 100;
       background: #1a1a1a;
-      
-      /* הקסם לשורה אחת עם גלילה: */
       display: flex;
       flex-wrap: nowrap;      /* מונע ירידת שורה */
-      overflow-x: auto;       /* מאפשר גלילה לצדדים */
-      white-space: nowrap;    /* שומר על הטקסט בשורה אחת */
-      
+      overflow-x: auto;       /* מאפשר גלילה */
+      white-space: nowrap;
       gap: 10px;
       padding: 10px 15px;
       margin-bottom: 20px;
       border-bottom: 1px solid #333;
-      -webkit-overflow-scrolling: touch; /* גלילה חלקה באייפון */
     }
     
-    /* הסתרת פס הגלילה המכוער */
-    .tabs::-webkit-scrollbar {
-        display: none;
-    }
+    .tabs::-webkit-scrollbar { display: none; } /* הסתרת פס גלילה */
 
     .tab-btn {
       padding: 8px 16px;
       border: none;
-      background: var(--muted);
+      background: #3a3a3a;
       color: #b0b0b0;
-      border-radius: 20px; /* עיגול יפה */
+      border-radius: 20px;
       cursor: pointer;
       font-size: 0.95rem;
-      flex-shrink: 0; /* מונע מהכפתור להתכווץ */
-      transition: all 0.3s ease;
+      flex-shrink: 0;
+      transition: all 0.2s;
     }
 
-    /* הסטייל הפעיל - עכשיו יעבוד */
     .tab-btn.active {
-      background: var(--accent);
+      background: #cb7e3d;
       color: #fff;
       font-weight: 700;
       box-shadow: 0 0 10px rgba(203, 126, 61, 0.4);
     }
 
-    /* =========================================
-       MENU ITEMS
-       ========================================= */
+    /* === כרטיסי תפריט === */
+    .menu-category {
+        /* ברירת מחדל מוסתר - חוץ מהראשון */
+        display: none; 
+        animation: fadeIn 0.3s ease;
+        padding: 0 10px;
+    }
+
     .category-title {
-      color: var(--accent);
+      color: #cb7e3d;
       font-size: 1.4rem;
-      margin: 10px 15px 15px 15px;
+      margin: 10px 5px 15px 0;
       font-weight: bold;
-      border-right: 4px solid var(--accent);
+      border-right: 4px solid #cb7e3d;
       padding-right: 10px;
     }
 
@@ -151,13 +125,6 @@
       display: flex;
       flex-direction: column;
       gap: 15px;
-      padding: 0 10px;
-    }
-
-    .menu-category {
-        /* הסתרת הכל בהתחלה - JS יפתח את הנכון */
-        display: none; 
-        animation: fadeIn 0.3s ease;
     }
 
     .roll-card {
@@ -165,11 +132,10 @@
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-      background: var(--bg-card);
+      background: #252525;
       padding: 12px;
       border-radius: 12px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-      width: 100%;
       gap: 12px;
     }
 
@@ -180,31 +146,17 @@
       gap: 15px;
     }
 
-    .roll-card .roll-image {
+    .roll-card img {
       width: 80px;
       height: 80px;
       border-radius: 8px;
       object-fit: cover;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .roll-card .roll-image-placeholder {
-      width: 80px;
-      height: 80px;
-      background: #333;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
       flex-shrink: 0;
     }
 
     .roll-card .info {
       display: flex;
       flex-direction: column;
-      gap: 4px;
     }
 
     .roll-card h3 {
@@ -212,38 +164,31 @@
       color: #adb745;
       font-size: 1.15rem;
     }
-
     .roll-card p {
-      margin: 0;
+      margin: 2px 0;
       color: #ccc;
       font-size: 0.9rem;
       line-height: 1.3;
     }
 
+    /* כפתורי כמות */
     .quantity-control {
       display: flex;
-      flex-direction: row;
       align-items: center;
       gap: 5px;
       background: #333;
       padding: 4px;
       border-radius: 8px;
     }
-
     .quantity-control button {
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       border-radius: 6px;
       border: none;
       background: #555;
       color: white;
       font-size: 1.2rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
-
     .quantity-control input {
       width: 30px;
       text-align: center;
@@ -251,40 +196,15 @@
       background: transparent;
       color: white;
       font-size: 1.1rem;
-      padding: 0;
     }
 
+    /* מובייל */
     @media (max-width: 600px) {
-      .roll-card {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .roll-card-content {
-        width: 100%;
-      }
-      .quantity-control {
-        align-self: flex-end;
-        margin-top: 5px;
-        width: auto;
-      }
+      .roll-card { flex-direction: column; align-items: stretch; }
+      .quantity-control { align-self: flex-end; margin-top: 5px; }
     }
 
-    /* =========================================
-       FORM & CONTROLS
-       ========================================= */
-    .note {
-      color: #888;
-      font-size: 0.85rem;
-      margin-top: 5px;
-      padding: 0 15px;
-    }
-
-    /* סקשנים של בחירה */
-    #chopsticks-section, #notes-section, #pickup-section, #summary-section {
-        padding: 0 15px;
-        margin-bottom: 20px;
-    }
-
+    /* === טפסים וכפתורים === */
     #notes, #pickup-time {
       width: 100%;
       padding: 14px;
@@ -310,7 +230,7 @@
     #send-order {
       margin-top: 20px;
       padding: 16px;
-      background: var(--accent);
+      background: #cb7e3d;
       color: #fff;
       border: none;
       border-radius: 10px;
@@ -318,57 +238,27 @@
       font-weight: 700;
       cursor: pointer;
       width: 100%;
-      box-shadow: 0 4px 15px rgba(203, 126, 61, 0.4);
     }
-    
-    #send-order:disabled {
-      background: #555;
-      box-shadow: none;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
+    #send-order:disabled { background: #555; opacity: 0.6; }
 
-    #messages {
-      margin-top: 15px;
-      font-weight: bold;
-      text-align: center;
-      min-height: 20px;
-    }
-
-    /* =========================================
-       PROFILE & MODALS
-       ========================================= */
-    #profile-btn {
-      background: rgba(0,0,0,0.6);
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      padding: 6px 12px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      backdrop-filter: blur(4px);
-    }
-    
-    #image-modal {
-      backdrop-filter: blur(5px);
-      animation: fadeIn 0.2s ease;
-    }
-    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-
-    /* פופ-אפ חוסם */
+    /* === פופ-אפ === */
     .order-popup {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.9); z-index: 9999;
       display: flex; align-items: center; justify-content: center;
-      padding: 20px;
     }
     .order-popup__box {
       background: #fff; color: #000;
       padding: 30px; border-radius: 12px;
-      text-align: center; max-width: 400px; width: 100%;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      text-align: center; max-width: 350px; width: 90%;
     }
-    .order-popup__logo { width: 120px; display: block; margin: 0 auto 15px; }
+    
+    /* מודל תמונה */
+    #image-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; align-items: center; justify-content: center; }
+    @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+    
+    /* כפתור פרופיל */
+    #profile-btn { border: 1px solid #cb7e3d; color: #cb7e3d; background:none; padding: 5px 10px; border-radius: 15px; }
   </style>
 </head>
 <body>
@@ -385,168 +275,113 @@
   </header>
 
   <nav class="tabs">
-    <button class="tab-btn active" data-target="insideout">Inside-out</button>
-    <button class="tab-btn" data-target="maki">Maki</button>
-    <button class="tab-btn" data-target="onigiri">Onigiri</button>
-    <button class="tab-btn" data-target="oshizushi">Oshizushi</button>
-    <button class="tab-btn" data-target="poke">Poke</button>
-    <button class="tab-btn" data-target="sauces">רטבים</button>
+    <button class="tab-btn active" onclick="switchTab('insideout', this)">Inside-out</button>
+    <button class="tab-btn" onclick="switchTab('maki', this)">Maki</button>
+    <button class="tab-btn" onclick="switchTab('onigiri', this)">Onigiri</button>
+    <button class="tab-btn" onclick="switchTab('oshizushi', this)">Oshizushi</button>
+    <button class="tab-btn" onclick="switchTab('poke', this)">Poke</button>
+    <button class="tab-btn" onclick="switchTab('sauces', this)">רטבים</button>
   </nav>
 
   <main id="main-content">
     
-    <section id="menu-section">
-      <div id="insideout" class="menu-category">
-        <div class="category-title">Inside-out Rolls</div>
-        <div id="insideout-rolls" class="category-container"></div>
-      </div>
+    <div id="insideout" class="menu-category" style="display:block;">
+      <div class="category-title">Inside-out Rolls</div>
+      <div id="insideout-rolls" class="category-container"></div>
+    </div>
 
-      <div id="maki" class="menu-category">
-        <div class="category-title">Maki Rolls</div>
-        <div id="maki-rolls" class="category-container"></div>
-      </div>
+    <div id="maki" class="menu-category">
+      <div class="category-title">Maki Rolls</div>
+      <div id="maki-rolls" class="category-container"></div>
+    </div>
 
-      <div id="onigiri" class="menu-category">
-        <div class="category-title">Onigiri</div>
-        <div id="onigiri-rolls" class="category-container"></div>
-      </div>
+    <div id="onigiri" class="menu-category">
+      <div class="category-title">Onigiri</div>
+      <div id="onigiri-rolls" class="category-container"></div>
+    </div>
 
-      <div id="oshizushi" class="menu-category">
-        <div class="category-title">Oshizushi</div>
-        <div id="oshizushi-rolls" class="category-container"></div>
-      </div>
+    <div id="oshizushi" class="menu-category">
+      <div class="category-title">Oshizushi</div>
+      <div id="oshizushi-rolls" class="category-container"></div>
+    </div>
 
-      <div id="poke" class="menu-category">
-        <div class="category-title">Poke</div>
-        <div id="poke-rolls" class="category-container"></div>
-      </div>
+    <div id="poke" class="menu-category">
+      <div class="category-title">Poke</div>
+      <div id="poke-rolls" class="category-container"></div>
+    </div>
 
-      <div id="sauces" class="menu-category">
-        <div class="category-title">רטבים</div>
-        <div id="sauces-container" class="category-container"></div>
-        <p class="note">כל רול מקבל 2 רטבים חינם. רוטב נוסף עולה 3₪.</p>
-      </div>
-    </section>
+    <div id="sauces" class="menu-category">
+      <div class="category-title">רטבים</div>
+      <div id="sauces-container" class="category-container"></div>
+      <p class="note" style="padding:0 10px;">כל רול מקבל 2 רטבים חינם. רוטב נוסף עולה 3₪.</p>
+    </div>
 
     <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
 
-    <section id="chopsticks-section">
-      <div class="category-title" style="font-size:1.1rem; border:none; margin:0 0 10px 0;">🥢 צ'ופסטיקס</div>
-      <div class="quantity-control" style="background:none; justify-content:flex-start;">
+    <div style="padding:0 15px;">
+      <h3 style="color:#cb7e3d; margin-bottom:10px;">🥢 צ'ופסטיקס</h3>
+      <div class="quantity-control" style="background:none;">
         <button id="chopsticks-minus">−</button>
-        <input id="chopsticks-qty" type="number" readonly value="1" style="border:1px solid #444; border-radius:4px;">
+        <input id="chopsticks-qty" type="number" readonly value="1" style="border:1px solid #444; color:#cb7e3d;">
         <button id="chopsticks-plus">+</button>
       </div>
-    </section>
 
-    <section id="notes-section">
-      <div class="category-title" style="font-size:1.1rem; border:none; margin:0 0 10px 0;">📝 הערות אישיות</div>
+      <h3 style="color:#cb7e3d; margin-top:20px; margin-bottom:10px;">📝 הערות אישיות</h3>
       <textarea id="notes" placeholder="למשל: ברול ניוטון, ללא רוטב בוטנים..." oninput="updateSummary()"></textarea>
-    </section>
 
-    <section id="pickup-section">
-      <div class="category-title" style="font-size:1.1rem; border:none; margin:0 0 10px 0;">⏰ שעת איסוף</div>
+      <h3 style="color:#cb7e3d; margin-top:20px; margin-bottom:10px;">⏰ שעת איסוף</h3>
       <select id="pickup-time" onchange="updateSummary()">
         <option value="">בחר שעה</option>
       </select>
-      <p class="note">השעות הזמינות מתעדכנות בזמן אמת</p>
-    </section>
 
-    <section id="summary-section">
-      <div class="category-title" style="font-size:1.1rem; border:none; margin:0 0 10px 0;">🛒 סיכום הזמנה</div>
-      <pre id="order-summary">הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.</pre>
+      <h3 style="color:#cb7e3d; margin-top:20px; margin-bottom:10px;">🛒 סיכום הזמנה</h3>
+      <pre id="order-summary">הזמנה ריקה...</pre>
       <button id="send-order" disabled>שלח הזמנה</button>
       <div id="messages"></div>
-    </section>
+    </div>
 
   </main>
 
   <div id="profile-page" style="display:none; padding:15px;">
-    <div class="category-title">👤 הפרופיל שלי</div>
-    
-    <div style="background: #252525; padding:20px; border-radius:10px; margin-bottom:15px;">
-      <h3 style="margin-top:0; color:#fff;">פרטים אישיים</h3>
-      <div id="profile-view-mode">
-        <p><strong>שם:</strong> <span id="display-name"></span></p>
-        <p><strong>אימייל:</strong> <span id="display-email"></span></p>
-        <p><strong>טלפון:</strong> <span id="display-phone"></span></p>
-        <button id="edit-mode-btn" style="margin-top:10px; padding:8px 15px; background:var(--accent); color:#fff; border:none; border-radius:6px;">✏️ ערוך פרטים</button>
-      </div>
-      
-      <div id="profile-edit-mode" style="display:none;">
-        <div style="margin-bottom:10px;">
-          <label>שם מלא:</label>
-          <input type="text" id="edit-name" style="width:100%; padding:8px; background:#333; color:#fff; border:1px solid #555; border-radius:4px;">
-        </div>
-        <div style="margin-bottom:10px;">
-          <label>טלפון (05X-XXXXXXX):</label>
-          <input type="tel" id="edit-phone" style="width:100%; padding:8px; background:#333; color:#fff; border:1px solid #555; border-radius:4px;">
-        </div>
-        <div style="display:flex; gap:10px;">
-          <button id="save-profile-btn" style="padding:10px; background:#28a745; color:white; border:none; border-radius:6px;">שמור</button>
-          <button id="cancel-edit-btn" style="padding:10px; background:#6c757d; color:white; border:none; border-radius:6px;">ביטול</button>
-        </div>
-      </div>
+    <h2 style="color:#cb7e3d;">👤 הפרופיל שלי</h2>
+    <div style="background:#252525; padding:20px; border-radius:10px; color:white;">
+       <p><strong>שם:</strong> <span id="p-name"></span></p>
+       <p><strong>טלפון:</strong> <span id="p-phone"></span></p>
     </div>
-
-    <div style="background: #252525; padding:20px; border-radius:10px;">
-      <h3 style="color:#fff;">היסטוריית הזמנות</h3>
-      <div id="order-history" style="color:#bbb; font-size:0.9rem;">טוען היסטוריה...</div>
-    </div>
-
-    <div style="text-align:center; margin-top:30px; display:flex; flex-direction:column; gap:10px;">
-      <button id="back-to-menu-btn" style="padding:12px; background:var(--accent); color:white; border:none; border-radius:8px;">← חזור לתפריט</button>
-      <button id="logout-btn-profile" style="padding:12px; background:var(--danger); color:white; border:none; border-radius:8px;">🚪 התנתק</button>
+    <div style="margin-top:20px; text-align:center;">
+       <button onclick="document.getElementById('profile-page').style.display='none'; document.getElementById('main-content').style.display='block';" style="padding:10px; background:#cb7e3d; border:none; color:white; border-radius:5px;">חזור לתפריט</button>
     </div>
   </div>
 
 </div>
 
-<div id="phone-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
-  <div style="background:#1a1a1a; padding:30px; border-radius:12px; max-width:350px; width:90%; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,0.7); border:1px solid #333;">
-    <h3 style="color:var(--accent); margin:0 0 10px 0;">מספר טלפון חובה</h3>
-    <input type="tel" id="phone-input" placeholder="050-1234567" style="width:100%; padding:12px; background:#2a2a2a; color:#fff; border:1px solid #444; border-radius:6px; text-align:center; font-size:1.1rem; direction:ltr;">
-    <p id="phone-error" style="color:var(--danger); display:none; margin-top:5px;">מספר לא תקין</p>
-    <div style="margin-top:20px; display:flex; gap:10px;">
-      <button onclick="submitPhone()" style="flex:1; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:6px; font-weight:bold;">אישור</button>
-      <button onclick="cancelPhone()" style="flex:1; padding:10px; background:#444; color:#fff; border:none; border-radius:6px;">ביטול</button>
+<div id="image-modal" onclick="this.style.display='none'">
+    <div style="position:relative;">
+        <img id="modal-img-src" src="" style="max-width:90vw; max-height:80vh; border-radius:10px;">
+        <p id="modal-img-title" style="color:white; text-align:center; font-size:1.2rem; margin-top:10px;"></p>
     </div>
-  </div>
-</div>
-
-<div id="image-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:10000; align-items:center; justify-content:center; cursor:pointer;" onclick="closeImageModal()">
-  <div style="position:relative; max-width:90%; max-height:90%;">
-    <button onclick="closeImageModal(); event.stopPropagation();" style="position:absolute; top:-40px; right:0; background:var(--accent); color:#fff; border:none; border-radius:50%; width:35px; height:35px; font-size:1.2rem;">✕</button>
-    <img id="modal-image" src="" style="max-width:100%; max-height:80vh; border-radius:8px; box-shadow:0 0 20px rgba(0,0,0,0.8);" onclick="event.stopPropagation()">
-    <p id="modal-image-title" style="color:white; text-align:center; font-size:1.2rem; margin-top:10px;"></p>
-  </div>
 </div>
 
 <div id="order-popup" class="order-popup" style="display:none">
   <div class="order-popup__box">
-    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="" class="order-popup__logo">
-    <h2 id="order-popup-title" style="margin-top:0;">הודעה חשובה</h2>
-    <p id="order-popup-message" style="font-size:1.1rem; line-height:1.4; margin:15px 0;"></p>
-    <button id="order-popup-ok" style="background:var(--accent); color:white; border:none; padding:10px 25px; border-radius:6px; font-size:1rem; cursor:pointer;">אישור</button>
+    <img src="https://i.imgur.com/m6KeXAB.jpeg" alt="" style="width:100px; margin-bottom:10px;">
+    <h2 style="margin:0 0 10px 0;">שימו לב!</h2>
+    <p id="order-popup-msg" style="margin-bottom:20px; font-size:1.1rem; line-height:1.4;"></p>
+    <button onclick="document.getElementById('order-popup').style.display='none'" style="background:#cb7e3d; color:white; border:none; padding:10px 30px; border-radius:6px; font-size:1rem; cursor:pointer;">אישור</button>
   </div>
 </div>
 
 <script>
-// --- CONFIGURATION ---
+// --- הגדרות ---
 const SUPABASE_URL = 'https://oxjokdjwdvmmdtcvqvon.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94am9rZGp3ZHZtbWR0Y3Zxdm9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzgwMzMsImV4cCI6MjA3NDY1NDAzM30.DmKp79UiPi9iOU50UutevdqRcPyREMUJ7NT5ZmBHDsg';
 const GOOGLE_CLIENT_ID = "962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com";
 const MAKE_WEBHOOK_URL = "https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r";
 
-// --- GLOBAL STATE ---
-let supabase = null;
-let currentUser = null;
-let orderItems = {};      
-let sauceSelections = {}; 
-let chopsticksCount = 1;
-let existingOrders = [];  
+let supabase, currentUser;
+let orderItems = {}, sauceSelections = {}, chopsticksCount = 1;
 
-// --- MENU DATA ---
+// --- נתונים ---
 const menuData = {
   insideout: [
     {name: 'רול בינגו', desc: 'סלמון נא, שמנת, אבוקדו בציפוי שומשום קלוי', price: 50, image_url: 'https://i.imgur.com/u5ebtHM.jpeg'},
@@ -595,494 +430,216 @@ const menuData = {
   ]
 };
 
-// --- INITIALIZATION ---
-document.addEventListener('DOMContentLoaded', async function() {
-  if (typeof window.supabase !== 'undefined') {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  }
+// --- אתחול ---
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof window.supabase !== 'undefined') supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  initGoogleAuth();
-  checkLocalAuth();
-  
-  // 1. Render items first
+  // 1. ציור התפריט
   renderMenu();
   
-  // 2. Setup tab logic
-  setupTabs();
-  
-  // 3. Setup other components
+  // 2. אתחול גוגל ושעות
+  initGoogleAuth();
+  generatePickupSlots();
   setupChopsticks();
   setupSendOrder();
-  setupProfile();
   
-  // 4. Load data & check day
-  await loadExistingOrders();
-  checkDayOfWeek();
+  // 3. בדיקת משתמש מקומי
+  const stored = localStorage.getItem('sushiUser');
+  if(stored) { currentUser = JSON.parse(stored); updateUI(); }
   
-  // 5. CRITICAL FIX: Click first tab to show initial content!
-  const firstTab = document.querySelector('.tab-btn');
-  if (firstTab) firstTab.click();
+  // 4. בדיקת יום (פופ-אפ)
+  const isWednesday = new Date().getDay() === 3;
+  if(!isWednesday) {
+    document.getElementById('order-popup-msg').innerHTML = "ההזמנות פתוחות בימי רביעי בלבד.<br>ניתן לצפות בתפריט אך לא לשלוח הזמנה.";
+    document.getElementById('order-popup').style.display = 'flex';
+  }
 });
 
-// --- GOOGLE AUTH & USER ---
-function initGoogleAuth() {
-  if (!window.google?.accounts?.id) {
-    setTimeout(initGoogleAuth, 500);
-    return;
-  }
-  window.google.accounts.id.initialize({
-    client_id: GOOGLE_CLIENT_ID,
-    callback: handleGoogleLogin
-  });
-  window.google.accounts.id.renderButton(
-    document.getElementById('login-btn'),
-    { theme: 'filled_black', size: 'medium', text: 'signin', locale: 'he' }
-  );
-}
+// --- פונקציות ---
 
-async function handleGoogleLogin(response) {
-  try {
-    const decoded = jwt_decode(response.credential);
-    let phone = '';
-    if (supabase) {
-        const { data } = await supabase.from('users').select('phone').eq('email', decoded.email).single();
-        if (data && data.phone) phone = data.phone;
-    }
+// החלפת טאבים
+window.switchTab = function(tabId, btn) {
+    // הסתרת כל הקטגוריות
+    document.querySelectorAll('.menu-category').forEach(el => el.style.display = 'none');
+    // הצגת הקטגוריה שנבחרה
+    document.getElementById(tabId).style.display = 'block';
     
-    if (!phone) {
-       phone = await promptForPhone();
-       if (!phone) {
-           alert('חובה להזין מספר טלפון כדי להזמין.');
-           return; 
-       }
-       if (supabase) {
-           await supabase.from('users').upsert({
-               email: decoded.email,
-               name: decoded.name,
-               phone: phone,
-               last_login: new Date()
-           });
-       }
-    }
-
-    currentUser = {
-      name: decoded.name,
-      email: decoded.email,
-      picture: decoded.picture,
-      phone: phone
-    };
+    // החלפת כפתור פעיל
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
     
-    localStorage.setItem('sushiUser', JSON.stringify(currentUser));
-    updateUIState();
-    
-  } catch (err) {
-    console.error('Login error', err);
-  }
-}
+    // גלילה למעלה
+    window.scrollTo({top:0, behavior:'smooth'});
+};
 
-function checkLocalAuth() {
-  const stored = localStorage.getItem('sushiUser');
-  if (stored) {
-    currentUser = JSON.parse(stored);
-    updateUIState();
-  }
-}
-
-function updateUIState() {
-  if (currentUser) {
-    document.getElementById('login-btn').style.display = 'none';
-    const btn = document.getElementById('profile-btn');
-    btn.style.display = 'flex';
-    btn.style.alignItems = 'center';
-    btn.style.gap = '5px';
-    if (currentUser.picture) {
-        btn.innerHTML = `<img src="${currentUser.picture}" style="width:24px;height:24px;border-radius:50%;"> הפרופיל שלי`;
-    }
-  } else {
-    document.getElementById('login-btn').style.display = 'block';
-    document.getElementById('profile-btn').style.display = 'none';
-  }
-}
-
-function promptForPhone() {
-    return new Promise((resolve) => {
-        const modal = document.getElementById('phone-modal');
-        const input = document.getElementById('phone-input');
-        const err = document.getElementById('phone-error');
-        modal.style.display = 'flex';
-        input.value = '';
-        err.style.display = 'none';
-        
-        window.submitPhone = () => {
-            let val = input.value.trim().replace(/\D/g,''); 
-            if (val.length === 10 && val.startsWith('05')) {
-                const formatted = val.slice(0,3) + '-' + val.slice(3);
-                modal.style.display = 'none';
-                resolve(formatted);
-            } else {
-                err.style.display = 'block';
-            }
-        };
-        
-        window.cancelPhone = () => {
-            modal.style.display = 'none';
-            resolve(null);
-        };
-    });
-}
-
-// --- RENDER MENU ---
+// ציור תפריט
 function renderMenu() {
-  const categories = ['insideout', 'maki', 'onigiri', 'oshizushi', 'poke'];
-  
-  categories.forEach(cat => {
-    const container = document.getElementById(cat + '-rolls');
-    if (!container) return;
-    
-    container.innerHTML = menuData[cat].map((item, idx) => {
-      const key = `${cat}_${idx}`;
-      const imageHTML = item.image_url 
-        ? `<img src="${item.image_url}" class="roll-image" onclick="window.openImageModal('${item.image_url}', '${item.name}')">`
-        : `<div class="roll-image-placeholder">🍣</div>`;
-        
-      return `
-        <div class="roll-card">
-          <div class="roll-card-content">
-            ${imageHTML}
-            <div class="info">
-              <h3>${item.name}</h3>
-              <p>${item.desc}</p>
-              <p style="font-weight:bold; color:var(--accent); margin-top:4px;">${item.price}₪</p>
-            </div>
-          </div>
-          <div class="quantity-control">
-            <button onclick="changeQty('${key}', -1)">−</button>
-            <input type="number" id="${key}" value="0" readonly>
-            <button onclick="changeQty('${key}', 1)">+</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-  });
-  
-  const saucesContainer = document.getElementById('sauces-container');
-  if (saucesContainer) {
-    saucesContainer.innerHTML = menuData.sauces.map((item, idx) => {
-      const key = `sauce_${idx}`;
-      return `
-        <div class="roll-card">
-          <div class="roll-card-content">
-            <div class="info">
-               <h3>${item.name}</h3>
-               ${item.price > 0 ? `<p>${item.price}₪</p>` : '<p>ללא תוספת תשלום (במסגרת המכסה)</p>'}
-            </div>
-          </div>
-          <div class="quantity-control">
-            <button onclick="changeSauce('${key}', -1)">−</button>
-            <input type="number" id="${key}" value="0" readonly>
-            <button onclick="changeSauce('${key}', 1)">+</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-}
-
-// --- LOGIC ---
-window.changeQty = function(key, delta) {
-  const input = document.getElementById(key);
-  let val = parseInt(input.value) || 0;
-  val = Math.max(0, val + delta);
-  input.value = val;
-  
-  if (val > 0) orderItems[key] = val;
-  else delete orderItems[key];
-  
-  generatePickupSlots();
-  updateSummary();
-}
-
-window.changeSauce = function(key, delta) {
-  const input = document.getElementById(key);
-  let val = parseInt(input.value) || 0;
-  val = Math.max(0, val + delta);
-  input.value = val;
-  
-  if (val > 0) sauceSelections[key] = val;
-  else delete sauceSelections[key];
-  
-  updateSummary();
-}
-
-function setupTabs() {
-  const tabs = document.querySelectorAll('.tab-btn');
-  tabs.forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.getElementById('profile-page').style.display = 'none';
-      document.getElementById('main-content').style.display = 'block';
-      
-      // Update visual state
-      tabs.forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-      
-      // Update logic state
-      document.querySelectorAll('.menu-category').forEach(el => el.style.display = 'none');
-      const target = btn.getAttribute('data-target');
-      document.getElementById(target).style.display = 'block';
-      
-      window.scrollTo({top: 0, behavior: 'smooth'});
+    Object.keys(menuData).forEach(cat => {
+        if(cat === 'sauces') {
+             // רטבים
+             document.getElementById('sauces-container').innerHTML = menuData.sauces.map((item,i) => `
+                <div class="roll-card">
+                  <div class="roll-card-content">
+                    <div class="info"><h3>${item.name}</h3></div>
+                  </div>
+                  <div class="quantity-control">
+                     <button onclick="changeItem('sauce_${i}', -1)">-</button>
+                     <input id="sauce_${i}" value="0" readonly>
+                     <button onclick="changeItem('sauce_${i}', 1)">+</button>
+                  </div>
+                </div>
+             `).join('');
+        } else {
+             // רולים
+             document.getElementById(cat + '-rolls').innerHTML = menuData[cat].map((item,i) => `
+                <div class="roll-card">
+                   <div class="roll-card-content">
+                     ${item.image_url ? `<img src="${item.image_url}" onclick="showImg('${item.image_url}','${item.name}')">` : '<div class="roll-image-placeholder">🍣</div>'}
+                     <div class="info">
+                        <h3>${item.name}</h3>
+                        <p>${item.desc}</p>
+                        <p style="color:#cb7e3d; font-weight:bold;">${item.price}₪</p>
+                     </div>
+                   </div>
+                   <div class="quantity-control">
+                     <button onclick="changeItem('${cat}_${i}', -1)">-</button>
+                     <input id="${cat}_${i}" value="0" readonly>
+                     <button onclick="changeItem('${cat}_${i}', 1)">+</button>
+                   </div>
+                </div>
+             `).join('');
+        }
     });
-  });
+}
+
+// ניהול כמויות
+window.changeItem = function(id, delta) {
+    const el = document.getElementById(id);
+    let val = parseInt(el.value) || 0;
+    val = Math.max(0, val + delta);
+    el.value = val;
+    
+    // עדכון אובייקט ההזמנה
+    if(id.startsWith('sauce')) {
+        if(val > 0) sauceSelections[id] = val; else delete sauceSelections[id];
+    } else {
+        if(val > 0) orderItems[id] = val; else delete orderItems[id];
+    }
+    updateSummary();
+};
+
+window.showImg = (url, title) => {
+    document.getElementById('modal-img-src').src = url;
+    document.getElementById('modal-img-title').innerText = title;
+    document.getElementById('image-modal').style.display = 'flex';
 }
 
 function setupChopsticks() {
-  document.getElementById('chopsticks-minus').onclick = () => {
-    if (chopsticksCount > 0) {
-      chopsticksCount--;
-      document.getElementById('chopsticks-qty').value = chopsticksCount;
-      updateSummary();
-    }
-  };
-  document.getElementById('chopsticks-plus').onclick = () => {
-    chopsticksCount++;
-    document.getElementById('chopsticks-qty').value = chopsticksCount;
-    updateSummary();
-  };
+    document.getElementById('chopsticks-minus').onclick = () => { if(chopsticksCount>0) chopsticksCount--; document.getElementById('chopsticks-qty').value=chopsticksCount; updateSummary(); };
+    document.getElementById('chopsticks-plus').onclick = () => { chopsticksCount++; document.getElementById('chopsticks-qty').value=chopsticksCount; updateSummary(); };
 }
 
-// --- ORDER CALCULATION ---
 function updateSummary() {
-  let totalRolls = 0;
-  let totalPrice = 0;
-  let summaryText = "";
-  
-  for (let key in orderItems) {
-    const [cat, idx] = key.split('_');
-    const item = menuData[cat][idx];
-    const qty = orderItems[key];
-    const cost = item.price * qty;
+    let total = 0, count = 0, txt = "";
     
-    totalRolls += qty;
-    totalPrice += cost;
-    summaryText += `${item.name} (x${qty}) = ${cost}₪\n`;
-  }
-  
-  let totalSauces = 0;
-  for (let key in sauceSelections) totalSauces += sauceSelections[key];
-  
-  const freeSauces = totalRolls * 2;
-  const extraSauces = Math.max(0, totalSauces - freeSauces);
-  const sauceCost = extraSauces * 3;
-  
-  if (totalSauces > 0) {
-    summaryText += `\nרטבים: ${totalSauces} יח'`;
-    summaryText += `\n(מתוכם ${freeSauces} חינם, ${extraSauces} בתשלום)\n`;
-    if (sauceCost > 0) summaryText += `תוספת רטבים: ${sauceCost}₪\n`;
-  }
-  
-  totalPrice += sauceCost;
-  
-  summaryText += `\nצ'ופסטיקס: ${chopsticksCount}`;
-  summaryText += `\nסה"כ לתשלום: ${totalPrice}₪`;
-  
-  document.getElementById('order-summary').textContent = totalRolls ? summaryText : 'הזמנה ריקה...';
-  
-  const pickupTime = document.getElementById('pickup-time').value;
-  const btn = document.getElementById('send-order');
-  
-  if (totalRolls > 0 && totalRolls <= 15 && pickupTime) {
-    btn.disabled = false;
-    btn.style.opacity = '1';
-    btn.style.cursor = 'pointer';
-  } else {
-    btn.disabled = true;
-    btn.style.opacity = '0.5';
-    btn.style.cursor = 'not-allowed';
-  }
-}
-
-async function loadExistingOrders() {
-  if (!supabase) return;
-  const today = new Date().toISOString().split('T')[0];
-  const { data } = await supabase.from('Sushi').select('pickup_time, items').eq('order_date', today);
-  if (data) existingOrders = data;
-  generatePickupSlots();
+    // רולים
+    for(let k in orderItems) {
+        const [cat, idx] = k.split('_');
+        const item = menuData[cat][idx];
+        const qty = orderItems[k];
+        txt += `${item.name} x${qty} = ${item.price*qty}₪\n`;
+        total += item.price*qty;
+        count += qty;
+    }
+    
+    // רטבים
+    let sCount = 0;
+    for(let k in sauceSelections) sCount += sauceSelections[k];
+    const free = count * 2;
+    const extra = Math.max(0, sCount - free);
+    if(sCount > 0) {
+        txt += `\nרטבים: ${sCount} (${free} חינם)\nתוספת: ${extra*3}₪\n`;
+        total += extra*3;
+    }
+    
+    txt += `\nסה"כ: ${total}₪`;
+    document.getElementById('order-summary').textContent = count ? txt : "הזמנה ריקה...";
+    
+    const btn = document.getElementById('send-order');
+    const time = document.getElementById('pickup-time').value;
+    if(count > 0 && time) { btn.disabled=false; btn.style.opacity=1; } else { btn.disabled=true; btn.style.opacity=0.6; }
 }
 
 function generatePickupSlots() {
-  const select = document.getElementById('pickup-time');
-  const currentVal = select.value;
-  select.innerHTML = '<option value="">בחר שעה</option>';
-  
-  const myPrepTime = Object.values(orderItems).reduce((a,b)=>a+b,0) * 10;
-  
-  for (let h=19; h<=22; h++) {
-    for (let m=0; m<60; m+=15) {
-      if (h===22 && m>30) continue; 
-      
-      const timeStr = `${h}:${m.toString().padStart(2,'0')}`;
-      const opt = document.createElement('option');
-      opt.value = timeStr;
-      opt.textContent = timeStr;
-      select.appendChild(opt);
+    const sel = document.getElementById('pickup-time');
+    for(let h=19; h<=22; h++) {
+        for(let m=0; m<60; m+=15) {
+            if(h==22 && m>30) continue;
+            let t = `${h}:${m<10?'0'+m:m}`;
+            sel.innerHTML += `<option value="${t}">${t}</option>`;
+        }
     }
-  }
-  select.value = currentVal;
 }
 
-// --- SUBMIT ORDER ---
+// שליחה
 function setupSendOrder() {
-  document.getElementById('send-order').addEventListener('click', async () => {
-    if (!currentUser) {
-      alert('עליך להתחבר כדי לבצע הזמנה');
-      initGoogleAuth(); 
-      return;
-    }
-    
-    const btn = document.getElementById('send-order');
-    btn.disabled = true;
-    btn.textContent = 'שולח...';
-    
-    try {
-      const orderData = {
-        user_name: currentUser.name,
-        email: currentUser.email,
-        phone: currentUser.phone,
-        order_date: new Date().toISOString().split('T')[0],
-        pickup_time: document.getElementById('pickup-time').value,
-        items: JSON.stringify(orderItems),
-        sauces: JSON.stringify(sauceSelections),
-        chopsticks: chopsticksCount,
-        notes: document.getElementById('notes').value,
-        total_price: parseInt(document.getElementById('order-summary').textContent.split('סה"כ לתשלום: ')[1]),
-        items_summary: document.getElementById('order-summary').textContent
-      };
-
-      if (supabase) {
-        const { error } = await supabase.from('Sushi').insert([orderData]);
-        if (error) throw error;
-      }
-      
-      await fetch(MAKE_WEBHOOK_URL, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(orderData)
-      });
-      
-      document.getElementById('messages').innerHTML = '<span style="color:green">ההזמנה נשלחה בהצלחה! 🎉</span>';
-      
-      setTimeout(() => {
-        location.reload();
-      }, 2000);
-
-    } catch (err) {
-      console.error(err);
-      document.getElementById('messages').innerHTML = '<span style="color:red">שגיאה בשליחה. נסה שוב.</span>';
-      btn.disabled = false;
-      btn.textContent = 'שלח הזמנה';
-    }
-  });
-}
-
-// --- PROFILE ---
-function setupProfile() {
-  document.getElementById('edit-mode-btn').onclick = () => {
-    document.getElementById('profile-view-mode').style.display = 'none';
-    document.getElementById('profile-edit-mode').style.display = 'block';
-    document.getElementById('edit-name').value = currentUser.name;
-    document.getElementById('edit-phone').value = currentUser.phone;
-  };
-  
-  document.getElementById('cancel-edit-btn').onclick = () => {
-    document.getElementById('profile-edit-mode').style.display = 'none';
-    document.getElementById('profile-view-mode').style.display = 'block';
-  };
-  
-  document.getElementById('save-profile-btn').onclick = () => {
-    currentUser.name = document.getElementById('edit-name').value;
-    currentUser.phone = document.getElementById('edit-phone').value;
-    localStorage.setItem('sushiUser', JSON.stringify(currentUser));
-    
-    if (supabase) {
-        supabase.from('users').update({
-            name: currentUser.name,
-            phone: currentUser.phone
-        }).eq('email', currentUser.email).then(console.log);
-    }
-    
-    document.getElementById('display-name').textContent = currentUser.name;
-    document.getElementById('display-phone').textContent = currentUser.phone;
-    document.getElementById('profile-edit-mode').style.display = 'none';
-    document.getElementById('profile-view-mode').style.display = 'block';
-  };
-  
-  document.getElementById('profile-btn').onclick = () => {
-    document.getElementById('main-content').style.display = 'none';
-    document.getElementById('profile-page').style.display = 'block';
-    
-    if (currentUser) {
-      document.getElementById('display-name').textContent = currentUser.name;
-      document.getElementById('display-email').textContent = currentUser.email;
-      document.getElementById('display-phone').textContent = currentUser.phone;
-      loadHistory();
-    }
-  };
-  
-  document.getElementById('back-to-menu-btn').onclick = () => {
-    document.querySelector('.tab-btn.active').click();
-  };
-  
-  document.getElementById('logout-btn-profile').onclick = () => {
-    localStorage.removeItem('sushiUser');
-    currentUser = null;
-    location.reload();
-  };
-}
-
-async function loadHistory() {
-  if (!supabase || !currentUser) return;
-  const { data } = await supabase.from('Sushi').select('*').eq('email', currentUser.email).order('created_at', {ascending: false});
-  
-  const container = document.getElementById('order-history');
-  if (!data || data.length === 0) {
-    container.textContent = 'אין הזמנות קודמות';
-    return;
-  }
-  
-  container.innerHTML = data.map(o => `
-    <div style="border-bottom:1px solid #444; padding:10px 0;">
-      <div><strong>${o.order_date}</strong> | שעה ${o.pickup_time}</div>
-      <div style="color:var(--accent)">סה"כ: ${o.total_price}₪</div>
-    </div>
-  `).join('');
-}
-
-window.openImageModal = (url, title) => {
-  document.getElementById('modal-image').src = url;
-  document.getElementById('modal-image-title').textContent = title;
-  document.getElementById('image-modal').style.display = 'flex';
-};
-window.closeImageModal = () => document.getElementById('image-modal').style.display = 'none';
-
-// --- POPUP CHECKER ---
-function checkDayOfWeek() {
-  const now = new Date();
-  const day = now.getDay(); // 0=Sunday
-  const isWednesday = (day === 3); 
-  
-  const popup = document.getElementById('order-popup');
-  const msg = document.getElementById('order-popup-message');
-  const okBtn = document.getElementById('order-popup-ok');
-  
-  // אם היום לא יום רביעי, נציג הודעה
-  if (!isWednesday) {
-    msg.innerHTML = 'ההזמנות פתוחות בימי רביעי בלבד.<br>ניתן לעיין בתפריט, אך לא ניתן לשלוח הזמנה כרגע.';
-    popup.style.display = 'flex';
-    
-    okBtn.onclick = function() {
-        popup.style.display = 'none';
+    document.getElementById('send-order').onclick = async () => {
+        if(!currentUser) { alert('אנא התחבר'); initGoogleAuth(); return; }
+        
+        const btn = document.getElementById('send-order');
+        btn.textContent = 'שולח...';
+        
+        const orderData = {
+            user_name: currentUser.name,
+            email: currentUser.email,
+            phone: currentUser.phone,
+            order_date: new Date().toISOString().split('T')[0],
+            pickup_time: document.getElementById('pickup-time').value,
+            items: JSON.stringify(orderItems),
+            sauces: JSON.stringify(sauceSelections),
+            chopsticks: chopsticksCount,
+            notes: document.getElementById('notes').value,
+            total_price: parseInt(document.getElementById('order-summary').textContent.split('סה"כ: ')[1])
+        };
+        
+        // Supabase Insert
+        if(supabase) await supabase.from('Sushi').insert([orderData]);
+        
+        // Make Webhook
+        fetch(MAKE_WEBHOOK_URL, { method: 'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(orderData) });
+        
+        document.getElementById('messages').innerHTML = "<span style='color:green'>ההזמנה נשלחה!</span>";
+        setTimeout(() => location.reload(), 2000);
     };
-  }
+}
+
+// גוגל ופרופיל
+function initGoogleAuth() {
+    if(!window.google?.accounts?.id) return setTimeout(initGoogleAuth, 500);
+    window.google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleLogin });
+    window.google.accounts.id.renderButton(document.getElementById('login-btn'), {theme:'filled_black', text:'signin'});
+}
+
+function handleLogin(res) {
+    const dec = jwt_decode(res.credential);
+    currentUser = { name: dec.name, email: dec.email, picture: dec.picture, phone: '' };
+    // כאן אפשר להוסיף לוגיקת טלפון אם רוצים
+    localStorage.setItem('sushiUser', JSON.stringify(currentUser));
+    updateUI();
+}
+
+function updateUI() {
+    document.getElementById('login-btn').style.display='none';
+    document.getElementById('profile-btn').style.display='inline-block';
+    
+    // פרופיל
+    document.getElementById('p-name').textContent = currentUser.name;
+    document.getElementById('p-phone').textContent = currentUser.phone || 'לא הוזן';
+    
+    document.getElementById('profile-btn').onclick = () => {
+        document.getElementById('main-content').style.display='none';
+        document.getElementById('profile-page').style.display='block';
+    };
 }
 </script>
 </body>
