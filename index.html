@@ -2204,22 +2204,6 @@ function showMenuPage() {
     insideoutSection.style.display = 'block';
   }
 }
-
-// --- החלפת טאבים ---
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    // ביטול מצב פעיל מכל הכפתורים
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    // הסתרת כל הקטגוריות
-    document.querySelectorAll('.menu-category').forEach(section => section.style.display = 'none');
-
-    // הצגת הקטגוריה שנבחרה
-    const target = btn.getAttribute('data-target');
-    document.getElementById(target).style.display = 'block';
-  });
-});
 })();
 </script>
 </body>
