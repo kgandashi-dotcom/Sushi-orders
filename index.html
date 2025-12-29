@@ -637,26 +637,47 @@ document.addEventListener('touchend', function(e) {
 document.addEventListener('gesturestart', function(e) {
   e.preventDefault();
 });
-    // ========================================
-    // הגדרות ראשוניות
-    // ========================================
-    
-    // הגדרת Supabase
- const SUPABASE_URL = 'https://oxjokdjwdvmmdtcvqvon.supabase.co';
+// ========================================
+
+// הגדרות ראשוניות
+
+// ========================================
+
+const SUPABASE_URL = 'https://oxjokdjwdvmmdtcvqvon.supabase.co';
+
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94am9rZGp3ZHZtbWR0Y3Zxdm9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzgwMzMsImV4cCI6MjA3NDY1NDAzM30.DmKp79UiPi9iOU50UutevdqRcPyREMUJ7NT5ZmBHDsg';
 
-let supabase = null;
+ 
 
-// המתן לטעינת Supabase ואז צור חיבור
-//if (typeof window.supabase !== 'undefined') {
-// supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
- // console.log('✅ Supabase מחובר בהצלחה!');
-// } else {
-//  console.error('❌ Supabase לא נטען - בדוק את הסקריפט');
-// }
+// 👇 הגדרה יחידה של supabase
+
+let supabase;
+
+ 
+
+// אתחול Supabase אחרי טעינת הספרייה
+
+setTimeout(() => {
+
+  if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    console.log('✅ Supabase מחובר בהצלחה!');
+
+  } else {
+
+    console.warn('⚠️ Supabase לא נטען - האתר יעבוד במצב מוגבל');
+
+  }
+
+}, 500);
+
+ 
 
 const GOOGLE_CLIENT_ID = "962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com";
-const MAKE_WEBHOOK_URL = "https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r";
+
+const MAKE_WEBHOOK_URL = https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r;
 
 // אימייל מנהל (לאיפוס)
 const ADMIN_EMAIL = 'kgandashi@gmail.com';
