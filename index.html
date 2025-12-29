@@ -146,6 +146,11 @@ h1 {
   min-height: 120px; /* גובה אחיד לכל הכרטיסים */
   align-items: center;
 }
+.roll-card-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;  
+}
 
 /* תמונה */
 .roll-card .roll-image,
@@ -1395,7 +1400,7 @@ function setupLogoutButton() {
     const key = `sauce_${idx}`;
     return `
       <div class="roll-card">
-        <div class="roll-card-content" style="display: flex; flex-direction: row-reverse; gap: 10px;">
+        <div class="roll-card-content" >
           <div class="info" style="flex: 1;">
             <h3>${sauce.name}</h3>
             ${sauce.price > 0 ? `<p><strong>${sauce.price}₪</strong></p>` : ''}
