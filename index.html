@@ -852,9 +852,13 @@ body.modal-open {
       initGoogleAuth();
 
       checkLocalAuth();
-
+      settimeout(() => { 
+      console.log('מתחיל רינדור');
+      
       renderMenu();
-
+      console.log('רינדור הושלם');
+      }, 100);
+      
       setupTabs();
 
       setupChopsticks();
