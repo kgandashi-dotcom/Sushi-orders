@@ -611,156 +611,287 @@ body.modal-open {
 
   </div>
 
-  <script>
-    
-document.addEventListener('dblclick', function(e) {
-  e.preventDefault();
-}, { passive: false });
+<script>
 
-// מניעת זום בפינץ'
-document.addEventListener('touchstart', function(e) {
-  if (e.touches.length > 1) {
-    e.preventDefault();
-  }
-}, { passive: false });
-
-let lastTouchEnd = 0;
-document.addEventListener('touchend', function(e) {
-  const now = Date.now();
-  if (now - lastTouchEnd <= 300) {
-    e.preventDefault();
-  }
-  lastTouchEnd = now;
-}, { passive: false });
-
-// מניעת מחוות זום
-document.addEventListener('gesturestart', function(e) {
-  e.preventDefault();
-});
-// ========================================
-
-// הגדרות ראשוניות
-
-// ========================================
-
-const SUPABASE_URL = 'https://oxjokdjwdvmmdtcvqvon.supabase.co';
-
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94am9rZGp3ZHZtbWR0Y3Zxdm9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzgwMzMsImV4cCI6MjA3NDY1NDAzM30.DmKp79UiPi9iOU50UutevdqRcPyREMUJ7NT5ZmBHDsg';
-
- 
-
-// 👇 הגדרה יחידה של supabase
-
-let supabase;
-
- 
-
-// אתחול Supabase אחרי טעינת הספרייה
-
-setTimeout(() => {
-
-  if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    console.log('✅ Supabase מחובר בהצלחה!');
-
-  } else {
-
-    console.warn('⚠️ Supabase לא נטען - האתר יעבוד במצב מוגבל');
-
-  }
-
-}, 500);
-
- 
-
-const GOOGLE_CLIENT_ID = "962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com";
-
-const MAKE_WEBHOOK_URL = https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r;
-
-// אימייל מנהל (לאיפוס)
-const ADMIN_EMAIL = 'kgandashi@gmail.com';
-
-// זמן הכנה לרול (בדקות)
-const PREP_TIME_PER_ROLL = 10;
     // ========================================
+
+    // מניעת זום ודאבל-טאץ'
+
+    // ========================================
+
+    document.addEventListener('dblclick', function(e) {
+
+      e.preventDefault();
+
+    }, { passive: false });
+
+ 
+
+    document.addEventListener('touchstart', function(e) {
+
+      if (e.touches.length > 1) {
+
+        e.preventDefault();
+
+      }
+
+    }, { passive: false });
+
+ 
+
+    let lastTouchEnd = 0;
+
+    document.addEventListener('touchend', function(e) {
+
+      const now = Date.now();
+
+      if (now - lastTouchEnd <= 300) {
+
+        e.preventDefault();
+
+      }
+
+      lastTouchEnd = now;
+
+    }, { passive: false });
+
+ 
+
+    document.addEventListener('gesturestart', function(e) {
+
+      e.preventDefault();
+
+    });
+
+ 
+
+    // ========================================
+
+    // הגדרות ראשוניות
+
+    // ========================================
+
+    const SUPABASE_URL = 'https://oxjokdjwdvmmdtcvqvon.supabase.co';
+
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94am9rZGp3ZHZtbWR0Y3Zxdm9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzgwMzMsImV4cCI6MjA3NDY1NDAzM30.DmKp79UiPi9iOU50UutevdqRcPyREMUJ7NT5ZmBHDsg';
+
+    const GOOGLE_CLIENT_ID = "962297663657-7bsrugivo5rjbu534lamiuc256gbqoc4.apps.googleusercontent.com";
+
+    const MAKE_WEBHOOK_URL = https://hook.eu2.make.com/asitqrbtyjum10ph3vf6gxhkd766us3r;
+
+ 
+
+    // 👇 הגדרה יחידה של supabase
+
+    let supabase;
+
+ 
+
+    // ========================================
+
     // תפריט - נתונים
+
     // ========================================
 
     const menuData = {
+
       insideout: [
+
         {name: 'רול בינגו', desc: 'סלמון נא, שמנת, אבוקדו בציפוי שומשום קלוי', price: 50, image_url: 'https://i.imgur.com/u5ebtHM.jpeg'},
+
         {name: 'רול לונה', desc: 'ספייסי סלמון אפוי על רול בטטה, אבוקדו ושיטאקי', price: 50},
+
         {name: 'רול ריי', desc: 'טרטר ספייסי טונה נא על רול מלפפון, עירית ואושינקו', price: 55},
+
         {name: 'רול קרייזי ברונו', desc: 'דג לבן, טונה, סלמון בציפוי שומשום קלוי', price: 60, image_url: 'https://i.imgur.com/rA4q1ND.jpeg'},
+
         {name: 'רול האפי ברונו', desc: 'סלמון בציפוי שקדים קלויים ורוטב טריאקי', price: 60, image_url: 'https://i.imgur.com/E3Uk19o.jpeg'},
-        {name: 'רול מילה', desc: 'בטטה, עירית ואבוקדו בעיטוף סלמון צרוב', price: 50, image_url: 'https://i.imgur.com/UBhaUta.jpeg' },
+
+        {name: 'רול מילה', desc: 'בטטה, עירית ואבוקדו בעיטוף סלמון צרוב', price: 50, image_url: 'https://i.imgur.com/UBhaUta.jpeg'},
+
         {name: 'רול ניוטון', desc: 'טונה אדומה, אבוקדו, בטטה בציפוי פנקו ורוטב בוטנים', price: 55, image_url: 'https://i.imgur.com/1fklsx4.jpeg'},
+
         {name: 'רול אולי', desc: 'דג לבן, מלפפון, אבוקדו בציפוי שומשום', price: 50},
+
         {name: 'רול מילי', desc: 'מקל סורימי, דג לבן אפוי, אושינקו בציפוי פנקו', price: 50},
+
         {name: 'רול סקאר', desc: 'ספייסי סלמון אפוי עם אבוקדו, מלפפון ובטטה בעיטור מיונז וצ\'יפס', price: 50},
+
         {name: 'רול מגי 🌱', desc: 'מלפפון, בטטה, עירית ואבוקדו בעיטור בטטה ורוטב בוטנים', price: 40},
+
         {name: 'רול קיילה', desc: 'סלמון נא, קנפיו, בטטה בעיטוף שבבי פנקו סגול', price: 50},
-        {name: 'רול טייסון', desc: 'רול מטוגן! סלמון, בטטה ומלפפון בציפוי קריספי ורוטב טריאקי', price: 60},        
+
+        {name: 'רול טייסון', desc: 'רול מטוגן! סלמון, בטטה ומלפפון בציפוי קריספי ורוטב טריאקי', price: 60},
+
         {name: 'רול לוסי', desc: 'סלמון נא, פטריות שיטאקי ואושינקו בציפוי טוביקו', price: 55},
+
         {name: 'רול בילי', desc: 'דג לבן צרוב, עירית, בטטה מצופה בפנקו', price: 50, image_url: 'https://i.imgur.com/AdT2Ync.jpeg'},
+
         {name: 'רול לאקי', desc: 'טרטר ספייסי סלמון עם אבוקדו, מלפפון ועירית', price: 50}
+
       ],
-      
+
       maki: [
+
         {name: 'רול אלפי', desc: 'מאקי סלמון', price: 35},
+
         {name: 'רול מיי מיי 🌱', desc: 'מאקי בטטה ואבוקדו', price: 25},
+
         {name: 'רול סנופי 🌱', desc: 'מאקי אושינקו וקנפיו', price: 25}
+
       ],
-      
+
       onigiri: [
+
         {name: 'אוניגירי רוקי', desc: 'טרטר טונה אדומה עם ספייסי מיונז ובצל ירוק', price: 35, image_url:'https://i.imgur.com/VW9Iexm.jpeg'},
+
         {name: 'אוניגירי ג\'וני', desc: 'טרטר סלמון עם ספייסי מיונז ובצל ירוק', price: 30, image_url:'https://i.imgur.com/VW9Iexm.jpeg'},
-        {name: 'אוניגירי ג\'יזל 🌱', desc: 'אבוקדו ובטטה', price: 25 , image_url:'https://i.imgur.com/VW9Iexm.jpeg'}
+
+        {name: 'אוניגירי ג\'יזל 🌱', desc: 'אבוקדו ובטטה', price: 25, image_url:'https://i.imgur.com/VW9Iexm.jpeg'}
+
       ],
-      
+
       oshizushi: [
+
         {name: 'אושיזושי סלמון קלאסי', desc: '6 יח\' - שכבת סלמון טרי ושכבת אבוקדו לחוצים בין שכבות אורז סושי', price: 50},
+
         {name: 'אושיזושי טונה פיקנטי', desc: '6 יח\' - שכבת טונה אדומה ושכבת בטטה לחוצים בין שכבות אורז סושי', price: 55},
-        {name: 'אושיזושי צמחוני 🌱', desc: '6  יח\' - שכבת אבוקדו ושכבת בטטה לחוצים בין שכבות אורז סושי ', price: 40}
+
+        {name: 'אושיזושי צמחוני 🌱', desc: '6 יח\' - שכבת אבוקדו ושכבת בטטה לחוצים בין שכבות אורז סושי', price: 40}
+
       ],
-      
+
       poke: [
+
         {name: 'בול-דוג', desc: 'אורז סושי, סלמון במרינדה, אדממה, מלפפון, אבוקדו, בצל ירוק. מעל שומשום ורוטב ספייסי מיונז', price: 60, image_url:'https://i.imgur.com/cUf6gYx.jpeg'},
-        {name: 'פיט-בול', desc: 'אורז סושי, טונה במרינדה, אדממה, מנגו, כרוב סגול. מעל בצל שאלוט מטוגן ורוטב צ׳ילי אננס מתוק', price: 70, image_url:'https://i.imgur.com/DhFRUGl.jpeg'},
+
+        {name: 'פיט-בול', desc: 'אורז סושי, טונה במרינדה, אדממה, מנגו, כרוב סגול. מעל בצל שאלוט מטוגן ורוטב צ\'ילי אננס מתוק', price: 70, image_url:'https://i.imgur.com/DhFRUGl.jpeg'},
+
         {name: 'בול-טרייר 🌱', desc: 'אורז סושי, אדממה, מלפפון, פטריות שיטאקי, גזר ואבוקדו. מעל שומשום ורוטב בוטנים', price: 45, image_url:'https://i.imgur.com/GvXgFPY.jpeg'}
+
       ],
-      
+
       sauces: [
+
         {name: 'ספייסי מיונז', price: 0},
+
         {name: 'רוטב סויה', price: 0},
+
         {name: 'רוטב טריאקי', price: 0},
+
         {name: 'ג\'ינג\'ר', price: 0},
+
         {name: 'וואסבי', price: 0}
+
       ]
+
     };
 
+ 
+
     // ========================================
+
     // משתנים גלובליים
+
     // ========================================
 
     let currentUser = null;
+
     let orderItems = {};
+
     let sauceSelections = {};
+
     let chopsticksCount = 1;
+
     let existingOrders = [];
 
+    let recipePrepTimes = {};
+
+    let isSending = false;
+
+ 
+
     // ========================================
+
+    // אתחול Supabase (אחרי טעינת הספרייה)
+
+    // ========================================
+
+    function initSupabase() {
+
+      if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        console.log('✅ Supabase מחובר בהצלחה!');
+
+      } else {
+
+        console.warn('⚠️ Supabase לא נטען - האתר יעבוד במצב מוגבל');
+
+        setTimeout(initSupabase, 500); // ניסיון חוזר
+
+      }
+
+    }
+
+ 
+
+    // ========================================
+
     // אתחול
+
     // ========================================
 
     document.addEventListener('DOMContentLoaded', async function() {
-  initGoogleAuth();
-  checkLocalAuth();
-  renderMenu();
-  setupTabs();
-  setupChopsticks();
+
+      console.log('🚀 אתחול האתר...');
+
+     
+
+      initSupabase();
+
+      initGoogleAuth();
+
+      checkLocalAuth();
+
+      renderMenu();
+
+      setupTabs();
+
+      setupChopsticks();
+
+      await loadRecipePrepTimes();
+
+      await loadExistingOrders();
+
+      setupSendOrder();
+
+      setupProfileButton();
+
+      setupLogoutButton();
+
+      updateSummary();
+
+     
+
+      document.addEventListener('keydown', function(e) {
+
+        if (e.key === 'Escape') {
+
+          closeImageModal();
+
+        }
+
+      });
+
+     
+
+      console.log('✅ אתחול הושלם');
+
+    });
+
+ 
   
   // טעינת זמני הכנה מהטבלה
   await loadRecipePrepTimes();
