@@ -2155,7 +2155,7 @@ document.addEventListener('keydown', function(e) {
     const now = new Date();
     const day = now.getDay(); // 0=שבת? actually JS: 0=Sunday, 1=Monday, ..., 3=Wednesday
     // בשימוש בעברית: יום רביעי = 3
-    const isWednesday = (day === 3);
+    const isWednesday = (day === 3 || day ==2);
 
     if (isWednesday) {
       const hour = now.getHours();
