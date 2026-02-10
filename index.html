@@ -1842,6 +1842,9 @@ function calculateOrderPrepTime(items) {
 // ========================================
 // סיכום הזמנה - גרסה סופית (מגבלה גלובלית)
 // ========================================
+// ========================================
+// סיכום הזמנה - עם עיצוב טקסט חדש
+// ========================================
 function updateSummary() {
   let totalRolls = 0;
   let totalPrice = 0;
@@ -1856,12 +1859,13 @@ function updateSummary() {
     const category = parts[0];
     const idx = parseInt(parts[1]);
     
-    // הגנה למקרה שמשהו השתבש במבנה הנתונים
     if (menuData[category] && menuData[category][idx]) {
         const item = menuData[category][idx];
         const itemTotal = item.price * qty;
         totalPrice += itemTotal;
-        lines.push(item.name + ' x' + qty + ' = ' + itemTotal + '₪');
+        
+        // --- השינוי כאן: הפורמט החדש שביקשת ---
+        lines.push(item.name + ' - מחיר: ' + itemTotal + '₪, כמות: ' + qty);
     }
   });
 
@@ -1876,7 +1880,7 @@ function updateSummary() {
       const idx = parseInt(key.split('_')[1]);
       if (menuData.sauces[idx]) {
           const sauceName = menuData.sauces[idx].name;
-          saucesList.push(sauceName + ' x' + qty);
+          saucesList.push(sauceName + ' - כמות: ' + qty);
       }
     }
   }
@@ -1893,7 +1897,7 @@ function updateSummary() {
       lines.push('  • ' + saucesList[i]);
     }
     // שורת סיכום רטבים
-    lines.push(`סה"כ: ${totalSauces} (${freeSauces} חינם, ${extraSauces} בתשלום) = ${saucePrice}₪`);
+    lines.push(`סה"כ רטבים: ${totalSauces} (${freeSauces} חינם, ${extraSauces} בתשלום) = ${saucePrice}₪`);
   }
 
   // 3. תוספות (צ'ופסטיקס, הערות, שעה)
@@ -1914,7 +1918,7 @@ function updateSummary() {
   }
 
   // 4. שורת סיכום סופית
-  lines.push('\n' + '='.repeat(30) + '\nסה"כ לתשלום: ' + totalPrice + '₪');
+  lines.push('\n' + '='.repeat(21) + '\nסה"כ לתשלום: ' + totalPrice + '₪');
 
   // עדכון התצוגה ב-HTML
   const summaryElement = document.getElementById('order-summary');
@@ -1928,17 +1932,13 @@ function updateSummary() {
   const sendBtn = document.getElementById('send-order');
   
   if (sendBtn) {
-      // איפוס הודעות שגיאה קודמות
       const messagesDiv = document.getElementById('messages');
       if (messagesDiv) messagesDiv.textContent = '';
 
-      // בדיקות תקינות
       if (totalRolls === 0) {
         disableButton('בחר לפחות רול אחד');
       } else if (!pickupTime) {
         disableButton('בחר שעת איסוף');
-      
-      // --- הבדיקה החדשה: האם סה"כ הזמנות היום (של כולם) + העגלה שלי > 15? ---
       } else if ((globalRollsOrderedToday + totalRolls) > KITCHEN_DAILY_CAPACITY) {
         disableButton('המטבח הגיע למכסה היומית');
         showMessage('שגיאה: כמות הרולים שבחרת חורגת מהמלאי שנותר במטבח להיום.', 'red');
@@ -1947,7 +1947,6 @@ function updateSummary() {
       }
   }
 
-  // פונקציות עזר פנימיות לעיצוב הכפתור
   function disableButton(reason) {
     sendBtn.disabled = true;
     sendBtn.style.opacity = '0.5';
