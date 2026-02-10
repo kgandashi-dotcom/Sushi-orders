@@ -2324,7 +2324,7 @@ function showMenuPage() {
 
   function showPopup(text) {
     if (!popup) return;
-    messageEl.textContent = text;
+    if (messageEl) messageEl.textContent = text;
     popup.style.display = 'block';
     popup.setAttribute('aria-hidden', 'false');
   }
@@ -2338,8 +2338,8 @@ function showMenuPage() {
     }
   }
 
-  if (closeBtn) closeBtn.addEventListener('click', () => hidePopup(true));
-  if (okBtn) okBtn.addEventListener('click', () => hidePopup(true));
+  if (closeBtn) closeBtn.onclick = () => hidePopup(true);
+  if (okBtn) okBtn.onclick = () => hidePopup(true);
 
   // בדיקת יום ושעה להצגת הודעה
   function checkAndShow() {
@@ -2367,14 +2367,10 @@ function showMenuPage() {
   } else {
     checkAndShow();
   }
-      document.getElementById('order-popup-close').onclick = () => popup.style.display='none';
-      document.getElementById('order-popup-ok').onclick = () => {
-          if(document.getElementById('order-popup-dontshow').checked) localStorage.setItem(todayKey, '1');
-          popup.style.display='none';
-      };
-    })();
-  </script>
+})();
+</script>
 </body>
 </html>
 
+ 
 
