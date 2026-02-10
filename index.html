@@ -1961,28 +1961,42 @@ function updateSummary() {
   }
 }
 
+
     // ========================================
-    // מעקב כניסות (לשימוש פנימי בלבד)
+    // מעקב כניסות + שמירת IP
     // ========================================
     async function trackSiteVisit() {
       // בדיקה: האם המשתמש כבר נספר בסשן הזה?
       if (sessionStorage.getItem('visit_counted')) {
-          return; // כבר ספרנו אותו, לא צריך שוב
+          return; 
       }
 
       if (supabase) {
-        // שליחת "איתות" לדאטה בייס
+        let userIp = 'Unknown';
+
+        try {
+            // 1. ניסיון להשיג את ה-IP משירות חיצוני
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            userIp = data.ip;
+        } catch (e) {
+            console.warn('Could not fetch IP', e);
+        }
+
+        // 2. שמירה ב-Supabase עם ה-IP
         const { error } = await supabase
           .from('site_visits')
-          .insert([{}]); // מכניס שורה ריקה, התאריך נוצר אוטומטית
+          .insert([
+              { ip_address: userIp } // הכנסת ה-IP לעמודה החדשה
+          ]);
 
         if (!error) {
-            // סימון שהמשתמש נספר, כדי שלא יספור אותו שוב ברענון
             sessionStorage.setItem('visit_counted', 'true');
-            console.log('👀 Visit tracked');
+            console.log('👀 Visit tracked from:', userIp);
         }
       }
     }
+
 // ========================================
 // שליחת הזמנה - גרסה מהירה (שם בלבד + וואטסאפ)
 // ========================================
