@@ -1962,8 +1962,27 @@ function updateSummary() {
 }
 
     // ========================================
-    // שליחת הזמנה
+    // מעקב כניסות (לשימוש פנימי בלבד)
     // ========================================
+    async function trackSiteVisit() {
+      // בדיקה: האם המשתמש כבר נספר בסשן הזה?
+      if (sessionStorage.getItem('visit_counted')) {
+          return; // כבר ספרנו אותו, לא צריך שוב
+      }
+
+      if (supabase) {
+        // שליחת "איתות" לדאטה בייס
+        const { error } = await supabase
+          .from('site_visits')
+          .insert([{}]); // מכניס שורה ריקה, התאריך נוצר אוטומטית
+
+        if (!error) {
+            // סימון שהמשתמש נספר, כדי שלא יספור אותו שוב ברענון
+            sessionStorage.setItem('visit_counted', 'true');
+            console.log('👀 Visit tracked');
+        }
+      }
+    }
 // ========================================
 // שליחת הזמנה - גרסה מהירה (שם בלבד + וואטסאפ)
 // ========================================
