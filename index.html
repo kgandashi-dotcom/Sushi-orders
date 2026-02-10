@@ -2178,11 +2178,14 @@ function closeImageModal() {
 
 // סגירה עם ESC
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
+    if (e.key === 'Escape') {
     closeImageModal();
   }
-});
-  </script>
+});  // <--- זה כבר קיים אצלך בשורה 2184
+
+});  // <--- תוסיף את השורה הזאת! (זה מה שחסר)
+
+</script> // <--- זה כבר קיים אצלך
 <!-- POPUP HTML -->
 <div id="order-popup" class="order-popup" aria-hidden="true" role="dialog" aria-labelledby="order-popup-title" style="display:none">
   <div class="order-popup__backdrop"></div>
