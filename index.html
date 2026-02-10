@@ -1583,23 +1583,114 @@ function setupTabs() {
     // טעינת הזמנות קיימות מ-Supabase
     // ========================================
 
+    // ========================================
+    // משתנה למכסה יומית כוללת (כל המטבח)
+    // ========================================
+    const KITCHEN_DAILY_CAPACITY = 100; // 👈 שנה את המספר הזה לכמות המקסימלית שאתה מוכן להכין ביום
+
+    // ========================================
+    // טעינת הזמנות ובדיקת מלאי כללי
+    // ========================================
+
     async function loadExistingOrders() {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    const { data, error } = await supabase
-      .from('Sushi')
-      .select('pickup_time, items')
-      .eq('order_date', today);
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        
+        // שליפת כל ההזמנות של היום
+        const { data, error } = await supabase
+          .from('Sushi')
+          .select('pickup_time, items, total_rolls') // וודא שיש לך עמודת total_rolls או שנחשב לבד
+          .eq('order_date', today);
 
-    if (error) throw error;
+        if (error) throw error;
 
-    existingOrders = data || [];
-    generatePickupSlots();
-  } catch (err) {
-    console.error('שגיאה בטעינת הזמנות:', err);
-    generatePickupSlots();
-  }
-}
+        existingOrders = data || [];
+        
+        // --- חישוב סך הכל רולים שהוזמנו היום ע"י כולם ---
+        let totalRollsMadeToday = 0;
+        
+        existingOrders.forEach(order => {
+            // אם שמרת total_rolls במסד הנתונים:
+            if (order.total_rolls) {
+                totalRollsMadeToday += order.total_rolls;
+            } else {
+                // חישוב ידני מתוך ה-JSON אם אין עמודת סיכום
+                try {
+                    const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+                    Object.values(items).forEach(qty => totalRollsMadeToday += qty);
+                } catch(e) { console.error('Error parsing order items', e); }
+            }
+        });
+
+        console.log(`📊 מצב מטבח: הוזמנו ${totalRollsMadeToday} מתוך ${KITCHEN_DAILY_CAPACITY}`);
+
+        // --- בדיקה אם המלאי נגמר ---
+        if (totalRollsMadeToday >= KITCHEN_DAILY_CAPACITY) {
+            activateSoldOutMode(); // הפעלת מצב "נגמר המלאי"
+        } else {
+            generatePickupSlots(); // אחרת, ממשיכים כרגיל ומייצרים שעות
+        }
+
+      } catch (err) {
+        console.error('שגיאה בטעינת הזמנות:', err);
+        generatePickupSlots(); // במקרה שגיאה, נפתח כרגיל (או שתחליט לחסום)
+      }
+    }
+
+    // ========================================
+    // פונקציה הנועלת את האתר במצב SOLD OUT
+    // ========================================
+    function activateSoldOutMode() {
+        // 1. הקפצת הודעה חוסמת
+        const popup = document.getElementById('order-popup');
+        const messageEl = document.getElementById('order-popup-message');
+        const titleEl = document.getElementById('order-popup-title');
+        
+        if (popup && messageEl) {
+            titleEl.textContent = "😔 מצטערים...";
+            titleEl.style.color = "#d9534f"; // צבע אדום לכותרת
+            
+            messageEl.innerHTML = `
+                <strong>היום הגענו למכסת ההזמנות המקסימלית!</strong><br><br>
+                המטבח סגור להזמנות חדשות להיום.<br>
+                נתראה בשבוע הבא! 🍣
+            `;
+            
+            // הסתרת כפתור ה"אל תראה שוב" כי זה חייב להופיע
+            const checkboxContainer = popup.querySelector('label');
+            if(checkboxContainer) checkboxContainer.style.display = 'none';
+
+            // שינוי כפתור האישור ל"סגור" פשוט
+            const okBtn = document.getElementById('order-popup-ok');
+            if(okBtn) okBtn.textContent = 'הבנתי';
+
+            popup.style.display = 'block';
+        }
+
+        // 2. נטרול כל כפתורי ההוספה (+)
+        const allPlusButtons = document.querySelectorAll('.quantity-control button:last-child');
+        allPlusButtons.forEach(btn => {
+            btn.disabled = true;
+            btn.style.backgroundColor = '#555';
+            btn.style.cursor = 'not-allowed';
+        });
+
+        // 3. נטרול כפתור שליחת הזמנה
+        const sendBtn = document.getElementById('send-order');
+        if (sendBtn) {
+            sendBtn.disabled = true;
+            sendBtn.textContent = "הזמנות סגורות להיום";
+            sendBtn.style.background = "#555";
+        }
+        
+        // 4. הצגת באנר קבוע למעלה (אופציונלי)
+        const header = document.querySelector('header');
+        const banner = document.createElement('div');
+        banner.style.cssText = "background: #d9534f; color: white; text-align: center; padding: 10px; font-weight: bold; width: 100%; position: absolute; top: 0; left: 0; z-index: 999;";
+        banner.textContent = "⛔ ההזמנות להיום נסגרו - נתראה בשבוע הבא";
+        document.body.prepend(banner);
+    }
+
 // ========================================
 // טעינת זמני הכנה מטבלת recipes
 // ========================================
@@ -2181,7 +2272,7 @@ document.addEventListener('keydown', function(e) {
     const now = new Date();
     const day = now.getDay(); // 0=שבת? actually JS: 0=Sunday, 1=Monday, ..., 3=Wednesday
     // בשימוש בעברית: יום רביעי = 3
-    const isWednesday = (day === 3 || day ==2);
+    const isWednesday = (day === 3);
 
     if (isWednesday) {
       const hour = now.getHours();
