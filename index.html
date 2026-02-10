@@ -1760,75 +1760,85 @@ function calculateOrderPrepTime(items) {
   
   return totalMinutes;
 }
+      // ========================================
+    // יצירת שעות איסוף - מנגנון סינון עומסים
     // ========================================
-    // יצירת שעות איסוף חכמות
-    // ========================================
+    function generatePickupSlots() {
+      const select = document.getElementById('pickup-time');
+      
+      // איפוס הרשימה
+      select.innerHTML = '<option value="">בחר שעה</option>';
 
-function generatePickupSlots() {
-  const select = document.getElementById('pickup-time');
-  select.innerHTML = '<option value="">בחר שעה</option>';
+      // --- הגדרות ה"פצמרים" (עומס) ---
+      const MAX_ROLLS_ALLOWED = 4;    // כמה רולים מותר שיהיו בו-זמנית
+      const SAFETY_WINDOW = 20;       // טווח ביטחון בדקות (בודק 10 דק' אחורה ו-10 קדימה)
 
-  const start = 20 * 60; // 20:00
-  const end = 22.5 * 60; // 22:30
-  
-  // חישוב זמן ההכנה של ההזמנה הנוכחית
-  const currentOrderPrepTime = calculateOrderPrepTime(orderItems);
-  
-  // יצירת כל השעות האפשריות
-  for (let minutes = start; minutes <= end; minutes += 5) {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    const timeStr = hours.toString().padStart(2,'0') + ':' + mins.toString().padStart(2,'0');
-    
-    // בדיקה אם השעה הזו תתנגש עם הזמנות קיימות
-    let hasConflict = false;
-    
-    existingOrders.forEach(function(order) {
-      try {
-        const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
-        const existingPrepTime = calculateOrderPrepTime(items);
-        
-        const timeParts = order.pickup_time.split(':');
-        const existingHours = parseInt(timeParts[0]);
-        const existingMinutes = parseInt(timeParts[1]);
-        const existingTime = existingHours * 60 + existingMinutes;
-        
-        // טווח ההכנה של ההזמנה הקיימת
-        const existingStart = existingTime - existingPrepTime;
-        const existingEnd = existingTime;
-        
-        // טווח ההכנה של ההזמנה החדשה (אם בוחרים את השעה הזו)
-        const newStart = minutes - currentOrderPrepTime;
-        const newEnd = minutes;
-        
-        // בדיקת התנגשות
-        // יש התנגשות אם:
-        // 1. ההתחלה של החדש בטווח של הקיים
-        // 2. הסיום של החדש בטווח של הקיים
-        // 3. החדש מכסה את כל הקיים
-        if (
-          (newStart >= existingStart && newStart <= existingEnd) || // התחלה בתוך
-          (newEnd >= existingStart && newEnd <= existingEnd) ||     // סיום בתוך
-          (newStart <= existingStart && newEnd >= existingEnd)      // מכסה לגמרי
-        ) {
-          hasConflict = true;
-          console.log('❌ התנגשות: ' + timeStr + ' מתנגש עם ' + order.pickup_time);
-        }
-        
-      } catch (e) {
-        console.error('שגיאה בבדיקת התנגשות:', e);
+      // שעות פעילות (למשל 20:00 עד 22:30)
+      const startMinutes = 20 * 60; 
+      const endMinutes = 22.5 * 60; 
+      
+      // 1. חישוב כמה רולים הלקוח הנוכחי רוצה להזמין עכשיו
+      let myCartSize = 0;
+      for (let k in orderItems) {
+        myCartSize += orderItems[k];
       }
-    });
-    
-    // הוספת האופציה רק אם אין התנגשות
-    if (!hasConflict) {
-      const option = document.createElement('option');
-      option.value = timeStr;
-      option.textContent = timeStr;
-      select.appendChild(option);
+
+      // אם העגלה ריקה, נציג את כל השעות (רק ויזואלית)
+      // אבל ברגע שיש רולים, הסינון יתחיל לעבוד
+      
+      // לולאה שרצה בקפיצות של 10 דקות
+      for (let timeSlot = startMinutes; timeSlot <= endMinutes; timeSlot += 10) { 
+        
+        // המרה לשעה יפה (למשל "20:10")
+        const hours = Math.floor(timeSlot / 60);
+        const mins = timeSlot % 60;
+        const timeStr = hours.toString().padStart(2,'0') + ':' + mins.toString().padStart(2,'0');
+        
+        // --- בדיקת עומס לשעה הספציפית הזו ---
+        let existingLoad = 0;
+
+        // עוברים על כל ההזמנות הקיימות במערכת
+        existingOrders.forEach(function(order) {
+          if (!order.pickup_time) return;
+
+          // המרת שעת ההזמנה הקיימת לדקות
+          const [oH, oM] = order.pickup_time.split(':').map(Number);
+          const orderTime = oH * 60 + oM;
+
+          // האם ההזמנה הזו "יושבת" על השעה שאנחנו בודקים?
+          // (בודקים אם היא בטווח של 10 דקות מהשעה הנוכחית)
+          if (Math.abs(timeSlot - orderTime) <= (SAFETY_WINDOW / 2)) {
+             
+             // אם כן - נוסיף את כמות הרולים שלה לעומס
+             let count = order.total_rolls || 0;
+             
+             // (גיבוי למקרה שאין total_rolls במסד)
+             if (!count && order.items) {
+               try {
+                 const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+                 Object.values(items).forEach(q => count += q);
+               } catch(e){}
+             }
+             existingLoad += count;
+          }
+        });
+
+        // --- רגע האמת: האם להציג את השעה? ---
+        // אם (מה שכבר יש במטבח בשעה הזו) + (מה שהלקוח רוצה להזמין) > 4
+        if ((existingLoad + myCartSize) > MAX_ROLLS_ALLOWED) {
+           // 🛑 עומס יתר! לא מוסיפים את ה-Option הזה ל-Select.
+           // השעה הזו פשוט לא תהיה קיימת ברשימה.
+           continue; 
+        }
+
+        // ✅ יש מקום! מוסיפים את השעה לרשימה
+        const option = document.createElement('option');
+        option.value = timeStr;
+        option.textContent = timeStr;
+        select.appendChild(option);
+      }
     }
-  }
-}
+
 
 
 // ========================================
