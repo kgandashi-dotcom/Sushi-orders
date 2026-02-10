@@ -2367,8 +2367,14 @@ function showMenuPage() {
   } else {
     checkAndShow();
   }
-})();
-</script>
+      document.getElementById('order-popup-close').onclick = () => popup.style.display='none';
+      document.getElementById('order-popup-ok').onclick = () => {
+          if(document.getElementById('order-popup-dontshow').checked) localStorage.setItem(todayKey, '1');
+          popup.style.display='none';
+      };
+    })();
+  </script>
 </body>
 </html>
+
 
