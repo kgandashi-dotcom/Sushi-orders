@@ -1537,40 +1537,29 @@ function setupTabs() {
   });
 }
     // ========================================
-    // כמויות רולים
+    // כמות רולים - גרסה "שקטה" (בלי לחשוף מספרים)
     // ========================================
-
-    // ========================================
-    // כמויות רולים - מעודכן עם חסימה ב-15
-    // ========================================
-
-       // ========================================
-    // כמויות רולים - מעודכן עם חסימה חכמה (היסטוריה + עגלה)
-    // ========================================
-
-        window.changeQty = function(key, delta) {
+    window.changeQty = function(key, delta) {
       // 1. חישוב כמה יש כרגע בעגלה
       let currentCartTotal = 0;
       for (let k in orderItems) {
         currentCartTotal += orderItems[k];
       }
 
+      // המגבלה האישית (מוסתרת מהלקוח)
       const dailyLimit = 15;
       
-      // 2. בדיקת חסימה (היסטוריה + עגלה)
+      // 2. בדיקת חסימה (אם מנסים להוסיף)
       if (delta > 0) {
+        // בדיקה משולבת: מה הוזמן בעבר + מה יש בעגלה
         if ((userRollsOrderedToday + currentCartTotal) >= dailyLimit) {
-          const remaining = Math.max(0, dailyLimit - userRollsOrderedToday);
-          if (remaining === 0) {
-             alert(`הזמנת כבר ${userRollsOrderedToday} רולים היום. הגעת למכסה היומית.`);
-          } else {
-             alert(`הזמנת כבר ${userRollsOrderedToday} רולים היום.\nנותרו לך עוד ${remaining} רולים להזמנה כרגע.`);
-          }
+          // הודעה כללית בלי מספרים ובלי הסברים
+          alert('לא ניתן להוסיף עוד רולים. הגעת למגבלת הכמות המקסימלית להזמנה.');
           return; 
         }
       }
 
-      // 3. לוגיקה רגילה
+      // 3. לוגיקה רגילה של עדכון המספר בשדה
       const input = document.getElementById(key);
       let val = parseInt(input.value) || 0;
       val = Math.max(0, val + delta);
@@ -1582,8 +1571,7 @@ function setupTabs() {
         delete orderItems[key];
       }
       
-      console.log('📦 עודכן:', key, '=', val);
-      
+      // עדכון שעות וסיכום
       generatePickupSlots();
       updateSummary();
     };
@@ -1856,16 +1844,17 @@ function generatePickupSlots() {
     }
   }
 }
-    // ========================================
-    // סיכום הזמנה
-    // ========================================
 
+
+// ========================================
+// סיכום הזמנה - גרסה "שקטה"
+// ========================================
 function updateSummary() {
   let totalRolls = 0;
   let totalPrice = 0;
   let lines = [];
 
-  // רולים
+  // חישוב רולים ומחיר
   Object.keys(orderItems).forEach(function(key) {
     const qty = orderItems[key];
     totalRolls += qty;
@@ -1880,7 +1869,7 @@ function updateSummary() {
     lines.push(item.name + ' x' + qty + ' = ' + itemTotal + '₪');
   });
 
-  // רטבים
+  // חישוב רטבים
   let totalSauces = 0;
   let saucesList = [];
 
@@ -1907,10 +1896,9 @@ function updateSummary() {
     lines.push('סה"כ: ' + totalSauces + ' (' + freeSauces + ' חינם, ' + extraSauces + ' בתשלום) = ' + saucePrice + '₪');
   }
 
-  // צ'ופסטיקס
+  // צ'ופסטיקס והערות
   lines.push('\nצ\'ופסטיקס: ' + chopsticksCount);
 
-  // הערות
   const notesInput = document.getElementById('notes');
   if (notesInput) {
     const notes = notesInput.value.trim();
@@ -1926,59 +1914,54 @@ function updateSummary() {
     lines.push('\nשעת איסוף: ' + pickupTime);
   }
 
-  // סה"כ
+  // שורת סיכום
   lines.push('\n' + '='.repeat(30) + '\nסה"כ לתשלום: ' + totalPrice + '₪');
 
-  // עדכון התצוגה
+  // הצגה בתיבת הסיכום
   const summaryElement = document.getElementById('order-summary');
   if (summaryElement) {
     summaryElement.textContent = totalRolls > 0 ? lines.join('\n') : 'הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.';
   }
 
-  // בדיקת מגבלות והפעלת כפתור
-    const sendBtn = document.getElementById('send-order');
-  // הגדרת המגבלה כמשתנה - קל לשנות כאן את המספר וההודעה תתעדכן לבד
-  const dailyLimit = 15; 
+  // --- לוגיקת כפתור שליחה ---
+  const sendBtn = document.getElementById('send-order');
+  const dailyLimit = 15; // המגבלה המוסתרת
 
-  if (!sendBtn) {
-    console.error('❌ כפתור שליחה לא נמצא');
-    return;
-  }
+  if (!sendBtn) return;
 
-  console.log('🔢 סה"כ רולים:', totalRolls, '| שעה:', pickupTime);
+  // איפוס הודעות
+  const messagesDiv = document.getElementById('messages');
+  if (messagesDiv) messagesDiv.textContent = '';
 
   if (totalRolls === 0) {
-    sendBtn.disabled = true;
-    sendBtn.style.opacity = '0.5';
-    sendBtn.style.cursor = 'not-allowed';
-    console.log('❌ אין רולים');
+    disableButton('בחר לפחות רול אחד');
   } else if (!pickupTime) {
-    sendBtn.disabled = true;
-    sendBtn.style.opacity = '0.5';
-    sendBtn.style.cursor = 'not-allowed';
-    console.log('❌ אין שעת איסוף');
+    disableButton('בחר שעת איסוף');
   
-  // --- כאן השינוי ---
-  } else if (totalRolls > dailyLimit) {
+  // חסימה שקטה אם עבר את המכסה (כולל מה שהוזמן בעבר)
+  } else if ((totalRolls + userRollsOrderedToday) > dailyLimit) {
+    disableButton('חרגת מכמות הרולים המקסימלית להזמנה');
+    // אופציונלי: אפשר להציג הודעה כללית למטה
+    showMessage('לא ניתן להשלים את ההזמנה: כמות הרולים גדולה מהמותר.', 'red');
+  } else {
+    enableButton();
+  }
+
+  // פונקציות עזר קטנות לניקיון הקוד
+  function disableButton(reason) {
     sendBtn.disabled = true;
     sendBtn.style.opacity = '0.5';
     sendBtn.style.cursor = 'not-allowed';
-    
-    // ההודעה החדשה: מציגה את המגבלה כ"מלאי שנותר"
-    showMessage(`לצערנו נותרו היום עוד ${dailyLimit} רולים להזמנה בלבד`, 'red');
-  // ------------------
+    // console.log('Button disabled:', reason);
+  }
 
-  } else {
+  function enableButton() {
     sendBtn.disabled = false;
     sendBtn.style.opacity = '1';
     sendBtn.style.cursor = 'pointer';
-    const messagesDiv = document.getElementById('messages');
-    if (messagesDiv) {
-      messagesDiv.textContent = ''; // ניקוי הודעות קודמות אם התנאים תקינים
-    }
-    console.log('✅ כפתור מופעל - מוכן לשליחה');
   }
 }
+
 
     // ========================================
     // שליחת הזמנה
