@@ -1964,6 +1964,9 @@ function updateSummary() {
     // ========================================
     // שליחת הזמנה
     // ========================================
+// ========================================
+// שליחת הזמנה - גרסה מהירה (שם בלבד + וואטסאפ)
+// ========================================
 function setupSendOrder() {
   const sendButton = document.getElementById('send-order');
   
@@ -1972,36 +1975,23 @@ function setupSendOrder() {
   sendButton.addEventListener('click', async function(e) {
     e.preventDefault(); 
     
-    // 1. זיהוי המשתמש (מחובר או אורח)
-    let orderUser = currentUser;
+    // 1. זיהוי שם הלקוח
+    let userName = '';
+    let userEmail = '';
     
-    if (!currentUser) {
-      const guestName = prompt('שם מלא:');
-      if (!guestName || guestName.trim() === '') {
-        showMessage('חייב להזין שם', 'red');
-        return;
-      }
-      
-      const contactInfo = prompt('הזן מספר טלפון:');
-      if (!contactInfo || contactInfo.trim() === '') {
-        showMessage('חייב להזין טלפון', 'red');
-        return;
-      }
-      
-      // ניקוי המספר
-      let cleanPhone = contactInfo.replace(/[-\s]/g, '');
-      const phoneRegex = /^0(5[0-9]|[2-4]|[8-9])\d{7}$/;
-      
-      if (!phoneRegex.test(cleanPhone)) {
-         showMessage('מספר טלפון לא תקין', 'red');
-         return;
-      }
-
-      orderUser = {
-        name: guestName.trim(),
-        phone: cleanPhone,
-        email: 'guest@whatsapp.order' // אימייל פיקטיבי לאורחים בוואטסאפ
-      };
+    if (currentUser) {
+        // אם מחובר עם גוגל
+        userName = currentUser.name;
+        userEmail = currentUser.email;
+    } else {
+        // אם אורח - מבקשים רק שם!
+        const inputName = prompt('איזה שם לרשום על ההזמנה?');
+        if (!inputName || inputName.trim() === '') {
+            showMessage('חייב להזין שם כדי להזמין', 'red');
+            return;
+        }
+        userName = inputName.trim();
+        userEmail = 'guest@whatsapp.com'; // אימייל דמי לדאטה בייס
     }
 
     // 2. איסוף נתונים
@@ -2013,7 +2003,6 @@ function setupSendOrder() {
     let totalPrice = 0;
     for (let key in orderItems) {
         totalRolls += orderItems[key];
-        // חישוב מחיר מהיר לטובת הוואטסאפ
         const parts = key.split('_');
         const item = menuData[parts[0]][parseInt(parts[1])];
         totalPrice += item.price * orderItems[key];
@@ -2035,22 +2024,21 @@ function setupSendOrder() {
       return;
     }
     
-    // בדיקת מכסה גלובלית (המטבח כולו)
+    // בדיקת מכסה גלובלית
     if ((globalRollsOrderedToday + totalRolls) > KITCHEN_DAILY_CAPACITY) {
         showMessage('שגיאה: חריגה מהמלאי היומי במטבח', 'red');
         return;
     }
 
     try {
-      console.log('📦 מעבד הזמנה...');
+      showMessage('⏳ שולח הזמנה...', 'orange');
       
-      // טקסט סיכום (מה שהלקוח רואה באתר)
       const summaryText = document.getElementById('order-summary').textContent;
 
       const orderData = {
-        user_name: orderUser.name,
-        email: orderUser.email,
-        phone: orderUser.phone,
+        user_name: userName,
+        email: userEmail,
+        phone: 'WhatsApp', // בדאטה בייס יהיה כתוב שזה מוואטסאפ
         order_date: new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jerusalem' }),
         pickup_time: pickupTime,
         items: JSON.stringify(orderItems),
@@ -2062,49 +2050,44 @@ function setupSendOrder() {
         items_summary: summaryText
       };
 
-      // 3. שמירה ב-Supabase (גיבוי חשוב!)
+      // 3. שמירה ב-Supabase (גיבוי)
+      // אנחנו לא מחכים לתשובה (await) כדי שהוואטסאפ ייפתח מהר
       if (supabase) {
-          const { error } = await supabase.from('Sushi').insert([orderData]);
-          if (error) console.error('שגיאת שמירה בגיבוי:', error);
+          supabase.from('Sushi').insert([orderData]).then(() => {
+              console.log('Saved to DB');
+          });
       }
 
-      // 4. שליחה ל-Make (אופציונלי, אם אתה רוצה גם במייל)
-      // fetch(MAKE_WEBHOOK_URL, ...); 
-
-      showMessage('✅ מעביר אותך לוואטסאפ לשליחת ההזמנה...', 'green');
-      
       // ======================================================
-      // 🚀 בניית הודעת הוואטסאפ למספר שלך (053-6777123)
+      // 🚀 שליחה לוואטסאפ (053-6777123)
       // ======================================================
       
-      const ownerPhone = '972536777123'; // המספר שלך בפורמט בינלאומי
+      const ownerPhone = '972536777123'; 
       
       const waMessage = `*הזמנה חדשה - Sushi Shifu* 🍣
       
-👤 *לקוח:* ${orderUser.name}
-📞 *טלפון:* ${orderUser.phone}
-⏰ *שעת איסוף:* ${pickupTime}
+👤 *שם:* ${userName}
+⏰ *שעה:* ${pickupTime}
 
-📝 *פירוט הזמנה:*
+📝 *הזמנה:*
 ${summaryText}
 
 💬 *הערות:* ${notes || 'אין'}
 
-💰 *סה"כ לתשלום:* ${totalPrice}₪
-
-_נשלח מהאתר_`;
+💰 *לתשלום:* ${totalPrice}₪`;
 
       // יצירת הקישור
       const whatsappUrl = `https://wa.me/${ownerPhone}?text=${encodeURIComponent(waMessage)}`;
       
-      // פתיחת הוואטסאפ (בחלון חדש או באפליקציה)
+      // ביצוע הפנייה (Redirect) - עובד הכי טוב במובייל
+      window.location.href = whatsappUrl;
+      
+      // איפוס קטן ברקע (למקרה שהמשתמש יחזור אחורה בדפדפן)
       setTimeout(() => {
-          window.open(whatsappUrl, '_blank');
-          
-          // איפוס האתר אחרי שהלקוח עבר לוואטסאפ
-          resetOrder();
-          loadExistingOrders(); 
-      }, 1500);
+        resetOrder();
+        loadExistingOrders();
+        showMessage('✅ ההזמנה נשלחה!', 'green');
+      }, 1000);
 
     } catch (err) {
       console.error('❌ שגיאה:', err);
