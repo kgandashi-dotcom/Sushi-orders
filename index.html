@@ -2267,84 +2267,24 @@ document.addEventListener('keydown', function(e) {
 }
 </style>
 
-<!-- POPUP JS -->
 <script>
-(function() {
-  const popup = document.getElementById('order-popup');
-  const messageEl = document.getElementById('order-popup-message');
-  const closeBtn = document.getElementById('order-popup-close');
-  const okBtn = document.getElementById('order-popup-ok');
-  const dontShowChk = document.getElementById('order-popup-dontshow');
-
-  // מתגורר לפי תאריך (כדי שה"אל תראה שוב היום" יחזיק רק ליום אחד)
-  const todayKey = 'order-popup-hidden-' + new Date().toISOString().slice(0,10);
-
-  function shouldSkip() {
-    return localStorage.getItem(todayKey) === '1';
-  }
-
-  function showPopup(text) {
-    messageEl.textContent = text;
-    popup.style.display = 'block';
-    popup.setAttribute('aria-hidden', 'false');
-    // לאפשר סגירה עם Escape
-    document.addEventListener('keydown', onKeyDown);
-  }
-
-  function hidePopup(saveDontShow) {
-    popup.style.display = 'none';
-    popup.setAttribute('aria-hidden', 'true');
-    document.removeEventListener('keydown', onKeyDown);
-    if (saveDontShow && dontShowChk.checked) {
-      localStorage.setItem(todayKey, '1');
-    }
-  }
-
-  function onKeyDown(e) {
-    if (e.key === 'Escape') hidePopup(false);
-  }
-
-  closeBtn.addEventListener('click', () => hidePopup(true));
-  okBtn.addEventListener('click', () => hidePopup(true));
-
-  // הגיון זמן/יום
-  function checkAndShow() {
-    if (shouldSkip()) return;
-
-    const now = new Date();
-    const day = now.getDay(); // 0=שבת? actually JS: 0=Sunday, 1=Monday, ..., 3=Wednesday
-    // בשימוש בעברית: יום רביעי = 3
-    const isWednesday = (day === 3);
-
-    if (isWednesday) {
-      const hour = now.getHours();
-      const minute = now.getMinutes();
-      // ניתן לשנות את המסגרת לפי הצורך; כאן "עד השעה 15:00" כולל עד 14:59:59
-      if (hour < 20) {
-        showPopup('יאללה להזמנה!! 🥳');
-      } else {
-        showPopup('היום יום רביעי, אך כבר חלפה השעה 15:00 — ההזמנות היום נסגרו.');
-      }
-    } else {
-      showPopup('ההזמנות מתקבלות רק בימי רביעי');
-    }
-  }
-
-  // הפעל לאחר טעינת ה־DOM
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', checkAndShow);
-  } else {
-    checkAndShow();
-  }
-// הפונקציה שלך הקיימת (מחזירה לתפריט)
+// ==========================================
+// 1. פונקציה חיונית לחזרה לתפריט
+// (חייבת להיות מחוץ לסוגריים כדי ששאר האתר יכיר אותה)
+// ==========================================
 function showMenuPage() {
+  // 1. הצגת הסקשנים של ההזמנה
   document.getElementById('menu-section').style.display = 'block';
   document.getElementById('chopsticks').style.display = 'block';
   document.getElementById('notes-section').style.display = 'block';
   document.getElementById('pickup-section').style.display = 'block';
   document.getElementById('summary-section').style.display = 'block';
   
-  // חזרה לטאב הראשון
+  // 2. הסתרת הפרופיל
+  const profilePage = document.getElementById('profile-page');
+  if (profilePage) profilePage.style.display = 'none';
+
+  // 3. איפוס הטאבים (חזרה לטאב הראשון)
   document.querySelectorAll('.tab-btn').forEach(function(t) {
     t.classList.remove('active');
   });
@@ -2354,7 +2294,7 @@ function showMenuPage() {
     firstTab.classList.add('active');
   }
   
-  // הצגת insideout
+  // 4. איפוס הקטגוריות (הצגת אינסייד-אאוט בלבד)
   document.querySelectorAll('.menu-category').forEach(function(cat) {
     cat.style.display = 'none';
   });
@@ -2364,7 +2304,71 @@ function showMenuPage() {
     insideoutSection.style.display = 'block';
   }
 }
+
+// ==========================================
+// 2. לוגיקה של הפופ-אפ (מודעה קופצת)
+// ==========================================
+(function() {
+  const popup = document.getElementById('order-popup');
+  const messageEl = document.getElementById('order-popup-message');
+  const closeBtn = document.getElementById('order-popup-close');
+  const okBtn = document.getElementById('order-popup-ok');
+  const dontShowChk = document.getElementById('order-popup-dontshow');
+
+  // מפתח ייחודי ליום הנוכחי
+  const todayKey = 'order-popup-hidden-' + new Date().toISOString().slice(0,10);
+
+  function shouldSkip() {
+    return localStorage.getItem(todayKey) === '1';
+  }
+
+  function showPopup(text) {
+    if (!popup) return;
+    messageEl.textContent = text;
+    popup.style.display = 'block';
+    popup.setAttribute('aria-hidden', 'false');
+  }
+
+  function hidePopup(saveDontShow) {
+    if (!popup) return;
+    popup.style.display = 'none';
+    popup.setAttribute('aria-hidden', 'true');
+    if (saveDontShow && dontShowChk && dontShowChk.checked) {
+      localStorage.setItem(todayKey, '1');
+    }
+  }
+
+  if (closeBtn) closeBtn.addEventListener('click', () => hidePopup(true));
+  if (okBtn) okBtn.addEventListener('click', () => hidePopup(true));
+
+  // בדיקת יום ושעה להצגת הודעה
+  function checkAndShow() {
+    if (shouldSkip()) return;
+
+    const now = new Date();
+    const day = now.getDay(); 
+    // יום רביעי = 3
+    const isWednesday = (day === 3);
+
+    if (isWednesday) {
+      const hour = now.getHours();
+      // אם יום רביעי לפני 20:00
+      if (hour < 20) {
+        showPopup('יאללה להזמנה!! 🥳');
+      } else {
+        showPopup('היום יום רביעי, אך כבר חלפה השעה 20:00 — ההזמנות להיום נסגרו.');
+      }
+    } 
+  }
+
+  // הפעלה בטעינת הדף
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkAndShow);
+  } else {
+    checkAndShow();
+  }
 })();
 </script>
 </body>
 </html>
+
