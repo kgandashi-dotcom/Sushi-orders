@@ -1779,7 +1779,10 @@ function updateSummary() {
   }
 
   // בדיקת מגבלות והפעלת כפתור
-  const sendBtn = document.getElementById('send-order');
+    const sendBtn = document.getElementById('send-order');
+  // הגדרת המגבלה כמשתנה - קל לשנות כאן את המספר וההודעה תתעדכן לבד
+  const dailyLimit = 15; 
+
   if (!sendBtn) {
     console.error('❌ כפתור שליחה לא נמצא');
     return;
@@ -1797,22 +1800,29 @@ function updateSummary() {
     sendBtn.style.opacity = '0.5';
     sendBtn.style.cursor = 'not-allowed';
     console.log('❌ אין שעת איסוף');
-  } else if (totalRolls > 15) {
+  
+  // --- כאן השינוי ---
+  } else if (totalRolls > dailyLimit) {
     sendBtn.disabled = true;
     sendBtn.style.opacity = '0.5';
     sendBtn.style.cursor = 'not-allowed';
-    showMessage('לא ניתן להזמין יותר מ־15 רולים ביום', 'red');
+    
+    // ההודעה החדשה: מציגה את המגבלה כ"מלאי שנותר"
+    showMessage(`לצערנו נותרו היום עוד ${dailyLimit} רולים להזמנה בלבד`, 'red');
+  // ------------------
+
   } else {
     sendBtn.disabled = false;
     sendBtn.style.opacity = '1';
     sendBtn.style.cursor = 'pointer';
     const messagesDiv = document.getElementById('messages');
     if (messagesDiv) {
-      messagesDiv.textContent = '';
+      messagesDiv.textContent = ''; // ניקוי הודעות קודמות אם התנאים תקינים
     }
     console.log('✅ כפתור מופעל - מוכן לשליחה');
   }
 }
+
     // ========================================
     // שליחת הזמנה
     // ========================================
