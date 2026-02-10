@@ -1840,10 +1840,11 @@ function calculateOrderPrepTime(items) {
     }
 
 // ========================================
-// סיכום הזמנה - גרסה סופית (מגבלה גלובלית)
-// ========================================
-// ========================================
 // סיכום הזמנה - עם עיצוב טקסט חדש
+// ========================================
+
+// ========================================
+// סיכום הזמנה - פורמט שורה אחת נקייה
 // ========================================
 function updateSummary() {
   let totalRolls = 0;
@@ -1864,8 +1865,8 @@ function updateSummary() {
         const itemTotal = item.price * qty;
         totalPrice += itemTotal;
         
-        // --- השינוי כאן: הפורמט החדש שביקשת ---
-        lines.push(item.name + ' - מחיר: ' + itemTotal + '₪, כמות: ' + qty);
+        // --- השינוי: שורה אחת נקייה ---
+        lines.push(item.name + ' - מחיר רול: ' + item.price + '₪, כמות: ' + qty);
     }
   });
 
@@ -1880,7 +1881,7 @@ function updateSummary() {
       const idx = parseInt(key.split('_')[1]);
       if (menuData.sauces[idx]) {
           const sauceName = menuData.sauces[idx].name;
-          saucesList.push(sauceName + ' - כמות: ' + qty);
+          saucesList.push(sauceName + ' (' + qty + ')');
       }
     }
   }
@@ -1893,11 +1894,10 @@ function updateSummary() {
 
   if (totalSauces > 0) {
     lines.push('\nרטבים:');
-    for (let i = 0; i < saucesList.length; i++) {
-      lines.push('  • ' + saucesList[i]);
+    lines.push(saucesList.join(', '));
+    if (extraSauces > 0) {
+        lines.push('(תוספת תשלום על רטבים: ' + saucePrice + '₪)');
     }
-    // שורת סיכום רטבים
-    lines.push(`סה"כ רטבים: ${totalSauces} (${freeSauces} חינם, ${extraSauces} בתשלום) = ${saucePrice}₪`);
   }
 
   // 3. תוספות (צ'ופסטיקס, הערות, שעה)
@@ -1918,9 +1918,10 @@ function updateSummary() {
   }
 
   // 4. שורת סיכום סופית
-  lines.push('\n' + '='.repeat(21) + '\nסה"כ לתשלום: ' + totalPrice + '₪');
+  lines.push('\n' + '='.repeat(22)); 
+  lines.push('סה"כ לתשלום: ' + totalPrice + '₪');
 
-  // עדכון התצוגה ב-HTML
+  // עדכון התצוגה באתר
   const summaryElement = document.getElementById('order-summary');
   if (summaryElement) {
     summaryElement.textContent = totalRolls > 0 ? lines.join('\n') : 'הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.';
