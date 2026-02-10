@@ -865,6 +865,10 @@ body.modal-open {
       await loadRecipePrepTimes();
 
       await loadExistingOrders();
+      
+      await calculateUserDailyQuota(); 
+           
+      updateUIAfterLogin();
 
       setupSendOrder();
 
@@ -913,40 +917,7 @@ body.modal-open {
     { theme: 'filled_black', size: 'medium', text: 'signin', locale: 'he' }
   );
 }
-async function loadOrderHistory() {
-  try {
-    if (!currentUser) return;
-    
-    const { data, error } = await supabase
-      .from('Sushi')
-      .select('*')
-      .eq('email', currentUser.email)
-      .order('created_at', { ascending: false });
 
-    if (error) throw error;
-
-    const historyDiv = document.getElementById('order-history');
-    if (!historyDiv) return;
-    
-    if (!data || data.length === 0) {
-      historyDiv.innerHTML = '<p>אין הזמנות קודמות.</p>';
-      return;
-    }
-
-    historyDiv.innerHTML = data.map(function(order) {
-      return `
-        <div class="history-item">
-          <strong>${new Date(order.created_at).toLocaleDateString('he-IL')}</strong><br>
-          שעת איסוף: ${order.pickup_time}<br>
-          סה"כ: ${order.total_price}₪
-        </div>
-      `;
-    }).join('');
-  } catch (err) {
-    console.error('שגיאה בטעינת היסטוריה:', err);
-    showMessage('שגיאה בטעינת היסטוריה: ' + err.message, 'red');
-  }
-}
 async function getValidPhone() {
   return new Promise((resolve) => {
     const modal = document.getElementById('phone-modal');
@@ -1092,7 +1063,10 @@ async function handleGoogleLogin(response) {
     
     // שמירה גם ב-localStorage לגישה מהירה
     localStorage.setItem('sushiUser', JSON.stringify(currentUser));
-    
+    await calculateUserDailyQuota();
+
+    showMessage('התחברת בהצלחה!', 'green');
+    updateUIAfterLogin();
     showMessage('התחברת בהצלחה!', 'green');
     updateUIAfterLogin();
     
@@ -1337,10 +1311,14 @@ function logoutUser() {
   showMessage('התנתקת בהצלחה', 'green');
 }
     
+// ========================================
+// טעינת היסטוריית הזמנות (עבור עמוד הפרופיל)
+// ========================================
 async function loadOrderHistory() {
   try {
     if (!currentUser) return;
     
+    // שליפת הזמנות לפי אימייל, מסודרות מהחדש לישן
     const { data, error } = await supabase
       .from('Sushi')
       .select('*')
@@ -1357,20 +1335,74 @@ async function loadOrderHistory() {
       return;
     }
 
+    // יצירת HTML לכל הזמנה
     historyDiv.innerHTML = data.map(function(order) {
+      // המרה לתאריך קריא
+      const dateObj = new Date(order.created_at);
+      const dateStr = dateObj.toLocaleDateString('he-IL');
+      const timeStr = dateObj.toLocaleTimeString('he-IL', {hour: '2-digit', minute:'2-digit'});
+
       return `
         <div class="history-item">
-          <strong>${new Date(order.created_at).toLocaleDateString('he-IL')}</strong><br>
-          שעת איסוף: ${order.pickup_time}<br>
-          סה"כ: ${order.total_price}₪
-        </div>
+          <div style="display:flex; justify-content:space-between; font-weight:bold;">
+            <span>📅 ${dateStr}</span>
+            <span>${order.total_price}₪</span>
+          </div>
+          <div style="font-size:0.9rem; color:#ccc; margin-top:4px;">
+            שעת איסוף: ${order.pickup_time}<br>
+            <span style="font-size:0.85rem; color:#888;">הוזמן ב: ${timeStr}</span>
+          </div>
+          </div>
       `;
     }).join('');
+    
   } catch (err) {
     console.error('שגיאה בטעינת היסטוריה:', err);
-    showMessage('שגיאה בטעינת היסטוריה: ' + err.message, 'red');
+    // לא חובה להציג הודעה למשתמש אם זה נכשל ברקע, אבל אפשר:
+    // showMessage('שגיאה בטעינת היסטוריה', 'red');
   }
 }
+// ========================================
+// חישוב מכסה יומית (חסימת 15 רולים)
+// ========================================
+let userRollsOrderedToday = 0; // משתנה גלובלי
+
+async function calculateUserDailyQuota() {
+  if (!currentUser) return;
+  
+  const today = new Date().toISOString().split('T')[0];
+  
+  // שליפת כל ההזמנות של המשתמש מהיום כדי לספור רולים
+  const { data, error } = await supabase
+    .from('Sushi')
+    .select('items, total_rolls') 
+    .eq('email', currentUser.email)
+    .eq('order_date', today);
+
+  if (error) {
+    console.error('שגיאה בחישוב מכסה:', error);
+    return;
+  }
+
+  userRollsOrderedToday = 0; // איפוס לפני ספירה מחדש
+
+  if (data && data.length > 0) {
+    data.forEach(order => {
+      if (order.total_rolls) {
+        userRollsOrderedToday += order.total_rolls;
+      } else {
+        // חישוב ידני אם אין עמודת סיכום
+        try {
+          const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+          Object.values(items).forEach(qty => userRollsOrderedToday += qty);
+        } catch (e) {}
+      }
+    });
+  }
+  
+  console.log(`📊 המשתמש כבר הזמין היום: ${userRollsOrderedToday} רולים`);
+}
+change
 
 function setupLogoutButton() {
   // הלוגיקה כבר משולבת ב-setupProfileButton
@@ -1505,22 +1537,39 @@ function setupTabs() {
     // כמויות רולים - מעודכן עם חסימה ב-15
     // ========================================
 
+       // ========================================
+    // כמויות רולים - מעודכן עם חסימה חכמה (היסטוריה + עגלה)
+    // ========================================
+
     window.changeQty = function(key, delta) {
-      // 1. חישוב כמות הרולים הנוכחית לפני השינוי
-      let currentTotal = 0;
+      // 1. חישוב כמה יש כרגע בעגלה (לפני ההוספה)
+      let currentCartTotal = 0;
       for (let k in orderItems) {
-        currentTotal += orderItems[k];
+        currentCartTotal += orderItems[k];
       }
 
-      // 2. בדיקת חסימה: אם מנסים להוסיף (delta > 0) וכבר יש 15 ומעלה
       const dailyLimit = 15;
       
-      if (delta > 0 && currentTotal >= dailyLimit) {
-        alert(`לצערנו נותרו היום עוד ${dailyLimit} רולים להיום`);
-        return; // עצירה מוחלטת - המספר לא יעלה
+      // 2. בדיקת חסימה רק אם מנסים להוסיף
+      if (delta > 0) {
+        // הנוסחה: (מה שהזמנתי בעבר) + (מה שיש לי כרגע בעגלה) >= 15
+        if ((userRollsOrderedToday + currentCartTotal) >= dailyLimit) {
+          
+          // חישוב כמה נותר לו להזמין בפועל
+          const remaining = Math.max(0, dailyLimit - userRollsOrderedToday);
+          
+          if (remaining === 0) {
+             alert(`הזמנת כבר ${userRollsOrderedToday} רולים היום. הגעת למכסה היומית ואינך יכול להזמין עוד.`);
+          } else {
+             // מקרה קצה: אם הוא הזמין 5, ומנסה להגיע ל-16 בעגלה
+             alert(`הזמנת כבר ${userRollsOrderedToday} רולים היום.\nנותרו לך עוד ${remaining} רולים להזמנה כרגע.`);
+          }
+          
+          return; // עוצר את הפונקציה - המספר לא יעלה!
+        }
       }
 
-      // 3. המשך הלוגיקה הרגילה (רק אם לא נעצרנו למעלה)
+      // 3. המשך הלוגיקה הרגילה
       const input = document.getElementById(key);
       let val = parseInt(input.value) || 0;
       val = Math.max(0, val + delta);
@@ -1534,6 +1583,10 @@ function setupTabs() {
       
       console.log('📦 עודכן:', key, '=', val);
       
+      generatePickupSlots();
+      updateSummary();
+    };
+    
       // עדכון שעות זמינות וסיכום
       generatePickupSlots();
       updateSummary();
@@ -2072,6 +2125,7 @@ function setupSendOrder() {
       
       resetOrder();
       await loadExistingOrders();
+      await calculateUserDailyQuota(); // 👇 מעדכן את המכסה של המשתמש הספציפי
 
     } catch (err) {
       console.error('❌ שגיאה מפורטת:', err);
