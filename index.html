@@ -2276,14 +2276,7 @@ document.addEventListener('keydown', function(e) {
 // 1. פונקציה חיונית לחזרה לתפריט
 // (חייבת להיות מחוץ לסוגריים כדי ששאר האתר יכיר אותה)
 // ==========================================
-function showMenuPage() {
-  // 1. הצגת הסקשנים של ההזמנה
-  document.getElementById('menu-section').style.display = 'block';
-  document.getElementById('chopsticks').style.display = 'block';
-  document.getElementById('notes-section').style.display = 'block';
-  document.getElementById('pickup-section').style.display = 'block';
-  document.getElementById('summary-section').style.display = 'block';
-  
+
   // 2. הסתרת הפרופיל
   const profilePage = document.getElementById('profile-page');
   if (profilePage) profilePage.style.display = 'none';
