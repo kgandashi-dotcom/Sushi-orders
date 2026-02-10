@@ -1455,8 +1455,12 @@ function renderCategory(category, containerId) {
   
   container.innerHTML = items.map((item, idx) => {
     const key = `${category}_${idx}`;
+    
+    // תיקון: הגנה מפני גרשיים בשם הרול
+    const safeName = item.name.replace(/'/g, "\\'"); 
+
     const imageHTML = item.image_url 
-      ? `<img src="${item.image_url}" alt="${item.name}" class="roll-image" onclick="openImageModal('${item.image_url}', '${item.name}')">`
+      ? `<img src="${item.image_url}" alt="${item.name}" class="roll-image" onclick="openImageModal('${item.image_url}', '${safeName}')">`
       : `<div class="roll-image-placeholder">🍣</div>`;
     
     return `
@@ -2079,7 +2083,7 @@ function setupSendOrder() {
         user_name: orderUser.name,
         email: orderUser.email,
         phone: orderUser.phone,
-        order_date: new Date().toISOString().split('T')[0],
+        order_date: new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jerusalem' }),
         pickup_time: pickupTime,
         items: JSON.stringify(orderItems),
         sauces: JSON.stringify(sauceSelections),
@@ -2272,35 +2276,6 @@ document.addEventListener('keydown', function(e) {
 </style>
 
 <script>
-// ==========================================
-// 1. פונקציה חיונית לחזרה לתפריט
-// (חייבת להיות מחוץ לסוגריים כדי ששאר האתר יכיר אותה)
-// ==========================================
-
-  // 2. הסתרת הפרופיל
-  const profilePage = document.getElementById('profile-page');
-  if (profilePage) profilePage.style.display = 'none';
-
-  // 3. איפוס הטאבים (חזרה לטאב הראשון)
-  document.querySelectorAll('.tab-btn').forEach(function(t) {
-    t.classList.remove('active');
-  });
-  
-  const firstTab = document.querySelector('.tab-btn[data-target="insideout"]');
-  if (firstTab) {
-    firstTab.classList.add('active');
-  }
-  
-  // 4. איפוס הקטגוריות (הצגת אינסייד-אאוט בלבד)
-  document.querySelectorAll('.menu-category').forEach(function(cat) {
-    cat.style.display = 'none';
-  });
-  
-  const insideoutSection = document.getElementById('insideout');
-  if (insideoutSection) {
-    insideoutSection.style.display = 'block';
-  }
-}
 
 // ==========================================
 // 2. לוגיקה של הפופ-אפ (מודעה קופצת)
@@ -2339,25 +2314,7 @@ document.addEventListener('keydown', function(e) {
   if (okBtn) okBtn.onclick = () => hidePopup(true);
 
   // בדיקת יום ושעה להצגת הודעה
-  function checkAndShow() {
-    if (shouldSkip()) return;
-
-    const now = new Date();
-    const day = now.getDay(); 
-    // יום רביעי = 3
-    const isWednesday = (day === 3);
-
-    if (isWednesday) {
-      const hour = now.getHours();
-      // אם יום רביעי לפני 20:00
-      if (hour < 20) {
-        showPopup('יאללה להזמנה!! 🥳');
-      } else {
-        showPopup('היום יום רביעי, אך כבר חלפה השעה 20:00 — ההזמנות להיום נסגרו.');
-      }
-    } 
-  }
-
+}
   // הפעלה בטעינת הדף
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', checkAndShow);
