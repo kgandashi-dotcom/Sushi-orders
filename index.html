@@ -1543,8 +1543,8 @@ function setupTabs() {
     // כמויות רולים - מעודכן עם חסימה חכמה (היסטוריה + עגלה)
     // ========================================
 
-    window.changeQty = function(key, delta) {
-      // 1. חישוב כמה יש כרגע בעגלה (לפני ההוספה)
+        window.changeQty = function(key, delta) {
+      // 1. חישוב כמה יש כרגע בעגלה
       let currentCartTotal = 0;
       for (let k in orderItems) {
         currentCartTotal += orderItems[k];
@@ -1552,26 +1552,20 @@ function setupTabs() {
 
       const dailyLimit = 15;
       
-      // 2. בדיקת חסימה רק אם מנסים להוסיף
+      // 2. בדיקת חסימה (היסטוריה + עגלה)
       if (delta > 0) {
-        // הנוסחה: (מה שהזמנתי בעבר) + (מה שיש לי כרגע בעגלה) >= 15
         if ((userRollsOrderedToday + currentCartTotal) >= dailyLimit) {
-          
-          // חישוב כמה נותר לו להזמין בפועל
           const remaining = Math.max(0, dailyLimit - userRollsOrderedToday);
-          
           if (remaining === 0) {
-             alert(`הזמנת כבר ${userRollsOrderedToday} רולים היום. הגעת למכסה היומית ואינך יכול להזמין עוד.`);
+             alert(`הזמנת כבר ${userRollsOrderedToday} רולים היום. הגעת למכסה היומית.`);
           } else {
-             // מקרה קצה: אם הוא הזמין 5, ומנסה להגיע ל-16 בעגלה
              alert(`הזמנת כבר ${userRollsOrderedToday} רולים היום.\nנותרו לך עוד ${remaining} רולים להזמנה כרגע.`);
           }
-          
-          return; // עוצר את הפונקציה - המספר לא יעלה!
+          return; 
         }
       }
 
-      // 3. המשך הלוגיקה הרגילה
+      // 3. לוגיקה רגילה
       const input = document.getElementById(key);
       let val = parseInt(input.value) || 0;
       val = Math.max(0, val + delta);
@@ -1588,7 +1582,7 @@ function setupTabs() {
       generatePickupSlots();
       updateSummary();
     };
-    
+
     // ========================================
     // רטבים
     // ========================================
@@ -1682,8 +1676,6 @@ function setupTabs() {
 
       } catch (err) {
         console.error('שגיאה בטעינת הזמנות:', err);
-        generatePickupSlots(); // במקרה שגיאה, נפתח כרגיל (או שתחליט לחסום)
-      }
     }
 
     // ========================================
