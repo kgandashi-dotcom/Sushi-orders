@@ -1501,26 +1501,44 @@ function setupTabs() {
     // כמויות רולים
     // ========================================
 
-window.changeQty = function(key, delta) {
-  const input = document.getElementById(key);
-  let val = parseInt(input.value) || 0;
-  val = Math.max(0, val + delta);
-  input.value = val;
-  
-  if (val > 0) {
-    orderItems[key] = val;
-  } else {
-    delete orderItems[key];
-  }
-  
-  console.log('📦 עודכן:', key, '=', val);
-  console.log('📋 orderItems:', orderItems);
-  
-  // עדכון שעות זמינות לפי ההזמנה החדשה
-  generatePickupSlots(); // 👈 הוסף!
-  
-  updateSummary();
-};
+    // ========================================
+    // כמויות רולים - מעודכן עם חסימה ב-15
+    // ========================================
+
+    window.changeQty = function(key, delta) {
+      // 1. חישוב כמות הרולים הנוכחית לפני השינוי
+      let currentTotal = 0;
+      for (let k in orderItems) {
+        currentTotal += orderItems[k];
+      }
+
+      // 2. בדיקת חסימה: אם מנסים להוסיף (delta > 0) וכבר יש 15 ומעלה
+      const dailyLimit = 15;
+      
+      if (delta > 0 && currentTotal >= dailyLimit) {
+        alert(`לצערנו נותרו היום עוד ${dailyLimit} רולים להיום`);
+        return; // עצירה מוחלטת - המספר לא יעלה
+      }
+
+      // 3. המשך הלוגיקה הרגילה (רק אם לא נעצרנו למעלה)
+      const input = document.getElementById(key);
+      let val = parseInt(input.value) || 0;
+      val = Math.max(0, val + delta);
+      input.value = val;
+      
+      if (val > 0) {
+        orderItems[key] = val;
+      } else {
+        delete orderItems[key];
+      }
+      
+      console.log('📦 עודכן:', key, '=', val);
+      
+      // עדכון שעות זמינות וסיכום
+      generatePickupSlots();
+      updateSummary();
+    };
+
 
     // ========================================
     // רטבים
