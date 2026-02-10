@@ -2276,7 +2276,6 @@ document.addEventListener('keydown', function(e) {
 </style>
 
 <script>
-
 // ==========================================
 // 2. לוגיקה של הפופ-אפ (מודעה קופצת)
 // ==========================================
@@ -2288,7 +2287,7 @@ document.addEventListener('keydown', function(e) {
   const dontShowChk = document.getElementById('order-popup-dontshow');
 
   // מפתח ייחודי ליום הנוכחי
-  const todayKey = 'order-popup-hidden-' + new Date().toISOString().slice(0,10);
+  const todayKey = 'order-popup-hidden-' + new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jerusalem' });
 
   function shouldSkip() {
     return localStorage.getItem(todayKey) === '1';
@@ -2314,7 +2313,39 @@ document.addEventListener('keydown', function(e) {
   if (okBtn) okBtn.onclick = () => hidePopup(true);
 
   // בדיקת יום ושעה להצגת הודעה
-}
+  function checkAndShow() {
+    // 1. בדיקת קיום האלמנטים
+    if (!popup) return;
+
+    // 2. בדיקה קריטית: האם הפופ-אפ כבר פתוח? (למשל: "Sold Out")
+    if (window.getComputedStyle(popup).display === 'block') {
+      console.log('🛑 פופ-אפ כבר פתוח, מדלג על הודעת יום רביעי.');
+      return;
+    }
+
+    // 3. בדיקה אם המשתמש סימן "אל תראה שוב היום"
+    if (shouldSkip()) return;
+
+    // 4. בדיקת זמנים
+    const now = new Date();
+    const day = now.getDay(); 
+    // יום רביעי = 3
+    const isWednesday = (day === 3);
+
+    if (isWednesday) {
+      const hour = now.getHours();
+      
+      // אם יום רביעי לפני 20:00
+      if (hour < 20) {
+        showPopup('יאללה להזמנה!! 🥳');
+      } 
+      // אם יום רביעי אחרי 20:00
+      else {
+        showPopup('היום יום רביעי, אך כבר חלפה השעה 20:00 — ההזמנות להיום נסגרו.');
+      }
+    } 
+  }
+
   // הפעלה בטעינת הדף
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', checkAndShow);
