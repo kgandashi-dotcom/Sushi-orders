@@ -1969,17 +1969,12 @@ function updateSummary() {
 function setupSendOrder() {
   const sendButton = document.getElementById('send-order');
   
-  if (!sendButton) {
-    console.error('❌ כפתור שלח הזמנה לא נמצא ב-setupSendOrder!');
-    return;
-  }
-  
-  console.log('✅ setupSendOrder - כפתור נמצא');
+  if (!sendButton) return;
   
   sendButton.addEventListener('click', async function(e) {
-    e.preventDefault(); // מונע שליחת טופס אם יש
-    console.log('🎯 נלחץ על כפתור שליחה');
+    e.preventDefault(); 
     
+    // 1. זיהוי המשתמש (מחובר או אורח)
     let orderUser = currentUser;
     
     if (!currentUser) {
@@ -1989,78 +1984,69 @@ function setupSendOrder() {
         return;
       }
       
-      const contactInfo = prompt('הזן מספר טלפון או אימייל:');
+      const contactInfo = prompt('הזן מספר טלפון:');
       if (!contactInfo || contactInfo.trim() === '') {
-        showMessage('חייב להזין פרטי יצירת קשר', 'red');
+        showMessage('חייב להזין טלפון', 'red');
         return;
       }
       
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      // ניקוי המספר
+      let cleanPhone = contactInfo.replace(/[-\s]/g, '');
       const phoneRegex = /^0(5[0-9]|[2-4]|[8-9])\d{7}$/;
       
-      let guestEmail = '';
-      let guestPhone = '';
-      
-      if (emailRegex.test(contactInfo.trim())) {
-        guestEmail = contactInfo.trim();
-        guestPhone = 'לא סופק';
-      } else if (phoneRegex.test(contactInfo.replace(/[-\s]/g, ''))) {
-        guestPhone = contactInfo.replace(/[-\s]/g, '');
-        guestEmail = 'guest_' + Date.now() + '@temp.com';
-      } else {
-        showMessage('פורמט לא תקין! הזן אימייל (example@mail.com) או טלפון (0501234567)', 'red');
-        return;
+      if (!phoneRegex.test(cleanPhone)) {
+         showMessage('מספר טלפון לא תקין', 'red');
+         return;
       }
-      
+
       orderUser = {
         name: guestName.trim(),
-        phone: guestPhone,
-        email: guestEmail
+        phone: cleanPhone,
+        email: 'guest@whatsapp.order' // אימייל פיקטיבי לאורחים בוואטסאפ
       };
     }
 
+    // 2. איסוף נתונים
     const pickupTime = document.getElementById('pickup-time').value;
+    const notes = document.getElementById('notes').value;
+    
+    // חישוב כמות ומחיר
+    let totalRolls = 0;
+    let totalPrice = 0;
+    for (let key in orderItems) {
+        totalRolls += orderItems[key];
+        // חישוב מחיר מהיר לטובת הוואטסאפ
+        const parts = key.split('_');
+        const item = menuData[parts[0]][parseInt(parts[1])];
+        totalPrice += item.price * orderItems[key];
+    }
+    
+    // הוספת מחיר רטבים
+    let totalSauces = 0;
+    for (let key in sauceSelections) totalSauces += sauceSelections[key];
+    const extraSauces = Math.max(0, totalSauces - (totalRolls * 2));
+    totalPrice += (extraSauces * 3);
+
+    // בדיקות תקינות
     if (!pickupTime) {
       showMessage('נא לבחור שעת איסוף', 'red');
       return;
     }
-
-    let totalRolls = 0;
-    for (let key in orderItems) {
-      totalRolls += orderItems[key];
-    }
-
     if (totalRolls === 0) {
-      showMessage('עליך לבחור לפחות רול אחד', 'red');
+      showMessage('העגלה ריקה', 'red');
       return;
     }
-
-    if (totalRolls > 15) {
-      showMessage('לא ניתן להזמין יותר מ־15 רולים ביום', 'red');
-      return;
+    
+    // בדיקת מכסה גלובלית (המטבח כולו)
+    if ((globalRollsOrderedToday + totalRolls) > KITCHEN_DAILY_CAPACITY) {
+        showMessage('שגיאה: חריגה מהמלאי היומי במטבח', 'red');
+        return;
     }
 
     try {
-      console.log('📦 מתחיל לשלוח הזמנה...');
+      console.log('📦 מעבד הזמנה...');
       
-      let totalSauces = 0;
-      for (let key in sauceSelections) {
-        totalSauces += sauceSelections[key];
-      }
-
-      const freeSauces = totalRolls * 2;
-      const extraSauces = Math.max(0, totalSauces - freeSauces);
-      
-      let totalPrice = 0;
-      for (let key in orderItems) {
-        const parts = key.split('_');
-        const category = parts[0];
-        const idx = parseInt(parts[1]);
-        const item = menuData[category][idx];
-        totalPrice += item.price * orderItems[key];
-      }
-      totalPrice += extraSauces * 3;
-
+      // טקסט סיכום (מה שהלקוח רואה באתר)
       const summaryText = document.getElementById('order-summary').textContent;
 
       const orderData = {
@@ -2072,42 +2058,59 @@ function setupSendOrder() {
         items: JSON.stringify(orderItems),
         sauces: JSON.stringify(sauceSelections),
         chopsticks: chopsticksCount,
-        notes: document.getElementById('notes').value,
+        notes: notes,
         total_price: totalPrice,
         total_rolls: totalRolls,
         items_summary: summaryText
       };
 
-      console.log('📋 נתוני הזמנה:', orderData);
-
-      if (!supabase) {
-        showMessage('Supabase לא מחובר - בדוק את ההגדרות', 'red');
-        return;
+      // 3. שמירה ב-Supabase (גיבוי חשוב!)
+      if (supabase) {
+          const { error } = await supabase.from('Sushi').insert([orderData]);
+          if (error) console.error('שגיאת שמירה בגיבוי:', error);
       }
 
-      const result = await supabase.from('Sushi').insert([orderData]);
+      // 4. שליחה ל-Make (אופציונלי, אם אתה רוצה גם במייל)
+      // fetch(MAKE_WEBHOOK_URL, ...); 
 
-      if (result.error) throw result.error;
+      showMessage('✅ מעביר אותך לוואטסאפ לשליחת ההזמנה...', 'green');
       
-      console.log('✅ נשמר ב-Supabase');
+      // ======================================================
+      // 🚀 בניית הודעת הוואטסאפ למספר שלך (053-6777123)
+      // ======================================================
+      
+      const ownerPhone = '972536777123'; // המספר שלך בפורמט בינלאומי
+      
+      const waMessage = `*הזמנה חדשה - Sushi Shifu* 🍣
+      
+👤 *לקוח:* ${orderUser.name}
+📞 *טלפון:* ${orderUser.phone}
+⏰ *שעת איסוף:* ${pickupTime}
 
-      await fetch(MAKE_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
-      });
-      
-      console.log('✅ נשלח ל-Make.com');
+📝 *פירוט הזמנה:*
+${summaryText}
 
-      showMessage('✅ ההזמנה נשלחה בהצלחה!', 'green');
+💬 *הערות:* ${notes || 'אין'}
+
+💰 *סה"כ לתשלום:* ${totalPrice}₪
+
+_נשלח מהאתר_`;
+
+      // יצירת הקישור
+      const whatsappUrl = `https://wa.me/${ownerPhone}?text=${encodeURIComponent(waMessage)}`;
       
-      resetOrder();
-      await loadExistingOrders();
-      await calculateUserDailyQuota(); // 👇 מעדכן את המכסה של המשתמש הספציפי
+      // פתיחת הוואטסאפ (בחלון חדש או באפליקציה)
+      setTimeout(() => {
+          window.open(whatsappUrl, '_blank');
+          
+          // איפוס האתר אחרי שהלקוח עבר לוואטסאפ
+          resetOrder();
+          loadExistingOrders(); 
+      }, 1500);
 
     } catch (err) {
-      console.error('❌ שגיאה מפורטת:', err);
-      showMessage('❌ שגיאה בשליחת ההזמנה: ' + err.message, 'red');
+      console.error('❌ שגיאה:', err);
+      showMessage('תקלה בשליחה', 'red');
     }
   });
 }
