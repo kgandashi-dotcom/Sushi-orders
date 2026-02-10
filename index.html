@@ -1096,18 +1096,21 @@ async function handleGoogleLogin(response) {
         picture: dbUser.profile_picture
       };
       
-      // עדכון localStorage עם נתונים עדכניים מה-DB
+      // עדכון localStorage
       localStorage.setItem('sushiUser', JSON.stringify(currentUser));
+      
+      // 👇👇👇 הוספנו את השורה הזו לחישוב המכסה ברענון 👇👇👇
+      await calculateUserDailyQuota(); 
       
       updateUIAfterLogin();
     } else if (error && error.code !== 'PGRST116') {
       console.error('שגיאה בטעינת משתמש:', error);
-      // אם יש שגיאה אבל יש נתונים מקומיים, נשתמש בהם
       currentUser = parsed;
       updateUIAfterLogin();
     }
   }
 }
+
 
 function updateUIAfterLogin() {
   const loginBtnContainer = document.getElementById('login-btn');
@@ -1402,7 +1405,6 @@ async function calculateUserDailyQuota() {
   
   console.log(`📊 המשתמש כבר הזמין היום: ${userRollsOrderedToday} רולים`);
 }
-change
 
 function setupLogoutButton() {
   // הלוגיקה כבר משולבת ב-setupProfileButton
@@ -1587,12 +1589,6 @@ function setupTabs() {
       updateSummary();
     };
     
-      // עדכון שעות זמינות וסיכום
-      generatePickupSlots();
-      updateSummary();
-    };
-
-
     // ========================================
     // רטבים
     // ========================================
