@@ -1846,86 +1846,53 @@ function calculateOrderPrepTime(items) {
 // ========================================
 // סיכום הזמנה - פורמט שורה אחת נקייה
 // ========================================
-function updateSummary() {
-  let totalRolls = 0;
-  let totalPrice = 0;
-  let lines = [];
-
-  // 1. חישוב רולים ומחיר
-  Object.keys(orderItems).forEach(function(key) {
-    const qty = orderItems[key];
-    totalRolls += qty;
-    
-    const parts = key.split('_');
-    const category = parts[0];
-    const idx = parseInt(parts[1]);
-    
-    if (menuData[category] && menuData[category][idx]) {
-        const item = menuData[category][idx];
-        const itemTotal = item.price * qty;
-        totalPrice += itemTotal;
+    function updateSummary() {
+        let totalRolls = 0, price = 0, text = [];
         
-        // --- השינוי: שורה אחת נקייה ---
-        lines.push(item.name + ' - מחיר רול: ' + item.price + '₪, כמות: ' + qty);
+        // חישוב רולים
+        for(let k in orderItems) {
+            let qty = orderItems[k], parts = k.split('_');
+            let item = menuData[parts[0]][parseInt(parts[1])];
+            totalRolls += qty; price += item.price * qty;
+            text.push(`${item.name} x${qty} = ${item.price*qty}₪`);
+        }
+        
+        // חישוב רטבים
+        let sauceCount = 0, sauceTxt = [];
+        for(let k in sauceSelections) {
+            let qty = sauceSelections[k], name = menuData.sauces[parseInt(k.split('_')[1])].name;
+            sauceCount += qty; sauceTxt.push(`${name} x${qty}`);
+        }
+        
+        // חישוב תוספת תשלום על רטבים
+        let extraSauce = Math.max(0, sauceCount - (totalRolls*2));
+        price += extraSauce * 3;
+        
+        if(sauceCount>0) text.push(`\nרטבים: ${sauceTxt.join(', ')} (תוספת: ${extraSauce*3}₪)`);
+        
+        // צ'ופסטיקס
+        text.push(`\nצ'ופסטיקס: ${chopsticksCount}`);
+        
+        // >>> כאן מחקנו את ההערות כדי למנוע כפילות <<<
+        
+        // שעת איסוף
+        let time = document.getElementById('pickup-time').value;
+        if(time) text.push(`שעת איסוף: ${time}`);
+        
+        text.push(`\n======\nסה"כ: ${price}₪`);
+        
+        document.getElementById('order-summary').textContent = totalRolls ? text.join('\n') : 'הזמנה ריקה';
+        
+        // בדיקת תקינות להפעלת כפתור שליחה
+        const btn = document.getElementById('send-order');
+        if (isKitchenSoldOut) {
+             btn.disabled = true; btn.textContent = "המלאי נגמר";
+        } else if (totalRolls === 0 || !time || totalRolls > 15) {
+             btn.disabled = true; btn.style.opacity = 0.5;
+        } else {
+             btn.disabled = false; btn.style.opacity = 1; btn.textContent = "שלח הזמנה";
+        }
     }
-  });
-
-  // 2. חישוב רטבים
-  let totalSauces = 0;
-  let saucesList = [];
-
-  for (let key in sauceSelections) {
-    const qty = sauceSelections[key];
-    if (qty > 0) {
-      totalSauces += qty;
-      const idx = parseInt(key.split('_')[1]);
-      if (menuData.sauces[idx]) {
-          const sauceName = menuData.sauces[idx].name;
-          saucesList.push(sauceName + ' (' + qty + ')');
-      }
-    }
-  }
-
-  // חישוב רטבים חינם vs בתשלום
-  const freeSauces = totalRolls * 2;
-  const extraSauces = Math.max(0, totalSauces - freeSauces);
-  const saucePrice = extraSauces * 3;
-  totalPrice += saucePrice;
-
-  if (totalSauces > 0) {
-    lines.push('\nרטבים:');
-    lines.push(saucesList.join(', '));
-    if (extraSauces > 0) {
-        lines.push('(תוספת תשלום על רטבים: ' + saucePrice + '₪)');
-    }
-  }
-
-  // 3. תוספות (צ'ופסטיקס, הערות, שעה)
-  lines.push('\nצ\'ופסטיקס: ' + chopsticksCount);
-
-  const notesInput = document.getElementById('notes');
-  if (notesInput) {
-    const notes = notesInput.value.trim();
-    if (notes) {
-      lines.push('\nהערות: ' + notes);
-    }
-  }
-
-  const pickupTimeSelect = document.getElementById('pickup-time');
-  const pickupTime = pickupTimeSelect ? pickupTimeSelect.value : '';
-  if (pickupTime) {
-    lines.push('\nשעת איסוף: ' + pickupTime);
-  }
-
-  // 4. שורת סיכום סופית
-  lines.push('\n' + '='.repeat(22)); 
-  lines.push('סה"כ לתשלום: ' + totalPrice + '₪');
-
-  // עדכון התצוגה באתר
-  const summaryElement = document.getElementById('order-summary');
-  if (summaryElement) {
-    summaryElement.textContent = totalRolls > 0 ? lines.join('\n') : 'הזמנה ריקה — בחר רולים, רטבים ושעה להצגת הסיכום.';
-  }
 
   // ============================================================
   // לוגיקת כפתור שליחה (מגבלה גלובלית - כל המטבח)
