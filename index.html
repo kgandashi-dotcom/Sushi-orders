@@ -1839,60 +1839,98 @@ function calculateOrderPrepTime(items) {
       }
     }
 
-// ========================================
-// סיכום הזמנה - עם עיצוב טקסט חדש
-// ========================================
-
-// ========================================
-// סיכום הזמנה - פורמט שורה אחת נקייה
-// ========================================
     function updateSummary() {
-        let totalRolls = 0, price = 0, text = [];
+        let totalRolls = 0;
+        let price = 0;
+        let text = [];
         
-        // חישוב רולים
+        // 1. חישוב רולים ומחיר בסיס
         for(let k in orderItems) {
-            let qty = orderItems[k], parts = k.split('_');
+            let qty = orderItems[k];
+            let parts = k.split('_');
+            // שליפת הפריט מהתפריט (menuData)
             let item = menuData[parts[0]][parseInt(parts[1])];
-            totalRolls += qty; price += item.price * qty;
-            text.push(`${item.name} x${qty} = ${item.price*qty}₪`);
+            
+            totalRolls += qty; 
+            price += item.price * qty;
+            text.push(`${item.name} x${qty} = ${item.price * qty}₪`);
         }
         
-        // חישוב רטבים
-        let sauceCount = 0, sauceTxt = [];
+        // 2. חישוב רטבים
+        let sauceCount = 0;
+        let sauceTxt = [];
         for(let k in sauceSelections) {
-            let qty = sauceSelections[k], name = menuData.sauces[parseInt(k.split('_')[1])].name;
-            sauceCount += qty; sauceTxt.push(`${name} x${qty}`);
+            let qty = sauceSelections[k];
+            // שליפת שם הרוטב
+            let name = menuData.sauces[parseInt(k.split('_')[1])].name;
+            
+            if (qty > 0) {
+                sauceCount += qty; 
+                sauceTxt.push(`${name} x${qty}`);
+            }
         }
         
-        // חישוב תוספת תשלום על רטבים
-        let extraSauce = Math.max(0, sauceCount - (totalRolls*2));
-        price += extraSauce * 3;
+        // לוגיקה: 2 רטבים חינם לכל רול
+        let freeSauces = totalRolls * 2;
+        let extraSauce = Math.max(0, sauceCount - freeSauces);
+        price += extraSauce * 3; // כל רוטב נוסף עולה 3 ש"ח
         
-        if(sauceCount>0) text.push(`\nרטבים: ${sauceTxt.join(', ')} (תוספת: ${extraSauce*3}₪)`);
+        if(sauceCount > 0) {
+            text.push(`\nרטבים: ${sauceTxt.join(', ')} (תוספת: ${extraSauce * 3}₪)`);
+        }
         
-        // צ'ופסטיקס
+        // 3. צ'ופסטיקס
         text.push(`\nצ'ופסטיקס: ${chopsticksCount}`);
         
-        // >>> כאן מחקנו את ההערות כדי למנוע כפילות <<<
-        
-        // שעת איסוף
+        // 4. שעת איסוף
         let time = document.getElementById('pickup-time').value;
-        if(time) text.push(`שעת איסוף: ${time}`);
+        if(time) {
+            text.push(`שעת איסוף: ${time}`);
+        }
         
+        // 5. הוספת שורת סה"כ
         text.push(`\n======\nסה"כ: ${price}₪`);
         
-        document.getElementById('order-summary').textContent = totalRolls ? text.join('\n') : 'הזמנה ריקה';
+        // עדכון הטקסט במסך (אם אין רולים, כותב "הזמנה ריקה")
+        document.getElementById('order-summary').textContent = totalRolls > 0 ? text.join('\n') : 'הזמנה ריקה';
         
-        // בדיקת תקינות להפעלת כפתור שליחה
+        // 6. בדיקת תקינות להפעלת כפתור השליחה
         const btn = document.getElementById('send-order');
+        const dailyLimit = 15; // מכסה יומית למשתמש
+        
         if (isKitchenSoldOut) {
-             btn.disabled = true; btn.textContent = "המלאי נגמר";
-        } else if (totalRolls === 0 || !time || totalRolls > 15) {
-             btn.disabled = true; btn.style.opacity = 0.5;
+             // אם המטבח סגור להיום
+             btn.disabled = true; 
+             btn.textContent = "המלאי נגמר";
+             btn.style.opacity = '0.5';
+             btn.style.cursor = 'not-allowed';
+        } else if (totalRolls === 0) {
+             // אם העגלה ריקה
+             btn.disabled = true; 
+             btn.textContent = "שלח הזמנה";
+             btn.style.opacity = '0.5';
+             btn.style.cursor = 'not-allowed';
+        } else if (!time) {
+             // אם לא נבחרה שעה
+             btn.disabled = true; 
+             btn.textContent = "בחר שעת איסוף";
+             btn.style.opacity = '0.5';
+             btn.style.cursor = 'not-allowed';
+        } else if (totalRolls > dailyLimit) {
+             // אם עבר את המכסה האישית
+             btn.disabled = true; 
+             btn.textContent = "חריגה מהמכסה (15)";
+             btn.style.opacity = '0.5';
+             btn.style.cursor = 'not-allowed';
         } else {
-             btn.disabled = false; btn.style.opacity = 1; btn.textContent = "שלח הזמנה";
+             // הכל תקין
+             btn.disabled = false; 
+             btn.textContent = "שלח הזמנה";
+             btn.style.opacity = '1';
+             btn.style.cursor = 'pointer';
         }
     }
+
 
   // ============================================================
   // לוגיקת כפתור שליחה (מגבלה גלובלית - כל המטבח)
